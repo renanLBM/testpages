@@ -1,0 +1,38 @@
+.table-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+table {
+  width: 950px;
+}
+
+thead{
+  text-align: center;
+  background-color: #77777788;
+}
+
+th {
+  font-size: larger;
+  padding: 15px;
+}
+
+tbody td {
+  text-align: center;
+  padding: 10px;
+  background-color: #DDDDDD55;
+}
+
+@media (max-width: 600px)
+{
+  table {
+    width: 450px;
+  }
+  th {
+    font-size: larger;
+    padding: 10px;
+  }
+  tbody td {
+    padding: 5px;
+  }
+}

@@ -1,0 +1,19 @@
+@import "../../../../themes.scss";
+
+.header-wrapper {
+  display: flex !important;
+  justify-content: space-between !important;
+  width: 100%;
+
+  .header-container {
+    display: flex;
+    align-items: center;
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  h1 {
+    font-size: x-large;
+  }
+}

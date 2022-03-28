@@ -1,0 +1,30 @@
+nb-card {
+  cursor: pointer;
+  width: 400px;
+  margin: 10px;
+
+  p {
+    padding: 0;
+    font-size: 42px;
+    font-weight: 600;
+  }
+}
+
+nb-card-body {
+  text-align: center;
+  padding: 0;
+}
+
+nb-card-footer {
+  text-align: center;
+  font-weight: 600;
+}
+nb-card-footer:hover {
+  background-color: rgba(112, 128, 144, 0.5);
+}
+
+@media screen and (max-width: 375px) {
+  nb-card {
+    width: 350px;
+  }
+}
