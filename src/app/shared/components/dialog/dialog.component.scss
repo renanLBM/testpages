@@ -1,0 +1,36 @@
+nb-card-header h3 {
+  text-align: center
+}
+
+.body-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.body-wrapper input {
+  width: 75%;
+}
+
+.data-inserida-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.data-inserida-wrapper span {
+  font-size: small;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+}
+.data-inserida-wrapper .bt-remover {
+  margin-left: 5px;
+  color: #ff3d71;
+  display: flex;
+}
+
+nb-card-footer {
+  display: flex;
+  justify-content: space-around;
+}

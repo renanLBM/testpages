@@ -12,7 +12,7 @@ export interface OP {
   CD_LOCAL: number,
   DS_LOCAL: string,
   DT_ENTRADA: number,
-  PREV_RETORNO: number,
+  PREV_RETORNO: Date,
   QT_OP: number,
 }
 

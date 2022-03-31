@@ -10,12 +10,12 @@ const API = environment.API_ENV;
   providedIn: 'root',
 })
 export class OpsService {
-  private opsSelecionadas = new BehaviorSubject<OPs>([]);
 
   constructor(private _httpClient: HttpClient) { }
 
   getAllOPs(): Observable<OPs> {
-    return this._httpClient.get<OPs>(`${API}/listops`);
+    // return this._httpClient.get<OPs>(`${API}/listops`);
+    return this._httpClient.get<OPs>(`${API}/getfaccao`);
   }
 
   getOp(id: string): Observable<OPs> {

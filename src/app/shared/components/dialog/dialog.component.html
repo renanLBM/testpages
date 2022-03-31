@@ -1,0 +1,23 @@
+<nb-card>
+  <nb-card-header>
+    <h3>Nova previsão</h3>
+  </nb-card-header>
+  <nb-card-body>
+    <div class="body-wrapper">
+      <input nbInput #dtcontrol [nbDatepicker]="datepicker" placeholder="Nova data">
+      <nb-datepicker #datepicker [min]="min"></nb-datepicker>
+      <div *ngIf="!!prev" class="data-inserida-wrapper">
+        <span class="data-inserida">Última data inserida: {{prev}}
+          <div class="bt-remover">
+            <nb-icon (click)="remove()" icon="close-square-outline"></nb-icon>
+          </div>
+        </span>
+        <!-- <span class="bt-remove">remover <nb-icon icon="close-square-outline"></nb-icon></span> -->
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer>
+    <button nbButton status="danger" (click)="cancel()">Cancelar</button>
+    <button nbButton status="success" (click)="submit(dtcontrol.value)">Enviar</button>
+  </nb-card-footer>
+</nb-card>

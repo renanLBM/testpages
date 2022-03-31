@@ -1,18 +1,34 @@
+<div class="filter-wrapper">
+  <nb-form-field>
+    <input type="text" nbInput (keyup)="filtroOP($event)" placeholder="Filtrar OP">
+    <button nbSuffix nbButton ghost (click)="filtroOP($event)">
+      <nb-icon icon="search-outline" aria-label="pesquisar">
+      </nb-icon>
+    </button>
+  </nb-form-field>
+</div>
 <div class="table-wrapper">
   <table>
     <thead>
       <th>Código</th>
-      <th> Referência</th>
+      <th>Referência</th>
       <th>Previsão</th>
-      <th>Ação</th>
+      <th>Atraso</th>
     </thead>
     <tbody>
-      <tr *ngFor="let item of descOP">
+      <tr *ngFor="let item of descOP$ | async">
         <td>{{item.cod}}</td>
         <td>{{item.ref}}</td>
         <td>{{item.previsao}}</td>
-        <td>x</td>
+        <td>
+          <nb-checkbox status="basic" [(checked)]="item.checked" [id]="item.ref" (click)="open(item)">
+            <nb-icon icon="calendar-outline"></nb-icon>
+          </nb-checkbox>
+        </td>
       </tr>
     </tbody>
   </table>
 </div>
+<!-- <div *ngFor="let item of datas">
+  <p>{{item}}</p>
+</div> -->
