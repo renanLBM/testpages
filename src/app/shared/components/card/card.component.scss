@@ -1,6 +1,6 @@
 nb-card {
   cursor: pointer;
-  width: 400px;
+  width: 350px;
   margin: 10px;
 
   p {
@@ -23,8 +23,8 @@ nb-card-footer:hover {
   background-color: rgba(112, 128, 144, 0.5);
 }
 
-@media screen and (max-width: 375px) {
+@media screen and (max-width: 475px) {
   nb-card {
-    width: 350px;
+    width: 300px;
   }
 }
