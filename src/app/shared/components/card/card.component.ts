@@ -8,6 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
 export class CardComponent implements OnInit {
 
   constructor() { }
+  @Input() loading: boolean = true;
 
   @Input() title: string = '';
   @Input() qnt_ops: number = 0;

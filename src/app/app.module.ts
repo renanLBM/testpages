@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,13 +15,14 @@ import {
   NbLayoutModule,
   NbSearchModule,
   NbSidebarModule,
+  NbSpinnerModule,
   NbThemeModule,
   NbToggleModule
 } from '@nebular/theme';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { DescricaoFaccaoComponent } from './components/descricao-faccao/descricao-faccao.component';
-import { ListFaccaoComponent } from './components/list-faccao/list-faccao.component';
+import { DescricaoFaccaoComponent } from './components/auditor/descricao-faccao/descricao-faccao.component';
+import { ListFaccaoComponent } from './components/auditor/list-faccao/list-faccao.component';
 import { PcpComponent } from './components/pcp/pcp.component';
 import { CardComponent } from './shared/components/card/card.component';
 import { HeaderComponent } from './shared/components/header/header.component';
@@ -32,6 +33,7 @@ import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { DialogComponent } from './shared/components/dialog/dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { InterceptorService } from './services/interceptor.service';
 
 registerLocaleData(localePt);
 
@@ -65,10 +67,14 @@ registerLocaleData(localePt);
     NbFormFieldModule,
     NbSearchModule,
     NbSidebarModule,
+    NbSpinnerModule,
     NbThemeModule.forRoot({ name: 'cosmic' }),
     NbToggleModule,
   ],
-  providers: [{ provide: LOCALE_ID, useValue: 'pt-BR' }],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },
+    { provide: LOCALE_ID, useValue: 'pt-BR' }
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

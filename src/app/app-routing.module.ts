@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DescricaoFaccaoComponent } from './components/descricao-faccao/descricao-faccao.component';
-import { ListFaccaoComponent } from './components/list-faccao/list-faccao.component';
+import { DescricaoFaccaoComponent } from './components/auditor/descricao-faccao/descricao-faccao.component';
+import { ListFaccaoComponent } from './components/auditor/list-faccao/list-faccao.component';
 import { PcpComponent } from './components/pcp/pcp.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 

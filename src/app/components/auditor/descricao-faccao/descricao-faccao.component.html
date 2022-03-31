@@ -1,8 +1,13 @@
+
 <div class="filter-wrapper">
   <nb-form-field>
-    <input type="text" nbInput (keyup)="filtroOP($event)" placeholder="Filtrar OP">
-    <button nbSuffix nbButton ghost (click)="filtroOP($event)">
+    <input type="text" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar OP">
+    <button nbPrefix nbButton ghost (click)="filtroOP($event)">
       <nb-icon icon="search-outline" aria-label="pesquisar">
+      </nb-icon>
+    </button>
+    <button *ngIf="filtroAtivo" nbSuffix nbButton ghost (click)="limpaFiltro(filtro)">
+      <nb-icon icon="close-square-outline" aria-label="limpar">
       </nb-icon>
     </button>
   </nb-form-field>

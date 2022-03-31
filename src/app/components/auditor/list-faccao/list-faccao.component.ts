@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { OPs } from 'src/app/models/ops';
 import { OpsService } from 'src/app/services/ops.service';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+import { LoadingService } from 'src/app/services/loading.service';
 
 interface faccao {
   id: number;
@@ -17,15 +18,19 @@ interface faccao {
 })
 export class ListFaccaoComponent implements OnInit {
   emptyList: boolean = false;
+  filtroAtivo: boolean = false;
 
   color: string[] = ['warning', 'info', 'success', 'danger', 'primary'];
 
   listFaccoes: OPs = [];
   OpsList: any[] = [];
   OpList: faccao[] = [];
-  OpList$: Subject<faccao[]> = new Subject();
+  OpList$: BehaviorSubject<faccao[]> = new BehaviorSubject(this.OpList);
 
-  constructor(private _opsService: OpsService) {}
+  constructor(
+    public _loadingService: LoadingService,
+    private _opsService: OpsService
+  ) {}
 
   ngOnInit(): void {
     this._opsService.getAllOPs().subscribe({
@@ -45,7 +50,7 @@ export class ListFaccaoComponent implements OnInit {
 
         let id = 0;
         uniq.map((f: string, index: number) => {
-          id = this.listFaccoes.find((x) => (x.DS_LOCAL == f))?.CD_LOCAL!;
+          id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
           this.OpList.push(
             ...[
               {
@@ -74,11 +79,19 @@ export class ListFaccaoComponent implements OnInit {
     const filterValue = (event.target as HTMLInputElement).value;
     if (filterValue == '') {
       this.OpList$.next(this.OpList);
+      this.filtroAtivo = false;
     } else {
+      this.filtroAtivo = true;
       this.OpList$.next(
         this.OpList.filter((_) => _.name.includes(filterValue.toUpperCase()))
       );
       this.OpList$.subscribe((x) => (this.emptyList = !x.length));
     }
+  }
+
+  limpaFiltro(item: HTMLInputElement): void {
+    this.filtroAtivo = false;
+    item.value = '';
+    this.OpList$.next(this.OpList);
   }
 }

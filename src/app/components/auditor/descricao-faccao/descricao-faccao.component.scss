@@ -1,6 +1,7 @@
 .filter-wrapper {
   display: flex;
   justify-content: flex-end;
+  margin-right: 80px;
   margin-bottom: 15px;
 }
 
@@ -12,7 +13,7 @@ table {
   width: 950px;
   margin-bottom: 2em;
 }
-thead{
+thead {
   text-align: center;
   background-color: #777777aa;
 }
@@ -26,8 +27,10 @@ tbody td {
   background-color: #dddddd66;
 }
 
-@media (max-width: 600px)
-{
+@media (max-width: 475px) {
+  .filter-wrapper {
+    margin-right: 0;
+  }
   table {
     width: 450px;
     margin-bottom: 2em;

@@ -21,6 +21,8 @@ interface descOP {
   styleUrls: ['./descricao-faccao.component.scss'],
 })
 export class DescricaoFaccaoComponent implements OnInit {
+  filtroAtivo: boolean = false;
+
   listOPs!: OPs;
   descOP: descOP[] = [];
   descOP$: Subject<descOP[]> = new Subject();
@@ -67,17 +69,6 @@ export class DescricaoFaccaoComponent implements OnInit {
     });
   }
 
-  filtroOP(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    if (filterValue == '') {
-      this.descOP$.next(this.descOP);
-    } else {
-      this.descOP$.next(
-        this.descOP.filter((_) => _.cod.includes(filterValue.toUpperCase()))
-      );
-    }
-  }
-
   open(item: descOP) {
     this.NbDdialogService.open(DialogComponent, {
       context: {
@@ -98,5 +89,24 @@ export class DescricaoFaccaoComponent implements OnInit {
         item.checked = false;
       }
     });
+  }
+
+  filtroOP(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    if (filterValue == '') {
+      this.filtroAtivo = false;
+      this.descOP$.next(this.descOP);
+    } else {
+      this.filtroAtivo = true;
+      this.descOP$.next(
+        this.descOP.filter((_) => _.cod.includes(filterValue.toUpperCase()))
+      );
+    }
+  }
+
+  limpaFiltro(item: HTMLInputElement): void {
+    this.filtroAtivo = false;
+    item.value = '';
+    this.descOP$.next(this.descOP);
   }
 }
