@@ -1,0 +1,49 @@
+<nb-layout>
+  <nb-layout-column>
+    <div class="back">
+      <button nbButton [routerLink]="['/pcp']">pcp</button>
+      <button nbButton [routerLink]="['/auditor']">auditor</button>
+      <div class="container login-container">
+        <form class="form mt-4" (ngSubmit)="login()" #loginForm="ngForm">
+          <div class="form-group">
+            <h4 class="text-center"><b>Login</b></h4>
+            <input
+              nbInput
+              class="form-control login-input"
+              placeholder="Nome do usuário"
+              [(ngModel)]="usuario"
+              name="usuario"
+              #campoUsuario="ngModel"
+              required
+            />
+          </div>
+
+          <div class="form-group login-input">
+            <input
+              nbInput
+              type="password"
+              class="form-control"
+              placeholder="Senha"
+              [(ngModel)]="senha"
+              name="senha"
+              #campoSenha="ngModel"
+              required
+            />
+          </div>
+
+          <div class="bt-container bt-login">
+            <button
+              nbButton
+              type="submit"
+              class="btn btn-primary btn-block"
+              [disabled]="loginForm.invalid"
+            >
+              Login
+            </button>
+          </div>
+        </form>
+        <hr />
+      </div>
+    </div>
+  </nb-layout-column>
+</nb-layout>

@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'facao-control';
+  title = 'facControl';
+
+  reciverFeedback(event: Event){
+    console.log(event);
+  }
 }

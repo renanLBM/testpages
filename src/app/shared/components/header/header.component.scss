@@ -12,6 +12,29 @@
   }
 }
 
+
+.bt-sidebar {
+  cursor: pointer;
+  margin-right: 5px;
+}
+.sidebar {
+  display: block;
+  position: fixed;
+  bottom: 10px;
+  margin: auto;
+}
+
+.exit {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bt-exit {
+  display: flex;
+}
+
+
 @media screen and (max-width: 375px) {
   h1 {
     font-size: x-large;

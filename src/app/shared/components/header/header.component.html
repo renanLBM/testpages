@@ -1,14 +1,23 @@
 <nb-layout-header fixed>
   <div class="header-wrapper">
-    <div class="header-container" style="cursor: pointer;" [routerLink]="['/']">
-      <h1>Facção Control</h1>
+    <div class="header-container">
+      <div style="cursor: pointer;" [routerLink]="['/']">
+        <h1>FacControl</h1>
+      </div>
     </div>
     <div class="header-container">
-      <nb-toggle (checkedChange)="toggleTheme($event)" [(checked)]="checked">
-        <nb-icon *ngIf="checked" icon="moon-outline"></nb-icon>
-        <nb-icon *ngIf="!checked" icon="sun-outline"></nb-icon>
-      </nb-toggle>
+      <div class="exit">
+        <button ghost nbButton (click)="toggleTheme()">
+          <nb-icon *ngIf="checked" icon="moon-outline"></nb-icon>
+          <nb-icon *ngIf="!checked" icon="sun-outline"></nb-icon>
+        </button>
+        <div *ngIf="isLoggedIn">
+          <button nbButton ghost class="bt-exit" (click)="sair()">
+            <nb-icon icon="log-out-outline"></nb-icon>
+            sair
+          </button>
+        </div>
+      </div>
     </div>
-    <!-- <nb-search type="rotate-layout"></nb-search> -->
   </div>
 </nb-layout-header>

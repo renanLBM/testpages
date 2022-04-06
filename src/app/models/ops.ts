@@ -14,6 +14,7 @@ export interface OP {
   DT_ENTRADA: number,
   PREV_RETORNO: Date,
   QT_OP: number,
+  Status: string
 }
 
 export type OPs = Array<OP>;

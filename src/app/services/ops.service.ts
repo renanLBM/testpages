@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { OPs } from '../models/ops';
 import { environment } from 'src/environments/environment';
 
@@ -18,7 +18,11 @@ export class OpsService {
     return this._httpClient.get<OPs>(`${API}/getfaccao`);
   }
 
-  getOp(id: string): Observable<OPs> {
+  getOpById(id: string): Observable<OPs> {
     return this._httpClient.get<OPs>(`${API}/getop/${id}`);
+  }
+
+  getOpByStatus(status: string): Observable<OPs> {
+    return this._httpClient.get<OPs>(`${API}/getopbystatus/${status}`);
   }
 }

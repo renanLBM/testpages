@@ -1,4 +1,3 @@
-
 <div class="filter-wrapper">
   <nb-form-field>
     <input type="text" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar OP">
@@ -12,28 +11,32 @@
     </button>
   </nb-form-field>
 </div>
-<div class="table-wrapper">
-  <table>
-    <thead>
-      <th>Código</th>
-      <th>Referência</th>
-      <th>Previsão</th>
-      <th>Atraso</th>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of descOP$ | async">
-        <td>{{item.cod}}</td>
-        <td>{{item.ref}}</td>
-        <td>{{item.previsao}}</td>
-        <td>
-          <nb-checkbox status="basic" [(checked)]="item.checked" [id]="item.ref" (click)="open(item)">
-            <nb-icon icon="calendar-outline"></nb-icon>
-          </nb-checkbox>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+<div *ngFor="let item of descOP$ | async">
+  <nb-card>
+    <nb-card-body>
+      <div class="c-body-wrapper">
+        <div class="c-img">
+          <img src="../../../../assets/BRZ07394.jpg" alt="op-img" width="auto" height="100px">
+        </div>
+        <div class="c-desc">
+          <div class="c-header">
+            <h4>{{ item.cod }}</h4>
+            <span>{{ item.status }}</span>
+          </div>
+          <div class="c-desc-mid">
+            <div class="c-body-left">
+              <p>Ref: {{ item.ref }}</p>
+              <p>Descrição: Nome da Peça</p>
+              <p>Previsão: {{ item.previsao }}</p>
+            </div>
+            <div class="c-body-right">
+              <p>{{ item.qnt }}</p>
+              <span>Quantidade de peças</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nb-card-body>
+    <nb-card-footer>Alterar</nb-card-footer>
+  </nb-card>
 </div>
-<!-- <div *ngFor="let item of datas">
-  <p>{{item}}</p>
-</div> -->

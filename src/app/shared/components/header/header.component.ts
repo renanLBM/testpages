@@ -1,29 +1,41 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NbThemeService } from '@nebular/theme';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'fc-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
+  @Input() checked = true;
+  isLoggedIn!: boolean;
 
-  @Input() theme = 'Dark Mode';
-  checked: boolean = true;
-
-  constructor(private themeService: NbThemeService) { }
+  constructor(
+    private themeService: NbThemeService,
+    private _userService: UserService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    this._userService.getLogged().subscribe((value) => {
+      this.isLoggedIn = value;
+    });
+    this.isLoggedIn = this._userService.isLogged();
   }
 
-  toggleTheme(event: boolean): void {
-    this.checked = event;
-    if (this.checked){
-      this.theme = 'Light Mode';
+  toggleTheme(): void {
+    this.checked = !this.checked;
+    if (this.checked) {
       this.themeService.changeTheme('cosmic');
-    }else{
-      this.theme = 'Dark Mode';
+    } else {
       this.themeService.changeTheme('default');
     }
+  }
+
+  sair() {
+    this._userService.logout();
+    this.router.navigateByUrl('');
   }
 }

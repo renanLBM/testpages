@@ -3,13 +3,7 @@ import { OPs } from 'src/app/models/ops';
 import { OpsService } from 'src/app/services/ops.service';
 import { BehaviorSubject } from 'rxjs';
 import { LoadingService } from 'src/app/services/loading.service';
-
-interface faccao {
-  id: number;
-  name: string;
-  qnt: number;
-  color: string;
-}
+import { Faccao } from 'src/app/models/faccao';
 
 @Component({
   selector: 'fc-list-faccao',
@@ -24,8 +18,8 @@ export class ListFaccaoComponent implements OnInit {
 
   listFaccoes: OPs = [];
   OpsList: any[] = [];
-  OpList: faccao[] = [];
-  OpList$: BehaviorSubject<faccao[]> = new BehaviorSubject(this.OpList);
+  OpList: Faccao[] = [];
+  OpList$: BehaviorSubject<Faccao[]> = new BehaviorSubject(this.OpList);
 
   constructor(
     public _loadingService: LoadingService,

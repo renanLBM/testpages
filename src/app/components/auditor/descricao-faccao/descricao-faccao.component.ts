@@ -2,18 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
-import { OP, OPs } from 'src/app/models/ops';
+import { descOP } from 'src/app/models/descOP';
+import { OPs } from 'src/app/models/ops';
 import { DialogService } from 'src/app/services/dialog.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
-
-interface descOP {
-  cod: string;
-  ref: string;
-  previsao: string;
-  novaprevisao: string;
-  checked: boolean;
-}
 
 @Component({
   selector: 'fc-descricao-faccao',
@@ -39,7 +32,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   ngOnInit(): void {
     let id = this._route.snapshot.paramMap.get('id')!;
-    this._opsService.getOp(id).subscribe((x) => {
+    this._opsService.getOpById(id).subscribe((x) => {
       x.sort((a, b) => {
         let x = new Date(a.PREV_RETORNO);
         let y = new Date(b.PREV_RETORNO);
@@ -63,6 +56,8 @@ export class DescricaoFaccaoComponent implements OnInit {
           previsao: prev,
           novaprevisao: '',
           checked: false,
+          status: i.Status,
+          qnt: i.QT_OP,
         });
         this.descOP$.next(this.descOP);
       });

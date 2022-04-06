@@ -1,37 +1,42 @@
-<div *ngIf="_loadingService.isLoading | async; else allOPs">
-  <div class="card-wrapper">
-    <div *ngFor="let i of color">
-      <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [color]="i">
-      </fc-card>
+<nb-layout>
+  <nb-layout-column>
+    <div *ngIf="_loadingService.isLoading | async; else allOPs">
+      <div class="card-wrapper">
+        <div *ngFor="let i of color">
+          <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [color]="i">
+          </fc-card>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<ng-template #allOPs>
-  <div class="filter-wrapper">
-    <nb-form-field>
-      <input type="text" #filtro nbInput (keyup)="filtroFaccao($event)" placeholder="Filtrar facção">
-      <button nbPrefix nbButton ghost (click)="filtroFaccao($event)">
-        <nb-icon icon="search-outline" aria-label="pesquisar">
-        </nb-icon>
-      </button>
-      <button *ngIf="filtroAtivo" nbSuffix nbButton ghost (click)="limpaFiltro(filtro)">
-        <nb-icon icon="close-square-outline" aria-label="pesquisar">
-        </nb-icon>
-      </button>
-    </nb-form-field>
-  </div>
-</ng-template>
+    <ng-template #allOPs>
+      <div class="filter-wrapper">
+        <nb-form-field>
+          <input type="text" #filtro nbInput (keyup)="filtroFaccao($event)" placeholder="Filtrar facção">
+          <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">
+            <nb-icon icon="close-square-outline" aria-label="pesquisar">
+            </nb-icon>
+          </button>
+          <button nbSuffix nbButton ghost (click)="filtroFaccao($event)">
+            <nb-icon icon="search-outline" aria-label="pesquisar">
+            </nb-icon>
+          </button>
+        </nb-form-field>
+      </div>
+    </ng-template>
 
-<div *ngIf="!emptyList; else listaVazia">
-  <div class="card-wrapper">
-    <div *ngFor="let item of OpList$ | async">
-      <fc-card [loading]="false" [title]="item.name" [qnt_ops]="item.qnt" [color]="item.color" [routerLink]="['/faccao/', item.id]">
-      </fc-card>
+    <div *ngIf="!emptyList; else listaVazia">
+      <div class="card-wrapper">
+        <div *ngFor="let item of OpList$ | async">
+          <fc-card [loading]="false" [title]="item.name" [qnt_ops]="item.qnt" [color]="item.color" [routerLink]="['/auditor/descricao/', item.id]">
+          </fc-card>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-  <ng-template #listaVazia>
-    Lista vazia
-  </ng-template>
+      <ng-template #listaVazia>
+        Lista vazia
+      </ng-template>
+
+  </nb-layout-column>
+</nb-layout>

@@ -1,39 +1,33 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DescricaoFaccaoComponent } from './components/auditor/descricao-faccao/descricao-faccao.component';
-import { ListFaccaoComponent } from './components/auditor/list-faccao/list-faccao.component';
-import { PcpComponent } from './components/pcp/pcp.component';
+import { LoginComponent } from './shared/components/login/login.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
-  // {
-  //   path: 'login',
-  //   component: LoginComponent,
-  //   canActivate: [LoginPageGuard],
-  // },
   {
-    path: 'home',
-    component: ListFaccaoComponent,
-    // canActivate: [LoginGuard],
+    path: 'login',
+    component: LoginComponent,
+    // canActivate: [LoginPageGuard],
   },
   {
-    path: 'faccao/:id',
-    component: DescricaoFaccaoComponent
+    path: 'pcp',
+    loadChildren: () => import('../app/components/pcp/pcp.module').then(m => m.PcpModule),
+    // canActivate: [LoginGuard]
+  },
+  {
+    path: 'auditor',
+    loadChildren: () => import('../app/components/auditor/auditor.module').then(m => m.AuditorModule),
+    // canActivate: [LoginGuard]
   },
   {
     path: '**',
     component: NotFoundComponent,
   },
-  // {
-  //   path: 'admin',
-  //   loadChildren: () => import('./components/admin/admin.module').then(m => m.AdminModule),
-  //   canActivate: [AdminLoginGuard]
-  // }
 
 ];
 
