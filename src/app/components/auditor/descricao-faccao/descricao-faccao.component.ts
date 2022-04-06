@@ -21,13 +21,14 @@ export class DescricaoFaccaoComponent implements OnInit {
   descOP$: Subject<descOP[]> = new Subject();
   datas: any[] = [];
 
+  img_url = "https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/"
+
   binding = false;
 
   constructor(
     private _opsService: OpsService,
     private _route: ActivatedRoute,
-    private NbDdialogService: NbDialogService,
-    private dialogService: DialogService
+    private NbDdialogService: NbDialogService
   ) {}
 
   ngOnInit(): void {
@@ -56,9 +57,11 @@ export class DescricaoFaccaoComponent implements OnInit {
           previsao: prev,
           novaprevisao: '',
           checked: false,
+          img: this.img_url + i.CD_REFERENCIA.toString() + "/" + i.CD_REFERENCIA.toString() + "-1.jpg",
           status: i.Status,
           qnt: i.QT_OP,
         });
+        console.log(this.descOP);
         this.descOP$.next(this.descOP);
       });
     });

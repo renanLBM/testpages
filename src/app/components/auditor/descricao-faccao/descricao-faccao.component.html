@@ -16,7 +16,8 @@
     <nb-card-body>
       <div class="c-body-wrapper">
         <div class="c-img">
-          <img src="../../../../assets/BRZ07394.jpg" alt="op-img" width="auto" height="100px">
+          <img src="{{ item.img }}" onError="this.onerror=null;this.src='../../../../assets/not-found.png';" alt="op-img"
+            width="auto" height="150px">
         </div>
         <div class="c-desc">
           <div class="c-header">
@@ -31,7 +32,7 @@
             </div>
             <div class="c-body-right">
               <p>{{ item.qnt }}</p>
-              <span>Quantidade de peças</span>
+              <span>Qnt. de peças</span>
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
-  @Input() checked = true;
+  @Input() checked = false;
   isLoggedIn!: boolean;
 
   constructor(

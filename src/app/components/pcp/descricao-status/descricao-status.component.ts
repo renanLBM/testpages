@@ -20,6 +20,8 @@ export class DescricaoStatusComponent implements OnInit {
   descOP$: Subject<descOPs> = new Subject();
   datas: any[] = [];
 
+  img_url = "https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/"
+
   binding = false;
 
   constructor(
@@ -54,6 +56,7 @@ export class DescricaoStatusComponent implements OnInit {
           previsao: prev,
           novaprevisao: '',
           checked: false,
+          img: this.img_url + i.CD_REFERENCIA.toString() + "/" + i.CD_REFERENCIA.toString() + "-1.jpg",
           status: i.Status,
           qnt: i.QT_OP,
         });
