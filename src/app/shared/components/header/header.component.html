@@ -8,8 +8,8 @@
     <div class="header-container">
       <div class="exit">
         <button ghost nbButton (click)="toggleTheme()">
-          <nb-icon *ngIf="checked" icon="moon-outline"></nb-icon>
-          <nb-icon *ngIf="!checked" icon="sun-outline"></nb-icon>
+          <nb-icon *ngIf="checked" icon="sun-outline"></nb-icon>
+          <nb-icon *ngIf="!checked" icon="moon-outline"></nb-icon>
         </button>
         <div *ngIf="isLoggedIn">
           <button nbButton ghost class="bt-exit" (click)="sair()">

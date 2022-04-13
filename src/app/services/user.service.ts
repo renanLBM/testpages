@@ -15,7 +15,7 @@ export class UserService {
     nivel: 0,
     nome: '',
   });
-  private admin = new BehaviorSubject<boolean>(false);
+  private nivel = new BehaviorSubject<number>(0);
   private logged = new BehaviorSubject<boolean>(false);
 
   constructor(private _httpClient: HttpClient) {}
@@ -41,6 +41,11 @@ export class UserService {
 
   setUser(op: any) {
     this.usuarioSubject.next(op);
+    // console.log(op['nivel']);
+    // this.usuarioSubject.subscribe((u) => {
+    //   console.log(u);
+    //   this.nivel.next(u.nivel)
+    // });
     this.setSession();
   }
 
@@ -61,6 +66,10 @@ export class UserService {
 
   getLogged() {
     return this.logged.asObservable();
+  }
+
+  getNivel() {
+    return this.nivel.asObservable();
   }
 
   logout() {

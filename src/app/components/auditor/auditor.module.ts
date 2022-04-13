@@ -1,11 +1,12 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbButtonModule, NbCardModule, NbCheckboxModule, NbFormFieldModule, NbIconModule, NbInputModule, NbLayoutModule } from '@nebular/theme';
-import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
-import { DescricaoFaccaoComponent } from './descricao-faccao/descricao-faccao.component';
-import { AuditorRoutingModule } from './auditor-routing.module';
-import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
+import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { NbButtonModule, NbCardModule, NbFormFieldModule, NbIconModule, NbInputModule, NbLayoutModule, NbSpinnerModule, NbTooltipModule } from '@nebular/theme';
+import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
+import { AuditorRoutingModule } from './auditor-routing.module';
+import { DescricaoFaccaoComponent } from './descricao-faccao/descricao-faccao.component';
+import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
+import { LazyLoadImageModule, LAZYLOAD_IMAGE_HOOKS, ScrollHooks } from 'ng-lazyload-image';
 
 
 
@@ -17,15 +18,20 @@ import { RouterModule } from '@angular/router';
   imports: [
     RouterModule,
     CommonModule,
+    LazyLoadImageModule,
     NbButtonModule,
     NbCardModule,
     NbIconModule,
     NbInputModule,
     NbFormFieldModule,
-    NbCheckboxModule,
     NbLayoutModule,
+    NbSpinnerModule,
+    NbTooltipModule,
     AuditorRoutingModule,
     SharedComponentsModule
+  ],
+  providers: [
+    { provide: LAZYLOAD_IMAGE_HOOKS, useClass: ScrollHooks }
   ]
 })
 export class AuditorModule { }

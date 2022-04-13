@@ -1,7 +1,15 @@
-<nb-card [status]="color" class="card-wrapper" [nbSpinner]="loading" nbSpinnerStatus="primary">
+<nb-card [accent]="c_accent" [status]="c_status" class="card-wrapper" [nbSpinner]="loading" nbSpinnerStatus="primary">
   <nb-card-header>{{ title }}</nb-card-header>
   <nb-card-body>
-    <p>{{ qnt_ops }}</p>
+    <div class="c-body">
+      <div class="total-op">
+        <p>{{ qnt_ops }}</p>
+        <span><b>Total de OP's</b></span>
+      </div>
+      <div *ngIf="show_desc" class="desc-op">
+        <span><b>Em atraso: </b>{{ qnt_atraso }}</span>
+      </div>
+    </div>
   </nb-card-body>
   <nb-card-footer>Acessar</nb-card-footer>
 </nb-card>

@@ -1,8 +1,7 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CardComponent } from './components/card/card.component';
-import { DialogComponent } from './components/dialog/dialog.component';
-import { NbEvaIconsModule } from '@nebular/eva-icons';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import {
   NbButtonModule,
   NbCardModule,
@@ -13,50 +12,56 @@ import {
   NbInputModule,
   NbLayoutModule,
   NbPopoverModule,
+  NbSelectModule,
   NbSidebarModule,
   NbSpinnerModule,
-  NbToggleModule
+  NbToggleModule, NbWindowModule
 } from '@nebular/theme';
+import { NgxUsefulSwiperModule } from 'ngx-useful-swiper';
+import { CardComponent } from './components/card/card.component';
+import { CarosselComponent } from './components/carossel/carossel.component';
+import { DialogComponent } from './components/dialog/dialog.component';
 import { HeaderComponent } from './components/header/header.component';
-import { NotFoundComponent } from './components/not-found/not-found.component';
 import { LoginComponent } from './components/login/login.component';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-
-
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 @NgModule({
   declarations: [
     CardComponent,
+    CarosselComponent,
     DialogComponent,
     HeaderComponent,
-    NotFoundComponent,
     LoginComponent,
+    NotFoundComponent,
   ],
   imports: [
     RouterModule,
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     NbButtonModule,
     NbCardModule,
     NbDatepickerModule.forRoot(),
     NbDialogModule.forRoot(),
-    NbEvaIconsModule,
     NbIconModule,
     NbInputModule,
     NbLayoutModule,
     NbFormFieldModule,
     NbPopoverModule,
     NbSidebarModule,
+    NbSelectModule,
     NbSpinnerModule,
     NbToggleModule,
+    NbWindowModule.forChild(),
+    NgxUsefulSwiperModule,
   ],
   exports: [
     CardComponent,
+    CarosselComponent,
     DialogComponent,
     HeaderComponent,
-    NotFoundComponent,
     LoginComponent,
-  ]
+    NotFoundComponent,
+  ],
 })
-export class SharedComponentsModule { }
+export class SharedComponentsModule {}

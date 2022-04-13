@@ -1,0 +1,16 @@
+<div *ngIf="list.length > 0; else error">
+  <swiper [config]="config" style="height: 400px; width: 275px;">
+    <div class="swiper-wrapper">
+      <img class="swiper-slide" alt="op-peça" height="auto" width="auto" *ngFor="let i of list" [src]="i"
+        onError="this.style.display='none'">
+    </div>
+    <!-- Add Pagination -->
+    <div class="swiper-pagination"></div>
+    <!-- Add Arrows -->
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+  </swiper>
+</div>
+<ng-template #error>
+  <span>Nenhuma imagem disponível</span>
+</ng-template>

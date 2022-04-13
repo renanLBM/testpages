@@ -8,7 +8,4 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'facControl';
 
-  reciverFeedback(event: Event){
-    console.log(event);
-  }
 }

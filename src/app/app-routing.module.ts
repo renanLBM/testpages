@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { LoginGuard } from './guard/login.guard';
+import { NivelGuard } from './guard/nivel.guard';
 import { LoginComponent } from './shared/components/login/login.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 
@@ -11,23 +13,23 @@ const routes: Routes = [
   },
   {
     path: 'login',
+    canActivate: [LoginGuard],
     component: LoginComponent,
-    // canActivate: [LoginPageGuard],
   },
   {
     path: 'pcp',
     loadChildren: () => import('../app/components/pcp/pcp.module').then(m => m.PcpModule),
-    // canActivate: [LoginGuard]
+    // canActivateChild: [NivelGuard]
   },
   {
     path: 'auditor',
     loadChildren: () => import('../app/components/auditor/auditor.module').then(m => m.AuditorModule),
-    // canActivate: [LoginGuard]
+    // canActivateChild: [NivelGuard]
   },
   {
     path: '**',
     component: NotFoundComponent,
-  },
+  }
 
 ];
 

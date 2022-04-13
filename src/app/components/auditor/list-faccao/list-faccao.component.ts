@@ -4,6 +4,8 @@ import { OpsService } from 'src/app/services/ops.service';
 import { BehaviorSubject } from 'rxjs';
 import { LoadingService } from 'src/app/services/loading.service';
 import { Faccao } from 'src/app/models/faccao';
+import { NbComponentStatus } from '@nebular/theme';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'fc-list-faccao',
@@ -13,8 +15,11 @@ import { Faccao } from 'src/app/models/faccao';
 export class ListFaccaoComponent implements OnInit {
   emptyList: boolean = false;
   filtroAtivo: boolean = false;
+  show_desc: boolean = true;
 
-  color: string[] = ['warning', 'info', 'success', 'danger', 'primary'];
+  color: NbComponentStatus[] = [
+    'primary',
+  ];
 
   listFaccoes: OPs = [];
   OpsList: any[] = [];
@@ -22,11 +27,13 @@ export class ListFaccaoComponent implements OnInit {
   OpList$: BehaviorSubject<Faccao[]> = new BehaviorSubject(this.OpList);
 
   constructor(
+    private _userService: UserService,
     public _loadingService: LoadingService,
     private _opsService: OpsService
   ) {}
 
   ngOnInit(): void {
+
     this._opsService.getAllOPs().subscribe({
       next: (list) => {
         this.listFaccoes = list;
@@ -43,14 +50,17 @@ export class ListFaccaoComponent implements OnInit {
         }, {});
 
         let id = 0;
+
         uniq.map((f: string, index: number) => {
           id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
+
           this.OpList.push(
             ...[
               {
                 id: id,
                 name: f,
                 qnt: qnt[f],
+                qnt_atraso: this.listFaccoes.filter((op) => op.Status == "Atraso" && op.DS_LOCAL == f).length,
                 color: this.color[index % this.color.length],
               },
             ]
@@ -67,8 +77,6 @@ export class ListFaccaoComponent implements OnInit {
     });
   }
 
-  // TODO: Ajuste da verificação da lista vazia
-  // lista não renderiza quando apagada a última letra que deu erro
   filtroFaccao(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     if (filterValue == '') {

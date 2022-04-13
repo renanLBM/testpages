@@ -9,7 +9,7 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
-  @Input() checked = false;
+  @Input() checked = true;
   isLoggedIn!: boolean;
 
   constructor(
@@ -28,9 +28,9 @@ export class HeaderComponent implements OnInit {
   toggleTheme(): void {
     this.checked = !this.checked;
     if (this.checked) {
-      this.themeService.changeTheme('cosmic');
-    } else {
       this.themeService.changeTheme('default');
+    } else {
+      this.themeService.changeTheme('cosmic');
     }
   }
 

@@ -52,7 +52,7 @@ export class DescricaoStatusComponent implements OnInit {
           .substring(0, 10);
         this.descOP.push({
           cod: i.NR_CICLO.toString() + '-' + i.NR_OP.toString(),
-          ref: i.CD_REFERENCIA.toString(),
+          ref: i.CD_REFERENCIA,
           previsao: prev,
           novaprevisao: '',
           checked: false,

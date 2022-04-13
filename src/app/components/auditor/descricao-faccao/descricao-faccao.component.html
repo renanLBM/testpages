@@ -1,43 +1,83 @@
-<div class="filter-wrapper">
-  <nb-form-field>
-    <input type="text" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar OP">
-    <button nbPrefix nbButton ghost (click)="filtroOP($event)">
-      <nb-icon icon="search-outline" aria-label="pesquisar">
-      </nb-icon>
-    </button>
-    <button *ngIf="filtroAtivo" nbSuffix nbButton ghost (click)="limpaFiltro(filtro)">
-      <nb-icon icon="close-square-outline" aria-label="limpar">
-      </nb-icon>
-    </button>
-  </nb-form-field>
-</div>
-<div *ngFor="let item of descOP$ | async">
-  <nb-card>
-    <nb-card-body>
-      <div class="c-body-wrapper">
-        <div class="c-img">
-          <img src="{{ item.img }}" onError="this.onerror=null;this.src='../../../../assets/not-found.png';" alt="op-img"
-            width="auto" height="150px">
-        </div>
-        <div class="c-desc">
-          <div class="c-header">
-            <h4>{{ item.cod }}</h4>
-            <span>{{ item.status }}</span>
-          </div>
-          <div class="c-desc-mid">
-            <div class="c-body-left">
-              <p>Ref: {{ item.ref }}</p>
-              <p>Descrição: Nome da Peça</p>
-              <p>Previsão: {{ item.previsao }}</p>
+<nb-layout>
+  <nb-layout-column>
+    <div class="filter-wrapper">
+      <nb-form-field>
+        <input type="text" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar Ciclo, OP ou Ref">
+        <button nbPrefix nbButton ghost (click)="filtroOP($event)">
+          <nb-icon icon="search-outline" aria-label="pesquisar">
+          </nb-icon>
+        </button>
+        <button *ngIf="filtroAtivo" nbSuffix nbButton ghost (click)="limpaFiltro(filtro)">
+          <nb-icon icon="close-square-outline" aria-label="limpar">
+          </nb-icon>
+        </button>
+      </nb-form-field>
+    </div>
+    <div *ngIf="_loadingService.isLoading | async">
+      <div class="card-wrapper">
+        <nb-card [nbSpinner]="true" nbSpinnerStatus="primary">
+          <nb-card-body>
+            <div class="c-body-wrapper">
+              <div class="c-img">
+                <img src="../../../../assets/not-found.png" alt="op-img">
+              </div>
+              <div class="c-desc">
+                <div class="c-header">
+                  <div>
+                    <h4>Ref:</h4>
+                  </div>
+                  <div class="bt-edit">
+                    <nb-icon icon="plus-square-outline"></nb-icon>
+                  </div>
+                </div>
+                <div class="c-body">
+                  <span>...</span>
+                  <p><b>Previsão:</b></p>
+                  <p><b>Ciclo: </b> / <b>OP: </b></p>
+                  <p><b>Descrição:</b></p>
+                  <p><b>Drop:</b></p>
+                  <p class="c-qnt"><b>Peças:</b></p>
+                </div>
+              </div>
             </div>
-            <div class="c-body-right">
-              <p>{{ item.qnt }}</p>
-              <span>Qnt. de peças</span>
-            </div>
-          </div>
-        </div>
+          </nb-card-body>
+        </nb-card>
       </div>
-    </nb-card-body>
-    <nb-card-footer>Alterar</nb-card-footer>
-  </nb-card>
-</div>
+    </div>
+
+    <div class="card-wrapper">
+      <nb-card [accent]="item.accent || 'basic'" *ngFor="let item of descOP$ | async">
+        <nb-card-body>
+          <div class="c-body-wrapper">
+            <div (click)="openWindow(item.ref.toString())" class="c-img">
+              <img [lazyLoad]="item.img!" [defaultImage]="defaultImage" alt="op-img">
+            </div>
+            <div class="c-desc">
+              <div class="c-header">
+                <div class="titulo">
+                  <h4>Ref: {{ item.ref }}</h4>
+                </div>
+                <div class="bt-edit" (click)="open(item)">
+                  <nb-icon nbTooltip="Alterar previsão" nbTooltipPlacement="bottom" icon="plus-square-outline">
+                  </nb-icon>
+                </div>
+              </div>
+              <div class="c-body">
+                <span [ngClass]="[item.status_color]" class="c-status">{{ item.status }}</span>
+                <p><b>Previsão:</b> {{ item.previsao }}</p>
+                <div *ngIf="item.checked">
+                  <p class="nv-prev"><b>Nova previsão:</b> {{ item.novaprevisao }}</p>
+                </div>
+                <p><b>Ciclo:</b> {{ item.ciclo }} / <b>OP:</b>  {{ item.op }}</p>
+                <!-- <p style="line-height: 0;"></p> -->
+                <p><b>Descrição:</b> {{ item.descricao }}</p>
+                <p><b>Drop:</b> {{ item.drop }}</p>
+                <p class="c-qnt"><b>Peças:</b> {{ item.qnt }}</p>
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </nb-layout-column>
+</nb-layout>

@@ -1,20 +1,22 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { NbComponentStatus } from '@nebular/theme';
 
 @Component({
   selector: 'fc-card',
   templateUrl: './card.component.html',
-  styleUrls: ['./card.component.scss']
+  styleUrls: ['./card.component.scss'],
 })
 export class CardComponent implements OnInit {
-
-  constructor() { }
-  @Input() loading: boolean = true;
+  constructor() {}
+  @Input() loading: boolean = false;
 
   @Input() title: string = '';
   @Input() qnt_ops: number = 0;
-  @Input() color: string = '';
+  @Input() qnt_atraso: number = 0;
+  @Input() show_desc: boolean = false;
 
-  ngOnInit(): void {
-  }
+  @Input() c_accent: NbComponentStatus = 'basic';
+  @Input() c_status: NbComponentStatus = 'basic';
 
+  ngOnInit(): void {}
 }

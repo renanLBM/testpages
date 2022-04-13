@@ -1,3 +1,5 @@
+import { NbComponentStatus } from "@nebular/theme";
+
 export interface OP {
   NR_CICLO: number,
   NR_OP: number,
