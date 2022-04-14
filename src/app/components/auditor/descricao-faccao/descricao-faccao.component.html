@@ -3,11 +3,11 @@
     <div class="filter-wrapper">
       <nb-form-field>
         <input type="text" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar Ciclo, OP ou Ref">
-        <button nbPrefix nbButton ghost (click)="filtroOP($event)">
+        <button nbSuffix nbButton ghost (click)="filtroOP($event)">
           <nb-icon icon="search-outline" aria-label="pesquisar">
           </nb-icon>
         </button>
-        <button *ngIf="filtroAtivo" nbSuffix nbButton ghost (click)="limpaFiltro(filtro)">
+        <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">
           <nb-icon icon="close-square-outline" aria-label="limpar">
           </nb-icon>
         </button>

@@ -15,14 +15,14 @@ export class OpsService {
 
   getAllOPs(): Observable<OPs> {
     // return this._httpClient.get<OPs>(`${API}/listops`);
-    return this._httpClient.get<OPs>(`${API}/getfaccao`);
+    return this._httpClient.get<OPs>(`${API}/api/getfaccao`);
   }
 
   getOpById(id: string): Observable<OPs> {
-    return this._httpClient.get<OPs>(`${API}/getop/${id}`);
+    return this._httpClient.get<OPs>(`${API}/api/getop/${id}`);
   }
 
   getOpByStatus(status: string): Observable<OPs> {
-    return this._httpClient.get<OPs>(`${API}/getopbystatus/${status}`);
+    return this._httpClient.get<OPs>(`${API}/api/getopbystatus/${status}`);
   }
 }

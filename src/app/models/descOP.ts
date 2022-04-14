@@ -9,6 +9,7 @@ export interface descOP {
   descricao?: string,
   drop?: string,
   novaprevisao: string,
+  motivo_atraso?: string,
   checked: boolean,
   img?: string,
   status?: string,

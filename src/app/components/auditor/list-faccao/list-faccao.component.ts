@@ -60,7 +60,7 @@ export class ListFaccaoComponent implements OnInit {
                 id: id,
                 name: f,
                 qnt: qnt[f],
-                qnt_atraso: this.listFaccoes.filter((op) => op.Status == "Atraso" && op.DS_LOCAL == f).length,
+                qnt_atraso: this.listFaccoes.filter((op) => op.Status == "Em atraso" && op.DS_LOCAL == f).length,
                 color: this.color[index % this.color.length],
               },
             ]

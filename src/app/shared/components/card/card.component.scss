@@ -23,28 +23,38 @@ nb-card-footer:hover {
 
 .c-body {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
 .total-op {
-  width: 100%;
+  width: 50%;
   p {
     margin: 35px 0 15px;
     padding: 0;
-    font-size: 42px;
+    font-size: 36px;
     font-weight: 600;
   }
-  margin-bottom: 10px;
+  margin: 10px 0 ;
+  border-right: 1px solid rgb(151, 151, 151);
 }
 
 .desc-op {
+  width: 50%;
   margin-top: 10px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
   span {
     font-size: 12px;
+  }
+  p {
+    color: red;
+    font-weight: 600;
+    line-height: 0;
   }
 }
 

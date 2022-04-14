@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Motivo, Motivos } from '../models/motivo';
 
 const API = environment.API_ENV;
 
@@ -12,13 +13,16 @@ export class AuditorService {
 
   constructor(private _httpClient: HttpClient) { }
 
-  // getCliente(id: string): Observable<Cliente> {
-  //   return this._httpClient.get<Cliente>(`${API}/api/cliente/${id}`);
-  // }
+  getMotivos(): Observable<Motivos> {
+    return this._httpClient.get<Motivos>(`${API}/api/getmotivo`);
+  }
 
-  setCliente(cliente: any): Observable<any> {
-    const body = JSON.stringify(cliente)
-    return this._httpClient.post<any>(`${API}/api/setcliente`, body);
+  setMotivo(motivo: Motivo): void {
+    const body = JSON.stringify(motivo)
+    this._httpClient.post<any>(`${API}/api/setmotivo`, body).subscribe( (data) =>
+      console.log(data)
+    );
   }
 
 }
+
