@@ -12,8 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'descricao/:id',
-    component: DescricaoFaccaoComponent,
-    // canActivate: [AdminGuard]
+    component: DescricaoFaccaoComponent
   }
 ];
 

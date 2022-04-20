@@ -55,6 +55,7 @@ export class DescricaoStatusComponent implements OnInit {
           ref: i.CD_REFERENCIA,
           previsao: prev,
           novaprevisao: '',
+          motivo_atraso: '',
           checked: false,
           img: this.img_url + i.CD_REFERENCIA.toString() + "/" + i.CD_REFERENCIA.toString() + "-1.jpg",
           status: i.Status,

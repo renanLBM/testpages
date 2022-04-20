@@ -5,7 +5,7 @@ export interface Faccao {
   name: string,
   qnt: number,
   qnt_atraso?: number,
-  color?: NbComponentStatus,
+  color?: string,
 }
 
 export type Faccoes = Array<Faccao>;

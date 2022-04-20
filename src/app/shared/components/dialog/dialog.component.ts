@@ -43,16 +43,42 @@ export class DialogComponent {
     protected dialogRef: NbDialogRef<DialogComponent>,
     private _userService: UserService,
     private _auditorService: AuditorService
-  ) { }
+  ) {}
 
   remove() {
     this.prev = '';
     this.removed = true;
-    this.dialogRef.close({ prev: '', removed: this.removed });
+    this.i_motivo = '';
+    this.user = JSON.parse(this._userService.getSession()).nome;
+
+    this.novoMotivo = {
+      NR_CICLO: this.prevOP.ciclo!,
+      NR_OP: this.prevOP.op!,
+      CD_REFERENCIA: this.prevOP.ref,
+      PREV_RETORNO: this.prevOP.previsao,
+      QT_OP: this.prevOP.qnt!,
+      Status: this.prevOP.status!,
+      NOVA_PREVISAO: '',
+      MOTIVO: 'removido',
+      USUARIO: this.user,
+      DT_INSERIDO: new Date().toLocaleString('pt-Br'),
+    };
+
+    this._auditorService.removeMotivo(this.novoMotivo);
+
+    this.dialogRef.close({
+      prev: '',
+      motivo: this.i_motivo,
+      removed: this.removed,
+    });
   }
 
   cancel() {
-    this.dialogRef.close({ prev: this.prev, removed: this.removed });
+    this.dialogRef.close({
+      prev: this.prev,
+      motivo: this.i_motivo,
+      removed: this.removed,
+    });
   }
 
   submit() {
@@ -84,7 +110,11 @@ export class DialogComponent {
 
     if (this.novoMotivo.MOTIVO && this.novoMotivo.NOVA_PREVISAO) {
       this._auditorService.setMotivo(this.novoMotivo);
-      this.dialogRef.close({ prev: novaData, removed: this.removed });
+      this.dialogRef.close({
+        prev: novaData,
+        motivo: this.novoMotivo.MOTIVO,
+        removed: this.removed,
+      });
     }
 
     this.err = true;

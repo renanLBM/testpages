@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NbComponentStatus } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
 import { Faccao } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
@@ -15,7 +14,7 @@ export class PcpComponent implements OnInit {
 
   emptyList: boolean = false;
 
-  color: NbComponentStatus[] = ['warning', 'info', 'success', 'danger', 'primary'];
+  color: string[] = ['warning', 'info', 'success', 'danger', 'primary'];
 
   listStatus: OPs = [];
   OpsList: any[] = [];

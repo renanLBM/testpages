@@ -4,8 +4,6 @@ import { OpsService } from 'src/app/services/ops.service';
 import { BehaviorSubject } from 'rxjs';
 import { LoadingService } from 'src/app/services/loading.service';
 import { Faccao } from 'src/app/models/faccao';
-import { NbComponentStatus } from '@nebular/theme';
-import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'fc-list-faccao',
@@ -17,9 +15,7 @@ export class ListFaccaoComponent implements OnInit {
   filtroAtivo: boolean = false;
   show_desc: boolean = true;
 
-  color: NbComponentStatus[] = [
-    'primary',
-  ];
+  color: string[] = ['info', 'warning', 'primary', 'success'];
 
   listFaccoes: OPs = [];
   OpsList: any[] = [];
@@ -27,13 +23,11 @@ export class ListFaccaoComponent implements OnInit {
   OpList$: BehaviorSubject<Faccao[]> = new BehaviorSubject(this.OpList);
 
   constructor(
-    private _userService: UserService,
     public _loadingService: LoadingService,
     private _opsService: OpsService
   ) {}
 
   ngOnInit(): void {
-
     this._opsService.getAllOPs().subscribe({
       next: (list) => {
         this.listFaccoes = list;
@@ -60,8 +54,10 @@ export class ListFaccaoComponent implements OnInit {
                 id: id,
                 name: f,
                 qnt: qnt[f],
-                qnt_atraso: this.listFaccoes.filter((op) => op.Status == "Em atraso" && op.DS_LOCAL == f).length,
-                color: this.color[index % this.color.length],
+                qnt_atraso: this.listFaccoes.filter(
+                  (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
+                ).length,
+                color: '',
               },
             ]
           );
@@ -69,7 +65,7 @@ export class ListFaccaoComponent implements OnInit {
 
         this.OpList.sort((a, b) =>
           a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0
-        );
+        ).map((f: Faccao, index: number) => f.color = this.color[index % this.color.length]);
 
         this.OpList$.next(this.OpList);
       },

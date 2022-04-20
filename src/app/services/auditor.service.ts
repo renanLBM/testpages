@@ -18,9 +18,16 @@ export class AuditorService {
   }
 
   setMotivo(motivo: Motivo): void {
-    const body = JSON.stringify(motivo)
+    const body = JSON.stringify(motivo);
     this._httpClient.post<any>(`${API}/api/setmotivo`, body).subscribe( (data) =>
-      console.log(data)
+      console.log('ok')
+    );
+  }
+
+  removeMotivo(motivo: Motivo): void {
+    const body = JSON.stringify(motivo);
+    this._httpClient.post<any>(`${API}/api/removemotivo`, body).subscribe( (data) =>
+      console.log('ok')
     );
   }
 

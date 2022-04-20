@@ -1,7 +1,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user';
 
@@ -15,7 +15,7 @@ export class UserService {
     nivel: 0,
     nome: '',
   });
-  private nivel = new BehaviorSubject<number>(0);
+  private nivel = 0;
   private logged = new BehaviorSubject<boolean>(false);
 
   constructor(private _httpClient: HttpClient) {}
@@ -39,13 +39,10 @@ export class UserService {
     return this.usuarioSubject.asObservable();
   }
 
-  setUser(op: any) {
-    this.usuarioSubject.next(op);
-    // console.log(op['nivel']);
-    // this.usuarioSubject.subscribe((u) => {
-    //   console.log(u);
-    //   this.nivel.next(u.nivel)
-    // });
+  setUser(userB: any) {
+    this.usuarioSubject.next(userB);
+    let userF = JSON.parse(userB);
+    this.nivel = userF.nivel;
     this.setSession();
   }
 
@@ -68,14 +65,17 @@ export class UserService {
     return this.logged.asObservable();
   }
 
-  getNivel() {
-    return this.nivel.asObservable();
+  getNivel(): number {
+    let userS: User = JSON.parse(this.getSession());
+    this.nivel = userS.nivel;
+
+    return this.nivel;
   }
 
   logout() {
     this.usuarioSubject.next({
       nivel: 0,
-      nome: ''
+      nome: '',
     });
     this.logged.next(false);
     sessionStorage.clear();

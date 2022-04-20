@@ -29,6 +29,7 @@ export class LoginComponent implements OnInit {
         }
       },
       error: (err) => {
+        this._router.navigate(['login']);
         alert('Erro de login ou senha!');
         console.log('error log', err);
       },

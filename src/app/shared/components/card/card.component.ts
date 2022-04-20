@@ -16,7 +16,7 @@ export class CardComponent implements OnInit {
   @Input() show_desc: boolean = false;
 
   @Input() c_accent: NbComponentStatus = 'basic';
-  @Input() c_status: NbComponentStatus = 'basic';
+  @Input() c_status: string = 'basic';
 
   ngOnInit(): void {}
 }

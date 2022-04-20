@@ -69,6 +69,18 @@ export class DescricaoFaccaoComponent implements OnInit {
       let maior;
 
       x.forEach((i) => {
+        let newImage = new Image();
+        newImage.src =
+          this.imgUrl +
+          i.CD_REFERENCIA.toString() +
+          '/' +
+          i.CD_REFERENCIA.toString() +
+          '-1.jpg';
+
+        newImage.onerror = () => {
+          this.imgList = this.imgList.filter( im => !im.includes(i.CD_REFERENCIA.toString()))
+        }
+
         for (let j = 1; j <= 13; j++) {
           imgListAll.push(
             this.imgUrl +
@@ -79,7 +91,6 @@ export class DescricaoFaccaoComponent implements OnInit {
               j +
               '.jpg'
           );
-
           this.imgList = [...new Set(imgListAll)];
         }
 
@@ -131,15 +142,23 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   filtraMaior(ref: number) {
-    let motivos = this.motivoList.filter((m) => m.CD_REFERENCIA == ref);
-    if (motivos.length > 0) {
-      this.motivo = motivos.reduce((p, c) => {
-        return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
-      });
-      console.log(this.motivo);
-      return {ds_atraso: this.motivo.MOTIVO,  dt_atraso: this.motivo.NOVA_PREVISAO, i_checked: true}
+    let erro = this.motivoList.toString() == 'error';
+    if (!erro) {
+      console.log('this.motivoList');
+      let motivos = this.motivoList.filter((m) => m.CD_REFERENCIA == ref);
+      if (motivos.length > 0) {
+        this.motivo = motivos.reduce((p, c) => {
+          return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
+        });
+        return {
+          ds_atraso: this.motivo.MOTIVO,
+          dt_atraso: this.motivo.NOVA_PREVISAO,
+          i_checked: true,
+        };
+      }
+      return { ds_atraso: '', dt_atraso: '', i_checked: false };
     }
-    return  {ds_atraso: '',  dt_atraso: '', i_checked: false};
+    return { ds_atraso: '', dt_atraso: '', i_checked: false };
   }
 
   filtroOP(event: Event): void {
@@ -177,12 +196,11 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   open(item: descOP) {
-
     this.NbDdialogService.open(DialogComponent, {
       context: {
         prevOP: item,
         prev: item.novaprevisao,
-        i_motivo: item.motivo_atraso
+        i_motivo: item.motivo_atraso,
       },
     }).onClose.subscribe((x) => {
       if (!!x.prev) {
