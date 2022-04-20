@@ -144,7 +144,6 @@ export class DescricaoFaccaoComponent implements OnInit {
   filtraMaior(ref: number) {
     let erro = this.motivoList.toString() == 'error';
     if (!erro) {
-      console.log('this.motivoList');
       let motivos = this.motivoList.filter((m) => m.CD_REFERENCIA == ref);
       if (motivos.length > 0) {
         this.motivo = motivos.reduce((p, c) => {
@@ -205,6 +204,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     }).onClose.subscribe((x) => {
       if (!!x.prev) {
         item.novaprevisao = x.prev;
+        item.motivo_atraso = x.motivo;
         item.checked = true;
       }
       if (x.removed) {
