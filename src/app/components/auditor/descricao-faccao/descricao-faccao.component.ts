@@ -1,11 +1,16 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   NbDialogService,
   NbWindowControlButtonsConfig,
   NbWindowService,
 } from '@nebular/theme';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { descOP } from 'src/app/models/descOP';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
@@ -14,19 +19,23 @@ import { LoadingService } from 'src/app/services/loading.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { CarosselComponent } from 'src/app/shared/components/carossel/carossel.component';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
+import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 @Component({
   selector: 'fc-descricao-faccao',
   templateUrl: './descricao-faccao.component.html',
   styleUrls: ['./descricao-faccao.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoFaccaoComponent implements OnInit {
   defaultImage = '../../../../assets/not-found.png';
+  emptyList: boolean = false;
+  loadingError: boolean = false;
 
   filtroAtivo: boolean = false;
   listOPs!: OPs;
   descOP: descOP[] = [];
-  descOP$: Subject<descOP[]> = new Subject();
+  descOP$: BehaviorSubject<descOP[]> = new BehaviorSubject(this.descOP);
 
   motivoList!: Motivos;
   motivo!: Motivo;
@@ -35,6 +44,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
 
   constructor(
+    private _setTitle: SetTitleServiceService,
     public _loadingService: LoadingService,
     private _opsService: OpsService,
     private _auditorService: AuditorService,
@@ -45,13 +55,15 @@ export class DescricaoFaccaoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this._setTitle.setTitle('Carregando...');
     // pega todos os dados da tabela de alterações
     this._auditorService
       .getMotivos()
       .subscribe((motivo) => (this.motivoList = motivo));
 
     let id = this._route.snapshot.paramMap.get('id')!;
-    this._opsService.getOpById(id).subscribe((x) => {
+    this._opsService.getOpById(id).subscribe({
+      next: (x) => {
       x.sort((a, b) => {
         let x = new Date(a.PREV_RETORNO);
         let y = new Date(b.PREV_RETORNO);
@@ -78,8 +90,10 @@ export class DescricaoFaccaoComponent implements OnInit {
           '-1.jpg';
 
         newImage.onerror = () => {
-          this.imgList = this.imgList.filter( im => !im.includes(i.CD_REFERENCIA.toString()))
-        }
+          this.imgList = this.imgList.filter(
+            (im) => !im.includes(i.CD_REFERENCIA.toString())
+          );
+        };
 
         for (let j = 1; j <= 13; j++) {
           imgListAll.push(
@@ -100,6 +114,7 @@ export class DescricaoFaccaoComponent implements OnInit {
           .toLocaleString('pt-br')
           .substring(0, 10);
         this.descOP.push({
+          local: i.DS_LOCAL,
           cod:
             i.NR_CICLO.toString() +
             '-' +
@@ -137,25 +152,47 @@ export class DescricaoFaccaoComponent implements OnInit {
           }
         });
       });
+      let title = this.descOP[0].local
+        .replace('COSTURA', '')
+        .replace('ESTAMPARIA', '')
+        .replace('TERCEIROS', '');
+      this._setTitle.setTitle(title);
       this.descOP$.next(this.descOP);
-    });
+    },
+    error: (e) => {
+      console.error(e);
+      this._setTitle.setTitle('Erro');
+      this.loadingError = true;
+    }
+
+  });
+  }
+
+  ngAfterContentInit() {
+    this.descOP$.next(this.descOP);
+  }
+
+  trackByOP(_index: number, op: { cod: string }) {
+    return op.cod;
   }
 
   filtraMaior(ref: number) {
-    let erro = this.motivoList.toString() == 'error';
-    if (!erro) {
-      let motivos = this.motivoList.filter((m) => m.CD_REFERENCIA == ref);
-      if (motivos.length > 0) {
-        this.motivo = motivos.reduce((p, c) => {
-          return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
-        });
-        return {
-          ds_atraso: this.motivo.MOTIVO,
-          dt_atraso: this.motivo.NOVA_PREVISAO,
-          i_checked: true,
-        };
+    if (this.motivoList) {
+      let erro = this.motivoList.toString() == 'error';
+      if (!erro) {
+        let motivos = this.motivoList.filter((m) => m.CD_REFERENCIA == ref);
+        if (motivos.length > 0) {
+          this.motivo = motivos.reduce((p, c) => {
+            return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
+          });
+          return {
+            ds_atraso: this.motivo.MOTIVO,
+            dt_atraso: this.motivo.NOVA_PREVISAO,
+            i_checked: true,
+          };
+        }
+        return { ds_atraso: '', dt_atraso: '', i_checked: false };
       }
-      return { ds_atraso: '', dt_atraso: '', i_checked: false };
     }
     return { ds_atraso: '', dt_atraso: '', i_checked: false };
   }
@@ -170,6 +207,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.descOP$.next(
         this.descOP.filter((_) => _.cod.includes(filterValue.toUpperCase()))
       );
+      this.descOP$.subscribe((x) => (this.emptyList = !x.length));
     }
   }
 

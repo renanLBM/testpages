@@ -1,18 +1,26 @@
 <nb-layout>
   <nb-layout-column>
-    <div class="filter-wrapper">
-      <nb-form-field>
-        <input type="text" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar Ciclo, OP ou Ref">
-        <button nbSuffix nbButton ghost (click)="filtroOP($event)">
-          <nb-icon icon="search-outline" aria-label="pesquisar">
-          </nb-icon>
-        </button>
-        <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">
-          <nb-icon icon="close-square-outline" aria-label="limpar">
-          </nb-icon>
-        </button>
-      </nb-form-field>
+    <div *ngIf="loadingError; else filter" style="text-align: center;">
+      <h3>Erro ao carregar os dados!</h3>
+      <h3>Tente novamente mais tarde.</h3>
     </div>
+
+    <ng-template #filter>
+      <div class="filter-wrapper">
+        <nb-form-field>
+          <input type="text" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar Ciclo, OP ou Ref">
+          <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">
+            <nb-icon icon="close-square-outline" aria-label="pesquisar">
+            </nb-icon>
+          </button>
+          <button nbSuffix nbButton ghost (click)="filtroOP($event)">
+            <nb-icon icon="search-outline" aria-label="pesquisar">
+            </nb-icon>
+          </button>
+        </nb-form-field>
+      </div>
+    </ng-template>
+
     <div *ngIf="_loadingService.isLoading | async">
       <div class="card-wrapper">
         <nb-card [nbSpinner]="true" nbSpinnerStatus="primary">
@@ -45,40 +53,46 @@
       </div>
     </div>
 
-    <div class="card-wrapper">
-      <nb-card [accent]="item.accent || 'basic'" *ngFor="let item of descOP$ | async">
-        <nb-card-body>
-          <div class="c-body-wrapper">
-            <div (click)="openWindow(item.ref.toString())" class="c-img">
-              <img [lazyLoad]="item.img!" [defaultImage]="defaultImage" alt="op-img">
-            </div>
-            <div class="c-desc">
-              <div class="c-header">
-                <div class="titulo">
-                  <h4>Ref: {{ item.ref }}</h4>
+    <div *ngIf="!emptyList; else listaVazia">
+      <div class="card-wrapper">
+        <nb-card [accent]="item.accent || 'basic'" *ngFor="let item of descOP$ | async; trackBy: trackByOP">
+          <nb-card-body>
+            <div class="c-body-wrapper">
+              <div (click)="openWindow(item.ref.toString())" class="c-img">
+                <img [lazyLoad]="item.img!" [defaultImage]="defaultImage" alt="op-img">
+              </div>
+              <div class="c-desc">
+                <div class="c-header">
+                  <div class="titulo">
+                    <h4>Ref: {{ item.ref }}</h4>
+                  </div>
+                  <div class="bt-edit" (click)="open(item)">
+                    <nb-icon nbTooltip="Alterar previsão" nbTooltipPlacement="bottom" icon="plus-square-outline">
+                    </nb-icon>
+                  </div>
                 </div>
-                <div class="bt-edit" (click)="open(item)">
-                  <nb-icon nbTooltip="Alterar previsão" nbTooltipPlacement="bottom" icon="plus-square-outline">
-                  </nb-icon>
+                <div class="c-body">
+                  <span [ngClass]="[item.status_color]" class="c-status">{{ item.status }}</span>
+                  <p style="font-size: 15px;"><b>Previsão de retorno:</b> {{ item.previsao }}</p>
+                  <div *ngIf="item.checked">
+                    <p class="nv-prev"><b>Nova previsão:</b> {{ item.novaprevisao }}</p>
+                    <p class="nv-prev"><b>Motivo atraso:</b> {{ item.motivo_atraso }}</p>
+                  </div>
+                  <p><b>Ciclo:</b> {{ item.ciclo }} / <b>OP:</b> {{ item.op }}</p>
+                  <!-- <p style="line-height: 0;"></p> -->
+                  <p class="desc-text"><b>Descrição:</b> {{ item.descricao }}</p>
+                  <p class="desc-text"><b>Coleção:</b> {{ item.drop }}</p>
+                  <p class="c-qnt"><b>Peças:</b> {{ item.qnt }}</p>
                 </div>
               </div>
-              <div class="c-body">
-                <span [ngClass]="[item.status_color]" class="c-status">{{ item.status }}</span>
-                <p style="font-size: 15px;"><b>Previsão de retorno:</b> {{ item.previsao }}</p>
-                <div *ngIf="item.checked">
-                  <p class="nv-prev"><b>Nova previsão:</b> {{ item.novaprevisao }}</p>
-                  <p class="nv-prev"><b>Motivo atraso:</b> {{ item.motivo_atraso }}</p>
-                </div>
-                <p><b>Ciclo:</b> {{ item.ciclo }} / <b>OP:</b> {{ item.op }}</p>
-                <!-- <p style="line-height: 0;"></p> -->
-                <p class="desc-text"><b>Descrição:</b> {{ item.descricao }}</p>
-                <p class="desc-text"><b>Coleção:</b> {{ item.drop }}</p>
-                <p class="c-qnt"><b>Peças:</b> {{ item.qnt }}</p>
-              </div>
             </div>
-          </div>
-        </nb-card-body>
-      </nb-card>
+          </nb-card-body>
+        </nb-card>
+      </div>
     </div>
+
+    <ng-template #listaVazia>
+      <h4 style="text-align: center;">Nenhum item encontrado..</h4>
+    </ng-template>
   </nb-layout-column>
 </nb-layout>

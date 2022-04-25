@@ -4,6 +4,7 @@ import { OpsService } from 'src/app/services/ops.service';
 import { BehaviorSubject } from 'rxjs';
 import { LoadingService } from 'src/app/services/loading.service';
 import { Faccao } from 'src/app/models/faccao';
+import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 @Component({
   selector: 'fc-list-faccao',
@@ -24,10 +25,12 @@ export class ListFaccaoComponent implements OnInit {
 
   constructor(
     public _loadingService: LoadingService,
+    private _setTitle: SetTitleServiceService,
     private _opsService: OpsService
   ) {}
 
   ngOnInit(): void {
+    this._setTitle.setTitle('FacControl - Auditor');
     this._opsService.getAllOPs().subscribe({
       next: (list) => {
         this.listFaccoes = list;

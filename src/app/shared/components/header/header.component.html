@@ -1,8 +1,11 @@
 <nb-layout-header fixed>
   <div class="header-wrapper">
-    <div class="header-container">
-      <div style="cursor: pointer;" [routerLink]="['login']">
-        <h1>FacControl</h1>
+    <div class="header-container" [routerLink]="['login']">
+      <nb-icon *ngIf="showIcon" style="margin: 0 10px; font-size: 25px; cursor: pointer;"
+        icon="home-outline" aria-label="home">
+      </nb-icon>
+      <div style="cursor: pointer;">
+        <h1 class="title">{{headerTitle}}</h1>
       </div>
     </div>
     <div class="header-container">

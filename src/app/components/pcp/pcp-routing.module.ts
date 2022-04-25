@@ -3,8 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { DescricaoStatusComponent } from './descricao-status/descricao-status.component';
 import { PcpComponent } from './list-status/pcp.component';
 
-// import { AdminGuard } from 'src/app/guard/admin.guard';
-
 const routes: Routes = [
   {
     path: '',
@@ -13,8 +11,11 @@ const routes: Routes = [
   {
     path: 'descricao/:status',
     component: DescricaoStatusComponent,
-    // canActivate: [AdminGuard]
-  }
+  },
+  // {
+  //   path: 'ops-descricao/:faccao',
+  //   component: OpsDescricaoComponent,
+  // }
 ];
 
 @NgModule({

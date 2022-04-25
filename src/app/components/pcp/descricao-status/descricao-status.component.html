@@ -1,43 +1,36 @@
-<div class="filter-wrapper">
-  <nb-form-field>
-    <input type="text" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar OP">
-    <button nbPrefix nbButton ghost (click)="filtroOP($event)">
-      <nb-icon icon="search-outline" aria-label="pesquisar">
-      </nb-icon>
-    </button>
-    <button *ngIf="filtroAtivo" nbSuffix nbButton ghost (click)="limpaFiltro(filtro)">
-      <nb-icon icon="close-square-outline" aria-label="limpar">
-      </nb-icon>
-    </button>
-  </nb-form-field>
-</div>
-<div *ngFor="let item of descOP$ | async">
-  <nb-card>
-    <nb-card-body>
-      <div class="c-body-wrapper">
-        <div class="c-img">
-          <img src="{{ item.img }}" onError="this.onerror=null;this.src='../../../../assets/not-found.png';" alt="op-img"
-            width="auto" height="150px">
-        </div>
-        <div class="c-desc">
-          <div class="c-header">
-            <h4>{{ item.cod }}</h4>
-            <span>{{ item.status }}</span>
-          </div>
-          <div class="c-desc-mid">
-            <div class="c-body-left">
-              <p>Ref: {{ item.ref }}</p>
-              <p>Descrição: Nome da Peça</p>
-              <p>Previsão: {{ item.previsao }}</p>
-            </div>
-            <div class="c-body-right">
-              <p>{{ item.qnt }}</p>
-              <span>Qnt. de peças</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nb-card-body>
-    <nb-card-footer>Alterar</nb-card-footer>
-  </nb-card>
+<table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Facção</th>
+      <th>Qnt. OP's</th>
+      <th>Qnt. Peças</th>
+    </tr>
+  </thead>
+  <tbody *ngIf="!emptyList">
+    <tr *ngFor="let item of faccao$ | async">
+      <td>{{ item.id }}</td>
+      <td>{{ item.name }}</td>
+      <td>{{ item.qnt }}</td>
+      <td>{{ item.qnt_pecas }}</td>
+    </tr>
+  </tbody>
+  <tbody *ngIf="emptyList">
+    <tr>
+      <td colspan="3" class="no-data-available">No data!</td>
+    </tr>
+  </tbody>
+</table>
+
+<div *ngIf="_loadingService.isLoading | async">
+  <div class="card-wrapper">
+    <nb-card [nbSpinner]="true" nbSpinnerSize="giant" nbSpinnerStatus="primary">
+      <nb-card-body>
+      </nb-card-body>
+    </nb-card>
+    <!-- <div *ngFor="let i of color">
+      <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [c_status]="i" [qnt_atraso]="0" [show_desc]="false" >
+      </fc-card>
+    </div> -->
+  </div>
 </div>

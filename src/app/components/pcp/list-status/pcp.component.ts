@@ -4,6 +4,7 @@ import { Faccao } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsService } from 'src/app/services/ops.service';
+import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 @Component({
   selector: 'fc-pcp',
@@ -11,8 +12,6 @@ import { OpsService } from 'src/app/services/ops.service';
   styleUrls: ['./pcp.component.scss']
 })
 export class PcpComponent implements OnInit {
-
-  emptyList: boolean = false;
 
   color: string[] = ['warning', 'info', 'success', 'danger', 'primary'];
 
@@ -22,11 +21,13 @@ export class PcpComponent implements OnInit {
   OpList$: BehaviorSubject<Faccao[]> = new BehaviorSubject(this.OpList);
 
   constructor(
+    private _setTitle: SetTitleServiceService,
     public _loadingService: LoadingService,
     private _opsService: OpsService
   ) {}
 
   ngOnInit(): void {
+    this._setTitle.setTitle("FacControl - PCP");
     this._opsService.getAllOPs().subscribe({
       next: (list) => {
         this.listStatus = list;
@@ -74,10 +75,4 @@ export class PcpComponent implements OnInit {
       error: (err: Error) => console.error(err),
     });
   }
-
-  limpaFiltro(item: HTMLInputElement): void {
-    item.value = '';
-    this.OpList$.next(this.OpList);
-  }
-
 }

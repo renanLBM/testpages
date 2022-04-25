@@ -2,6 +2,11 @@ nb-layout-column {
   padding: 0 !important;
 }
 
+.titulo {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-align: center;
+}
+
 .filter-wrapper {
   display: flex;
   justify-content: flex-end;
@@ -111,6 +116,9 @@ nb-layout-column {
 }
 
 @media (max-width: 375px) {
+  .titulo {
+    font-size: 25px;
+  }
 
   .filter-wrapper {
     margin-right: 0;
@@ -131,6 +139,9 @@ nb-layout-column {
 }
 
 @media (min-width:376px) and (max-width: 475px) {
+  .titulo {
+    font-size: 25px;
+  }
   .c-img {
     img {
       height: -webkit-fill-available;

@@ -5,6 +5,7 @@ export interface Faccao {
   name: string,
   qnt: number,
   qnt_atraso?: number,
+  qnt_pecas?: number,
   color?: string,
 }
 

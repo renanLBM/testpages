@@ -14,9 +14,16 @@ export class CardComponent implements OnInit {
   @Input() qnt_ops: number = 0;
   @Input() qnt_atraso: number = 0;
   @Input() show_desc: boolean = false;
+  @Input() page_desc: string = '';
 
   @Input() c_accent: NbComponentStatus = 'basic';
   @Input() c_status: string = 'basic';
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if(!this.show_desc) {
+      this.page_desc = 'total-op-false';
+    }else {
+      this.page_desc = 'total-op';
+    }
+  }
 }

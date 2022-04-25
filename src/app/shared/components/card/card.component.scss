@@ -40,6 +40,17 @@ nb-card-footer:hover {
   border-right: 1px solid rgb(151, 151, 151);
 }
 
+.total-op-false {
+  width: 50%;
+  p {
+    margin: 30px 0 10px;
+    padding: 0;
+    font-size: 36px;
+    font-weight: 600;
+  }
+  margin: 10px 0 ;
+}
+
 .desc-op {
   width: 50%;
   margin-top: 10px;

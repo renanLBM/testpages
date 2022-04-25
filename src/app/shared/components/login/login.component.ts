@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user.service';
+import { SetTitleServiceService } from '../../set-title-service.service';
 
 @Component({
   selector: 'fc-login',
@@ -13,10 +14,13 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private _router: Router,
+    private _setTitle: SetTitleServiceService,
     private _userService: UserService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this._setTitle.setTitle('FacControl - Login');
+  }
 
   login() {
     this._userService.login(this.usuario, this.senha).subscribe({

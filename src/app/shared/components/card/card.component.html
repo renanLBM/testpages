@@ -2,20 +2,14 @@
   <nb-card-header>{{ title }}</nb-card-header>
   <nb-card-body>
     <div class="c-body">
-      <div class="total-op">
+      <div [ngClass]="page_desc">
         <p>{{ qnt_ops }}</p>
         <span><b>Total de OP's</b></span>
       </div>
-      <div *ngIf="show_desc; else pcp" class="desc-op">
+      <div *ngIf="show_desc" class="desc-op">
         <span>{{ qnt_atraso }}</span>
         <span><b>OP's em atraso:</b></span>
       </div>
-      <ng-template #pcp>
-        <div class="desc-op">
-          <span><b>OP's em atraso:</b> {{ qnt_atraso }}</span>
-          <span><b>Peças em atraso:</b> 1%</span>
-        </div>
-      </ng-template>
     </div>
   </nb-card-body>
   <nb-card-footer>Acessar</nb-card-footer>

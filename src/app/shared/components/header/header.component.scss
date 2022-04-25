@@ -1,5 +1,9 @@
 @import "../../../../themes.scss";
 
+h1 {
+  margin: 0;
+}
+
 .header-wrapper {
   display: flex !important;
   justify-content: space-between !important;
@@ -10,6 +14,10 @@
     align-items: center;
     width: auto;
   }
+}
+.title {
+  font-size: 28px !important;
+  line-height: 1;
 }
 
 
@@ -36,7 +44,14 @@
 
 
 @media screen and (max-width: 375px) {
-  h1 {
-    font-size: x-large;
+  .title {
+    font-size: 16px !important;
+    line-height: 1;
+  }
+}
+@media (min-width:376px) and (max-width: 475px) {
+  .title {
+    font-size: 22px !important;
+    line-height: 1;
   }
 }

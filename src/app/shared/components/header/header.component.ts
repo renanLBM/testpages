@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NbThemeService } from '@nebular/theme';
 import { UserService } from 'src/app/services/user.service';
+import { SetTitleServiceService } from '../../set-title-service.service';
 
 @Component({
   selector: 'fc-header',
@@ -9,16 +10,26 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
-  @Input() checked = true;
+  headerTitle: string = 'FacControl';
+  showIcon: boolean = false;
+  @Input() checked: boolean = true;
   isLoggedIn!: boolean;
 
   constructor(
     private themeService: NbThemeService,
+    private _setTitle: SetTitleServiceService,
     private _userService: UserService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this._setTitle.title.subscribe((t) => {
+      this.headerTitle = t;
+      this.showIcon = true;
+      if (this.headerTitle.includes('Login')) {
+        this.showIcon = false;
+      }
+    });
     this._userService.getLogged().subscribe((value) => {
       this.isLoggedIn = value;
     });
