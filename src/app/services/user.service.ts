@@ -66,8 +66,13 @@ export class UserService {
   }
 
   getNivel(): number {
-    let userS: User = JSON.parse(this.getSession());
-    this.nivel = userS.nivel;
+    try{
+      let userS: User = JSON.parse(this.getSession());
+      this.nivel = userS.nivel;
+      return this.nivel;
+    }catch (err) {
+      this.nivel = 0;
+    }
 
     return this.nivel;
   }

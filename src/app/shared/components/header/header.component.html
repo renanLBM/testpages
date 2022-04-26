@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="header-container">
-      <div *ngIf="nivel == 99">
+      <div *ngIf="adm && checked">
         <nb-button-group>
           <button [routerLink]="['auditor']" nbButton>A</button>
           <button [routerLink]="['pcp']" nbButton>P</button>
