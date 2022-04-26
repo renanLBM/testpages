@@ -9,10 +9,10 @@
       </div>
     </div>
     <div class="header-container">
-      <div *ngIf="adm && checked">
-        <nb-button-group>
-          <button [routerLink]="['auditor']" nbButton>A</button>
-          <button [routerLink]="['pcp']" nbButton>P</button>
+      <div *ngIf="adm && isLoggedIn">
+        <nb-button-group (valueChange)="updateSingleSelectGroupValue($event)">
+          <button nbButtonToggle [routerLink]="['auditor']" nbButton>Aud</button>
+          <button nbButtonToggle [routerLink]="['pcp']" nbButton>PCP</button>
         </nb-button-group>
       </div>
       <div class="exit">

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NbThemeService } from '@nebular/theme';
 import { UserService } from 'src/app/services/user.service';
@@ -14,6 +14,7 @@ export class HeaderComponent implements OnInit {
   showIcon: boolean = false;
   isLoggedIn!: boolean;
   adm: boolean = false;
+  singleSelectGroupValue = [];
 
   @Input() checked: boolean = true;
 
@@ -21,7 +22,8 @@ export class HeaderComponent implements OnInit {
     private themeService: NbThemeService,
     private _setTitle: SetTitleServiceService,
     private _userService: UserService,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -33,11 +35,16 @@ export class HeaderComponent implements OnInit {
       if (this.headerTitle.includes('Login')) {
         this.showIcon = false;
       }
-      this._userService.getLogged().subscribe((value) => {
-        this.isLoggedIn = value;
-      });
-      this.isLoggedIn = this._userService.isLogged();
     });
+    this._userService.getLogged().subscribe((value) => {
+      this.isLoggedIn = value;
+    });
+    this.isLoggedIn = this._userService.isLogged();
+  }
+
+  updateSingleSelectGroupValue(value: any): void {
+    this.singleSelectGroupValue = value;
+    this.cd.markForCheck();
   }
 
   toggleTheme(): void {
