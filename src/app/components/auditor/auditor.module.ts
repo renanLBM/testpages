@@ -9,7 +9,6 @@ import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
 import { LazyLoadImageModule, LAZYLOAD_IMAGE_HOOKS, ScrollHooks } from 'ng-lazyload-image';
 
 
-
 @NgModule({
   declarations: [
     ListFaccaoComponent,

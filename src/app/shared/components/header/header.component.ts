@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NbThemeService } from '@nebular/theme';
+import { NbMenuItem, NbThemeService } from '@nebular/theme';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from '../../set-title-service.service';
 
@@ -12,8 +12,10 @@ import { SetTitleServiceService } from '../../set-title-service.service';
 export class HeaderComponent implements OnInit {
   headerTitle: string = 'FacControl';
   showIcon: boolean = false;
-  @Input() checked: boolean = true;
   isLoggedIn!: boolean;
+  nivel = 0;
+
+  @Input() checked: boolean = true;
 
   constructor(
     private themeService: NbThemeService,
@@ -23,6 +25,7 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.nivel = this._userService.getNivel();
     this._setTitle.title.subscribe((t) => {
       this.headerTitle = t;
       this.showIcon = true;

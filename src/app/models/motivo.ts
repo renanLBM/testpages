@@ -1,5 +1,6 @@
 export interface Motivo {
   ID_NOVO_MOTIVO?: number,
+  CD_LOCAL: number,
   NR_CICLO: number,
   NR_OP: number,
   CD_REFERENCIA: number,

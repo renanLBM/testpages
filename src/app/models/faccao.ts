@@ -7,6 +7,7 @@ export interface Faccao {
   qnt_atraso?: number,
   qnt_pecas?: number,
   color?: string,
+  alteracoes?: number,
 }
 
 export type Faccoes = Array<Faccao>;

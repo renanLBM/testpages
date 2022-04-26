@@ -1,6 +1,7 @@
 import { NbComponentStatus } from "@nebular/theme";
 
 export interface descOP {
+  cd_local: number,
   local: string,
   cod: string,
   ciclo?: number,

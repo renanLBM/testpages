@@ -1,36 +1,39 @@
-<table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Facção</th>
-      <th>Qnt. OP's</th>
-      <th>Qnt. Peças</th>
-    </tr>
-  </thead>
-  <tbody *ngIf="!emptyList">
-    <tr *ngFor="let item of faccao$ | async">
-      <td>{{ item.id }}</td>
-      <td>{{ item.name }}</td>
-      <td>{{ item.qnt }}</td>
-      <td>{{ item.qnt_pecas }}</td>
-    </tr>
-  </tbody>
-  <tbody *ngIf="emptyList">
-    <tr>
-      <td colspan="3" class="no-data-available">No data!</td>
-    </tr>
-  </tbody>
-</table>
+<nb-layout>
+  <nb-layout-column>
+    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+      <thead>
+        <tr>
+          <th>Facção</th>
+          <th>Qnt. OP's</th>
+          <th>Qnt. Peças</th>
+          <th>Alterações</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="!emptyList">
+        <tr *ngFor="let item of faccao$ | async; trackBy: trackByFaccao">
+          <td>{{ item.name }}</td>
+          <td>{{ item.qnt }}</td>
+          <td>{{ item.qnt_pecas }}</td>
+          <td *ngIf="item.alteracoes! >= 1"><a style="cursor: pointer; color: blue; font-weight: 600;"
+              (click)="open(item.id!, item.name)">{{ item.alteracoes
+              }}</a></td>
+          <td *ngIf="item.alteracoes! < 1">{{ item.alteracoes }}</td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="emptyList">
+        <tr>
+          <td colspan="3" class="no-data-available">No data!</td>
+        </tr>
+      </tbody>
+    </table>
 
-<div *ngIf="_loadingService.isLoading | async">
-  <div class="card-wrapper">
-    <nb-card [nbSpinner]="true" nbSpinnerSize="giant" nbSpinnerStatus="primary">
-      <nb-card-body>
-      </nb-card-body>
-    </nb-card>
-    <!-- <div *ngFor="let i of color">
-      <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [c_status]="i" [qnt_atraso]="0" [show_desc]="false" >
-      </fc-card>
-    </div> -->
-  </div>
-</div>
+    <div *ngIf="_loadingService.isLoading | async">
+      <div class="card-wrapper">
+        <nb-card [nbSpinner]="true" nbSpinnerSize="giant" nbSpinnerStatus="primary">
+          <nb-card-body>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+  </nb-layout-column>
+</nb-layout>

@@ -5,10 +5,13 @@
 
 $nb-themes: nb-register-theme((
   // add your variables here like:
-  // color-bg: #4ca6ff,
-), cosmic, cosmic);
+  color-tb-header-bg: #131324,
+  color-tb-even-bg: #101024,
+  ), cosmic, cosmic);
 
 $nb-themes: nb-register-theme((
+  color-tb-header-bg: #9f9faf,
+  color-tb-even-bg: #d9d9d9,
   // add your variables here like:
   // color-bg: #4ca6ff,
 ), default, default);

@@ -16,7 +16,7 @@ export class PcpGuard implements CanLoad {
     | UrlTree
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree> {
-    if (this._userService.getNivel() != 2) {
+    if (this._userService.getNivel() != 2 && this._userService.getNivel() != 99) {
       this._route.navigate(['login']);
       return false;
     }

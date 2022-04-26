@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import {
+  NbButtonGroupModule,
   NbButtonModule,
   NbCardModule,
   NbDatepickerModule,
@@ -11,6 +12,7 @@ import {
   NbIconModule,
   NbInputModule,
   NbLayoutModule,
+  NbMenuModule,
   NbPopoverModule,
   NbSelectModule,
   NbSidebarModule,
@@ -24,12 +26,15 @@ import { DialogComponent } from './components/dialog/dialog.component';
 import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './components/login/login.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { DialogTableComponent } from './components/dialog-table/dialog-table.component';
+import { DataTablesModule } from 'angular-datatables';
 
 @NgModule({
   declarations: [
     CardComponent,
     CarosselComponent,
     DialogComponent,
+    DialogTableComponent,
     HeaderComponent,
     LoginComponent,
     NotFoundComponent,
@@ -39,10 +44,12 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    DataTablesModule,
     NbButtonModule,
+    NbButtonGroupModule,
     NbCardModule,
     NbDatepickerModule.forRoot(),
-    NbDialogModule.forRoot(),
+    NbDialogModule.forChild(),
     NbIconModule,
     NbInputModule,
     NbLayoutModule,
@@ -59,6 +66,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
     CardComponent,
     CarosselComponent,
     DialogComponent,
+    DialogTableComponent,
     HeaderComponent,
     LoginComponent,
     NotFoundComponent,

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { descOP } from 'src/app/models/descOP';
 import { Motivo } from 'src/app/models/motivo';
@@ -52,6 +52,7 @@ export class DialogComponent {
     this.user = JSON.parse(this._userService.getSession()).nome;
 
     this.novoMotivo = {
+      CD_LOCAL: this.prevOP.cd_local,
       NR_CICLO: this.prevOP.ciclo!,
       NR_OP: this.prevOP.op!,
       CD_REFERENCIA: this.prevOP.ref,
@@ -96,6 +97,7 @@ export class DialogComponent {
     this.user = JSON.parse(this._userService.getSession()).nome;
 
     this.novoMotivo = {
+      CD_LOCAL: this.prevOP.cd_local,
       NR_CICLO: this.prevOP.ciclo!,
       NR_OP: this.prevOP.op!,
       CD_REFERENCIA: this.prevOP.ref,
