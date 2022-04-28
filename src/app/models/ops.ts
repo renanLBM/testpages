@@ -19,10 +19,10 @@ export interface OP {
   PREV_RETORNO: Date,
   QT_OP: number,
   Status: string,
-  previsao?: string,
-  dias_atraso?: number,
+  dias_faccao?: number,
   motivo_atraso?: string,
-  nova_previsao?: string
+  nova_previsao?: string,
+  css_class?: string
 }
 
 export type OPs = Array<OP>;

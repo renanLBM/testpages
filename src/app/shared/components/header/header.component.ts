@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
       this.adm = n == 99;
       this.headerTitle = t;
       this.showIcon = true;
-      if (this.headerTitle.includes('Login')) {
+      if (this.headerTitle.includes('Login') || this.headerTitle.includes('usuário')) {
         this.showIcon = false;
       }
     });

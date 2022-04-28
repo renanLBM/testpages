@@ -7,6 +7,7 @@ export interface Faccao {
   qnt_atraso?: string,
   per_atraso?: number,
   qnt_pecas?: string,
+  pecas_atraso?: string,
   color?: string,
   alteracoes?: number,
 }

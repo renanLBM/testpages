@@ -56,58 +56,81 @@ export class PcpDescOpsComponent implements OnInit {
         pageLength: 15,
         responsive: true,
         autoWidth: true,
-        order: [[4, 'desc']],
+        order: [[3, 'asc']],
       };
 
       this.tituloStatus = this._route.snapshot.paramMap.get('status')!;
       this.facIdStatus = this._route.snapshot.paramMap.get('faccaoid')!;
       this._setTitle.setTitle(this.tituloStatus);
-      this._opsService.getOpByStatus(this.tituloStatus).subscribe({
-        next: (list) => {
-          this.faccaoList = list.filter(
-            (x) => x.CD_LOCAL == parseInt(this.facIdStatus)
-          );
-          this.tituloLocal = this.faccaoList[0].DS_LOCAL;
 
-          this.faccaoList.map((x) => {
-            let atraso = this.motivoList.filter(
-              (_) =>
-                _.NR_CICLO + '-' + _.NR_OP + '-' + _.CD_REFERENCIA ==
-                x.NR_CICLO + '-' + x.NR_OP + '-' + x.CD_REFERENCIA
-            )[0];
-            let dt_prev = new Date(x.PREV_RETORNO);
-            let hj = new Date();
+      if (this.tituloStatus == 'Geral') {
+        this._opsService.getAllOPs().subscribe({
+          next: (list) => {
+            this.getOPS(list);
 
-            if (x.DS_COORDENADO) {
-              x.DS_COORDENADO = x.CATEGORIA + ' ' + x.DS_COORDENADO;
-            } else {
-              x.DS_COORDENADO = x.DS_GRUPO;
-            }
-            x.previsao = new Date(x.PREV_RETORNO)
-              .toLocaleString('pt-br')
-              .substring(0, 10);
-            x['dias_atraso'] = Math.floor(
-              (hj.getTime() - dt_prev.getTime()) / (24 * 3600 * 1000)
-            );
+            this.listOPs$.next(this.faccaoList);
+            this.dtTrigger.next(this.dtOptions);
+          },
+          error: (err: Error) => {
+            console.error(err);
+            this._setTitle.setTitle('Erro');
+          },
+        });
+      } else {
+        this._opsService.getOpByStatus(this.tituloStatus).subscribe({
+          next: (list) => {
+            this.getOPS(list);
 
-            //  verifica se teve atraso para essa OP
-            if (atraso) {
-              x['motivo_atraso'] = atraso.MOTIVO;
-              x['nova_previsao'] = atraso.NOVA_PREVISAO;
-            } else {
-              x['motivo_atraso'] = '-';
-              x['nova_previsao'] = '-';
-            }
-          });
+            this.listOPs$.next(this.faccaoList);
+            this.dtTrigger.next(this.dtOptions);
+          },
+          error: (err: Error) => {
+            console.error(err);
+            this._setTitle.setTitle('Erro');
+          },
+        });
+      }
+    });
+  }
 
-          this.listOPs$.next(this.faccaoList);
-          this.dtTrigger.next(this.dtOptions);
-        },
-        error: (err: Error) => {
-          console.error(err);
-          this._setTitle.setTitle('Erro');
-        },
-      });
+  getOPS(thisOPs: OPs) {
+    this.faccaoList = thisOPs.filter(
+      (x) => x.CD_LOCAL == parseInt(this.facIdStatus)
+    );
+    this.tituloLocal = this.faccaoList[0].DS_LOCAL;
+
+    this.faccaoList.map((x) => {
+      let atraso = this.motivoList.filter(
+        (_) =>
+          _.NR_CICLO + '-' + _.NR_OP + '-' + _.CD_REFERENCIA ==
+          x.NR_CICLO + '-' + x.NR_OP + '-' + x.CD_REFERENCIA
+      )[0];
+      let dtEnt = new Date(x.DT_ENTRADA);
+      let hj = new Date();
+
+      let dtPrev = new Date(x.PREV_RETORNO);
+      x.css_class = 'andamento';
+      if (dtPrev < hj) {
+        x.css_class = 'atraso';
+      }
+
+      if (x.DS_COORDENADO) {
+        x.DS_COORDENADO = x.CATEGORIA + ' ' + x.DS_COORDENADO;
+      } else {
+        x.DS_COORDENADO = x.DS_GRUPO;
+      }
+      x['dias_faccao'] = Math.floor(
+        (hj.getTime() - dtEnt.getTime()) / (24 * 3600 * 1000)
+      );
+
+      //  verifica se teve atraso para essa OP
+      if (atraso) {
+        x['motivo_atraso'] = atraso.MOTIVO;
+        x['nova_previsao'] = atraso.NOVA_PREVISAO;
+      } else {
+        x['motivo_atraso'] = '-';
+        x['nova_previsao'] = '-';
+      }
     });
   }
 

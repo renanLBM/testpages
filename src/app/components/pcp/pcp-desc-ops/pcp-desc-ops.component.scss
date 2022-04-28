@@ -54,11 +54,22 @@ table {
 
   .img-hover a:hover span {
     display: block;
+
     img {
       border: 1px solid #dddddd;
       box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
       border-radius: 10px;
     }
+  }
+
+  .atraso {
+    font-weight: 600;
+    color: nb-theme(color-danger-600);
+  }
+
+  .andamento {
+    font-weight: 600;
+    color: nb-theme(color-success-700);
   }
 
   .even {

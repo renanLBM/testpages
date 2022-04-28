@@ -5,7 +5,9 @@
         <tr>
           <th>Facção</th>
           <th>Qnt. OP's</th>
-          <th>Qnt. Peças</th>
+          <th>Total Peças</th>
+          <th>OP's em atraso</th>
+          <th>Peças em Atraso</th>
           <th>Alterações</th>
         </tr>
       </thead>
@@ -14,6 +16,8 @@
           <td>{{ item.name }}</td>
           <td><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id!]">{{ item.qnt }}</a></td>
           <td>{{ item.qnt_pecas }}</td>
+          <td class="atraso">{{ item.qnt_atraso }}</td>
+          <td class="atraso">{{ item.pecas_atraso }}</td>
           <td *ngIf="item.alteracoes! >= 1"><a class="link-desc" (click)="openAtraso(item.id!, item.name)">{{ item.alteracoes
               }}</a></td>
           <td *ngIf="item.alteracoes! < 1">{{ item.alteracoes }}</td>

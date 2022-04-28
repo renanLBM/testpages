@@ -35,8 +35,10 @@ export class PcpComponent implements OnInit {
         this.listStatus.forEach((x) => {
           this.OpsList.push({ status: x['Status'], qnt_p: x['QT_OP'] });
         });
+        this.listStatus.forEach((x) => {
+          this.OpsList.push({ status: 'Geral', qnt_p: x['QT_OP'] });
+        });
 
-        // let uniq = [...new Set(this.OpsList)].filter((item) => item !== '');
         let uniq: any[] = [];
         this.OpsList.forEach((f) => {
           uniq.push(f.status);
@@ -51,20 +53,6 @@ export class PcpComponent implements OnInit {
           prev[cur.status] = (prev[cur.status] || 0) + parseInt(cur.qnt_p);
           return prev;
         }, {});
-
-        // let qnt = this.OpsList.reduce((prev, cur) => {
-        //   prev[cur] = (prev[cur] || 0) + 1;
-        //   return prev;
-        // }, {});
-
-        // let qnt_pecas = this.listStatus.reduce((prev, cur) => {
-        //   console.log(prev);
-        //   console.log(cur['Status']);
-        //   parseInt(prev[cur['Status']]);
-        //   // parseInt(cur.QT_OP);
-        //   // prev[cur['Status']] = (prev[cur['Status']] || 0) + parseInt(cur.QT_OP);
-        //   return prev;
-        // }, {});
 
         uniq.map((s: string, index: number) => {
           this.OpList.push(
@@ -86,7 +74,7 @@ export class PcpComponent implements OnInit {
           } else if ( op.name == 'Em atraso') {
             op.color = 'danger'
           } else {
-            op.color = 'basic'
+            op.color = 'primary'
           }
         })
 

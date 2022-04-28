@@ -30,6 +30,11 @@ table {
 
 }
 
+.atraso {
+  font-weight: 600;
+  color: nb-theme(color-danger-600);
+}
+
 @media screen and (max-width: 475px) {
   .titulo {
     font-size: 25px;

@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
+    this._setTitle.setTitle('Verificando usuário...');
     this._userService.login(this.usuario, this.senha).subscribe({
       next: (x) => {
         let nivel = JSON.parse(x.body).nivel;
@@ -33,6 +34,7 @@ export class LoginComponent implements OnInit {
         }
       },
       error: (err) => {
+        this._setTitle.setTitle('FacControl - Login');
         this._router.navigate(['login']);
         alert('Erro de login ou senha!');
         console.log('error log', err);

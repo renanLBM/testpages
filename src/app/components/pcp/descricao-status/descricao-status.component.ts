@@ -3,7 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnDestroy,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NbDialogService } from '@nebular/theme';
@@ -61,75 +61,153 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
         pagingType: 'full_numbers',
         pageLength: 15,
         responsive: true,
-        order: [[3, 'desc']],
+        order: [[5, 'desc']],
       };
 
       this.tituloStatus = this._route.snapshot.paramMap.get('status')!;
       this._setTitle.setTitle(this.tituloStatus);
-      this._opsService.getOpByStatus(this.tituloStatus).subscribe({
-        next: (list) => {
-          this.listFaccoes = list;
 
-          this.listFaccoes.forEach((x) => {
-            this.faccaoList.push({ local: x['DS_LOCAL'], qnt_p: x['QT_OP'] });
-          });
+      if (this.tituloStatus == 'Geral') {
+        this._opsService.getAllOPs().subscribe({
+          next: (o) => {
+            this.listFaccoes = o;
 
-          let uniq: any[] = [];
-          this.faccaoList.forEach((f) => {
-            uniq.push(f.local);
-            uniq = [...new Set(uniq)].filter((item) => item !== '');
-          });
+            this.listFaccoes.forEach((x) => {
+              this.faccaoList.push({ local: x['DS_LOCAL'], qnt_p: x['QT_OP'], status: x['Status'] });
+            });
 
-          let qnt_ops = this.faccaoList.reduce((prev, cur) => {
-            prev[cur.local] = (prev[cur.local] || 0) + 1;
-            return prev;
-          }, {});
-          let qnt_pecas = this.faccaoList.reduce((prev, cur) => {
-            prev[cur.local] = (prev[cur.local] || 0) + parseInt(cur.qnt_p);
-            return prev;
-          }, {});
+            let uniq: any[] = [];
+            this.faccaoList.forEach((f) => {
+              uniq.push(f.local);
+              uniq = [...new Set(uniq)].filter((item) => item !== '');
+            });
 
-          let id = 0;
-          let motivos = [];
+            // conta ops
+            let qnt_ops = this.faccaoList.reduce((prev, cur) => {
+              prev[cur.local] = (prev[cur.local] || 0) + 1;
+              return prev;
+            }, {});
+            // conta peças
+            let qnt_pecas = this.faccaoList.reduce((prev, cur) => {
+              prev[cur.local] = (prev[cur.local] || 0) + parseInt(cur.qnt_p);
+              return prev;
+            }, {});
+            // conta peças em atraso
+            let pecas_at = this.faccaoList.reduce((prev, cur) => {
+              prev[cur.local+'-'+cur.status] = (prev[cur.local+'-'+cur.status] || 0) + parseInt(cur.qnt_p);
+              return prev;
+            }, {});
 
-          uniq.map((f: string, index: number) => {
-            id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
-            motivos = this.motivoList.filter(
-              (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
-            );
+            let id = 0;
+            let motivos = [];
 
-            this.faccao.push(
-              ...[
-                {
-                  id: id,
-                  name: f,
-                  qnt: qnt_ops[f],
-                  qnt_pecas: parseInt(qnt_pecas[f]).toLocaleString('pt-Br'),
-                  qnt_atraso: (this.listFaccoes.filter(
-                    (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
-                  ).length).toLocaleString(),
-                  color: '',
-                  alteracoes: motivos.length,
-                },
-              ]
-            );
-          });
+            uniq.map((f: string, index: number) => {
+              id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
+              motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
 
-          this.faccao
-            .sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0))
-            .map(
-              (f: Faccao, index: number) =>
-                (f.color = this.color[index % this.color.length])
-            );
+              this.faccao.push(
+                ...[
+                  {
+                    id: id,
+                    name: f,
+                    qnt: qnt_ops[f],
+                    qnt_pecas: parseInt(qnt_pecas[f]).toLocaleString('pt-Br'),
+                    qnt_atraso: this.listFaccoes
+                    .filter(
+                      (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
+                      )
+                      .length.toLocaleString(),
+                    pecas_atraso: parseInt(pecas_at[f+'-Em atraso'] || 0).toLocaleString('pt-Br') ,
+                    color: '',
+                    alteracoes: motivos.length,
+                  },
+                ]
+              );
+            });
 
-          this.faccao$.next(this.faccao);
-          this.dtTrigger.next(this.dtOptions);
-        },
-        error: (err: Error) => {
-          console.error(err);
-          this._setTitle.setTitle('Erro');
-        },
-      });
+            this.faccao
+              .sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0))
+              .map(
+                (f: Faccao, index: number) =>
+                  (f.color = this.color[index % this.color.length])
+              );
+
+            this.faccao$.next(this.faccao);
+            this.dtTrigger.next(this.dtOptions);
+          },
+          error: (err: Error) => {
+            console.error(err);
+            this._setTitle.setTitle('Erro');
+          },
+        });
+      } else {
+        this._opsService.getOpByStatus(this.tituloStatus).subscribe({
+          next: (list) => {
+            this.listFaccoes = list;
+
+            this.listFaccoes.forEach((x) => {
+              this.faccaoList.push({ local: x['DS_LOCAL'], qnt_p: x['QT_OP'] });
+            });
+
+            let uniq: any[] = [];
+            this.faccaoList.forEach((f) => {
+              uniq.push(f.local);
+              uniq = [...new Set(uniq)].filter((item) => item !== '');
+            });
+
+            let qnt_ops = this.faccaoList.reduce((prev, cur) => {
+              prev[cur.local] = (prev[cur.local] || 0) + 1;
+              return prev;
+            }, {});
+            let qnt_pecas = this.faccaoList.reduce((prev, cur) => {
+              prev[cur.local] = (prev[cur.local] || 0) + parseInt(cur.qnt_p);
+              return prev;
+            }, {});
+
+            let id = 0;
+            let motivos = [];
+
+            uniq.map((f: string, index: number) => {
+              id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
+              motivos = this.motivoList.filter(
+                (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
+              );
+
+              this.faccao.push(
+                ...[
+                  {
+                    id: id,
+                    name: f,
+                    qnt: qnt_ops[f],
+                    qnt_pecas: parseInt(qnt_pecas[f]).toLocaleString('pt-Br'),
+                    qnt_atraso: this.listFaccoes
+                      .filter(
+                        (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
+                      )
+                      .length.toLocaleString(),
+                    color: '',
+                    alteracoes: motivos.length,
+                  },
+                ]
+              );
+            });
+
+            this.faccao
+              .sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0))
+              .map(
+                (f: Faccao, index: number) =>
+                  (f.color = this.color[index % this.color.length])
+              );
+
+            this.faccao$.next(this.faccao);
+            this.dtTrigger.next(this.dtOptions);
+          },
+          error: (err: Error) => {
+            console.error(err);
+            this._setTitle.setTitle('Erro');
+          },
+        });
+      }
     });
   }
 
@@ -138,7 +216,16 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   }
 
   openAtraso(id: NumberInput, name: string) {
-    let alteracoes = this.motivoList.filter((m) => m.CD_LOCAL == id && m.Status == this.tituloStatus);
+    let alteracoes;
+    if(this.tituloStatus == 'Geral') {
+      alteracoes = this.motivoList.filter(
+        (m) => m.CD_LOCAL == id
+      );
+    }else{
+      alteracoes = this.motivoList.filter(
+        (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
+      );
+    }
     this.NbDdialogService.open(DialogTableComponent, {
       context: {
         motivos: alteracoes,
@@ -149,8 +236,12 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   }
 
   openOps(id: NumberInput, name: string) {
-    let alteracoes = this.motivoList.filter((m) => m.CD_LOCAL == id && m.Status == this.tituloStatus);
-    let ops = this.listFaccoes.filter((m) => m.CD_LOCAL == id && m.Status == this.tituloStatus);
+    let alteracoes = this.motivoList.filter(
+      (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
+    );
+    let ops = this.listFaccoes.filter(
+      (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
+    );
     this.NbDdialogService.open(DialogTableOpComponent, {
       context: {
         ops: ops,
