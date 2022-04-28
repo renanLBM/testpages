@@ -33,22 +33,46 @@ export class PcpComponent implements OnInit {
         this.listStatus = list;
 
         this.listStatus.forEach((x) => {
-          this.OpsList.push(x['Status']);
+          this.OpsList.push({ status: x['Status'], qnt_p: x['QT_OP'] });
         });
 
-        let uniq = [...new Set(this.OpsList)].filter((item) => item !== '');
+        // let uniq = [...new Set(this.OpsList)].filter((item) => item !== '');
+        let uniq: any[] = [];
+        this.OpsList.forEach((f) => {
+          uniq.push(f.status);
+          uniq = [...new Set(uniq)].filter((item) => item !== '');
+        });
 
-        let qnt = this.OpsList.reduce((prev, cur) => {
-          prev[cur] = (prev[cur] || 0) + 1;
+        let qnt_ops = this.OpsList.reduce((prev, cur) => {
+          prev[cur.status] = (prev[cur.status] || 0) + 1;
           return prev;
         }, {});
+        let qnt_pecas = this.OpsList.reduce((prev, cur) => {
+          prev[cur.status] = (prev[cur.status] || 0) + parseInt(cur.qnt_p);
+          return prev;
+        }, {});
+
+        // let qnt = this.OpsList.reduce((prev, cur) => {
+        //   prev[cur] = (prev[cur] || 0) + 1;
+        //   return prev;
+        // }, {});
+
+        // let qnt_pecas = this.listStatus.reduce((prev, cur) => {
+        //   console.log(prev);
+        //   console.log(cur['Status']);
+        //   parseInt(prev[cur['Status']]);
+        //   // parseInt(cur.QT_OP);
+        //   // prev[cur['Status']] = (prev[cur['Status']] || 0) + parseInt(cur.QT_OP);
+        //   return prev;
+        // }, {});
 
         uniq.map((s: string, index: number) => {
           this.OpList.push(
             ...[
               {
                 name: s,
-                qnt: qnt[s],
+                qnt: qnt_ops[s],
+                qnt_pecas: parseInt(qnt_pecas[s]).toLocaleString('pt-Br')
               },
             ]
           );

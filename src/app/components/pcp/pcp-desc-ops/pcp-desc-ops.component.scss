@@ -1,0 +1,88 @@
+@import "../../../../themes.scss";
+
+.titulo {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-align: center;
+}
+
+.back-button {
+  height: fit-content;
+  margin-bottom: 7px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bt-voltar:hover {
+  background-color: #b3b3b3;
+}
+
+.titulo-wrapper {
+  position: absolute;
+  text-align: center;
+  width: calc(100% - 200px);
+  left: 100px;
+}
+
+table {
+  width: 100%;
+  text-align: center;
+  border: 1px solid nb-theme(color-tb-even-bg);
+
+  thead {
+    background-color: nb-theme(color-tb-header-bg);
+    height: 34px;
+  }
+
+  td {
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .img-hover a {
+    cursor: default;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .img-hover a span {
+    position: absolute;
+    display: none;
+    z-index: 99;
+    top: -20px;
+    right: 60px;
+  }
+
+  .img-hover a:hover span {
+    display: block;
+    img {
+      border: 1px solid #dddddd;
+      box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+      border-radius: 10px;
+    }
+  }
+
+  .even {
+    background-color: nb-theme(color-tb-even-bg);
+  }
+
+  .link-desc {
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+}
+
+@media screen and (max-width: 475px) {
+  .titulo {
+    font-size: 25px;
+  }
+
+  .img-hover a span {
+    position: absolute;
+    display: none;
+    z-index: 99;
+    bottom: 20px;
+    right: 40px;
+  }
+
+}

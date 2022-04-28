@@ -28,6 +28,7 @@ import { LoginComponent } from './components/login/login.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { DialogTableComponent } from './components/dialog-table/dialog-table.component';
 import { DataTablesModule } from 'angular-datatables';
+import { DialogTableOpComponent } from './components/dialog-table-op/dialog-table-op.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { DataTablesModule } from 'angular-datatables';
     CarosselComponent,
     DialogComponent,
     DialogTableComponent,
+    DialogTableOpComponent,
     HeaderComponent,
     LoginComponent,
     NotFoundComponent,
@@ -67,6 +69,7 @@ import { DataTablesModule } from 'angular-datatables';
     CarosselComponent,
     DialogComponent,
     DialogTableComponent,
+    DialogTableOpComponent,
     HeaderComponent,
     LoginComponent,
     NotFoundComponent,

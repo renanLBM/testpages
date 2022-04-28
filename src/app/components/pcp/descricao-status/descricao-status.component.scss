@@ -23,6 +23,11 @@ table {
     background-color: nb-theme(color-tb-even-bg);
   }
 
+  .link-desc {
+    cursor: pointer;
+    font-weight: 600;
+  }
+
 }
 
 @media screen and (max-width: 475px) {

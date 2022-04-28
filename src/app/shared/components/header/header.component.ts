@@ -52,7 +52,7 @@ export class HeaderComponent implements OnInit {
     if (this.checked) {
       this.themeService.changeTheme('default');
     } else {
-      this.themeService.changeTheme('cosmic');
+      this.themeService.changeTheme('dark');
     }
   }
 

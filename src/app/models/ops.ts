@@ -11,12 +11,18 @@ export interface OP {
   DS_COLECAO: string,
   CD_DROP: number,
   DS_DROP: string,
+  CATEGORIA: string,
+  DS_COORDENADO: string,
   CD_LOCAL: number,
   DS_LOCAL: string,
   DT_ENTRADA: number,
   PREV_RETORNO: Date,
   QT_OP: number,
-  Status: string
+  Status: string,
+  previsao?: string,
+  dias_atraso?: number,
+  motivo_atraso?: string,
+  nova_previsao?: string
 }
 
 export type OPs = Array<OP>;

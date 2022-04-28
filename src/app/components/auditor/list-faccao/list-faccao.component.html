@@ -3,7 +3,7 @@
     <div *ngIf="_loadingService.isLoading | async; else allOPs">
       <div class="card-wrapper">
         <div *ngFor="let i of color">
-          <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [c_status]="i" [qnt_atraso]="0" [show_desc]="true" >
+          <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [c_status]="i" [qnt_atraso]="'0'" [show_desc]="true" >
           </fc-card>
         </div>
       </div>
@@ -28,8 +28,8 @@
     <div *ngIf="!emptyList; else listaVazia">
       <div class="card-wrapper">
         <div *ngFor="let item of OpList$ | async">
-          <fc-card [show_desc]="show_desc" [title]="item.name" [qnt_ops]="item.qnt" [c_status]="item.color!"
-            [qnt_atraso]="item.qnt_atraso!" [routerLink]="['/auditor/descricao/', item.id]">
+          <fc-card [show_desc]="show_desc" [title]="item.name" text_desc="OP's em atraso" [qnt_ops]="item.qnt" [c_status]="item.color!"
+            [qnt_atraso]="item.qnt_atraso!" [per_atraso]="item.per_atraso!" [routerLink]="['/auditor/descricao/', item.id]">
           </fc-card>
         </div>
       </div>

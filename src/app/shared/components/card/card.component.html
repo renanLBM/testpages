@@ -7,10 +7,13 @@
         <span><b>Total de OP's</b></span>
       </div>
       <div *ngIf="show_desc" class="desc-op">
-        <span>{{ qnt_atraso }}</span>
-        <span><b>OP's em atraso:</b></span>
+        <span><b>{{ qnt_text_desc }}</b></span>
+        <span>{{ text_desc }}</span>
       </div>
     </div>
   </nb-card-body>
   <nb-card-footer>Acessar</nb-card-footer>
 </nb-card>
+
+<!-- TODO
+SEparador de milhar qnt peças -->

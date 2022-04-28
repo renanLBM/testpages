@@ -1,17 +1,19 @@
 @forward '@nebular/theme/styles/theming';
 @import '~@nebular/theme/styles/theming';
-@import '~@nebular/theme/styles/themes/cosmic';
+@import '~@nebular/theme/styles/themes/dark';
 @import '~@nebular/theme/styles/themes/default';
 
 $nb-themes: nb-register-theme((
   // add your variables here like:
   color-tb-header-bg: #131324,
   color-tb-even-bg: #101024,
-  ), cosmic, cosmic);
+  color-primary-900: #29157a,
+  ), dark, dark);
 
 $nb-themes: nb-register-theme((
-  color-tb-header-bg: #9f9faf,
-  color-tb-even-bg: #d9d9d9,
   // add your variables here like:
   // color-bg: #4ca6ff,
+  color-tb-header-bg: #9f9faf,
+  color-tb-even-bg: #d9d9d9,
+  color-primary-900: #091c7a,
 ), default, default);

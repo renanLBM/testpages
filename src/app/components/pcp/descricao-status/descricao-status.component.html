@@ -12,10 +12,9 @@
       <tbody *ngIf="!emptyList">
         <tr *ngFor="let item of faccao$ | async; trackBy: trackByFaccao">
           <td>{{ item.name }}</td>
-          <td>{{ item.qnt }}</td>
+          <td><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id!]">{{ item.qnt }}</a></td>
           <td>{{ item.qnt_pecas }}</td>
-          <td *ngIf="item.alteracoes! >= 1"><a style="cursor: pointer; color: blue; font-weight: 600;"
-              (click)="open(item.id!, item.name)">{{ item.alteracoes
+          <td *ngIf="item.alteracoes! >= 1"><a class="link-desc" (click)="openAtraso(item.id!, item.name)">{{ item.alteracoes
               }}</a></td>
           <td *ngIf="item.alteracoes! < 1">{{ item.alteracoes }}</td>
         </tr>

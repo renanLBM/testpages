@@ -7,13 +7,15 @@ import { SharedComponentsModule } from 'src/app/shared/shared-components.module'
 import { DescricaoStatusComponent } from './descricao-status/descricao-status.component';
 import { PcpComponent } from './list-status/pcp.component';
 import { PCPRoutingModule } from './pcp-routing.module';
+import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
 
 
 
 @NgModule({
   declarations: [
     PcpComponent,
-    DescricaoStatusComponent
+    DescricaoStatusComponent,
+    PcpDescOpsComponent
   ],
   imports: [
     RouterModule,

@@ -47,9 +47,24 @@ export class ListFaccaoComponent implements OnInit {
         }, {});
 
         let id = 0;
+        let atraso = 0;
+        let per_atraso = 0;
+        let cor = '';
 
         uniq.map((f: string, index: number) => {
           id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
+          atraso = this.listFaccoes.filter(
+            (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
+          ).length;
+          per_atraso = (atraso/qnt[f]);
+
+          if (per_atraso >= 0.5){
+            cor = 'danger';
+          } else if (per_atraso >= 0.01){
+            cor = 'warning';
+          }else {
+            cor = 'info';
+          }
 
           this.OpList.push(
             ...[
@@ -57,10 +72,9 @@ export class ListFaccaoComponent implements OnInit {
                 id: id,
                 name: f,
                 qnt: qnt[f],
-                qnt_atraso: this.listFaccoes.filter(
-                  (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
-                ).length,
-                color: '',
+                qnt_atraso: atraso.toLocaleString('pt-Br'),
+                per_atraso: Math.floor(per_atraso * 100),
+                color: cor,
               },
             ]
           );
@@ -68,7 +82,8 @@ export class ListFaccaoComponent implements OnInit {
 
         this.OpList.sort((a, b) =>
           a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0
-        ).map((f: Faccao, index: number) => f.color = this.color[index % this.color.length]);
+        );
+        // .map((f: Faccao, index: number) => f.color = this.color[index % this.color.length])
 
         this.OpList$.next(this.OpList);
       },

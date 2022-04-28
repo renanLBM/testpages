@@ -15,6 +15,7 @@ import { LanguagePtBr } from 'src/app/models/ptBr';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsService } from 'src/app/services/ops.service';
+import { DialogTableOpComponent } from 'src/app/shared/components/dialog-table-op/dialog-table-op.component';
 import { DialogTableComponent } from 'src/app/shared/components/dialog-table/dialog-table.component';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
@@ -103,10 +104,10 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                   id: id,
                   name: f,
                   qnt: qnt_ops[f],
-                  qnt_pecas: qnt_pecas[f],
-                  qnt_atraso: this.listFaccoes.filter(
+                  qnt_pecas: parseInt(qnt_pecas[f]).toLocaleString('pt-Br'),
+                  qnt_atraso: (this.listFaccoes.filter(
                     (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
-                  ).length,
+                  ).length).toLocaleString(),
                   color: '',
                   alteracoes: motivos.length,
                 },
@@ -136,10 +137,23 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     return faccao.id;
   }
 
-  open(id: NumberInput, name: string) {
+  openAtraso(id: NumberInput, name: string) {
     let alteracoes = this.motivoList.filter((m) => m.CD_LOCAL == id && m.Status == this.tituloStatus);
     this.NbDdialogService.open(DialogTableComponent, {
       context: {
+        motivos: alteracoes,
+        status: this.tituloStatus,
+        name: name,
+      },
+    });
+  }
+
+  openOps(id: NumberInput, name: string) {
+    let alteracoes = this.motivoList.filter((m) => m.CD_LOCAL == id && m.Status == this.tituloStatus);
+    let ops = this.listFaccoes.filter((m) => m.CD_LOCAL == id && m.Status == this.tituloStatus);
+    this.NbDdialogService.open(DialogTableOpComponent, {
+      context: {
+        ops: ops,
         motivos: alteracoes,
         status: this.tituloStatus,
         name: name,
