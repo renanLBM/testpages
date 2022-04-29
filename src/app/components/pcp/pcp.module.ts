@@ -8,6 +8,7 @@ import { DescricaoStatusComponent } from './descricao-status/descricao-status.co
 import { PcpComponent } from './list-status/pcp.component';
 import { PCPRoutingModule } from './pcp-routing.module';
 import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 
 
@@ -21,6 +22,7 @@ import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
     RouterModule,
     CommonModule,
     DataTablesModule,
+    FontAwesomeModule,
     PCPRoutingModule,
     SharedComponentsModule,
     NbButtonModule,

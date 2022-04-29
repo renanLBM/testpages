@@ -11,13 +11,16 @@ import { LoadingService } from 'src/app/services/loading.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
+import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
+
 @Component({
   selector: 'fc-pcp-desc-ops',
   templateUrl: './pcp-desc-ops.component.html',
   styleUrls: ['./pcp-desc-ops.component.scss'],
 })
 export class PcpDescOpsComponent implements OnInit {
-  dtOptions: DataTables.Settings = {};
+  faFileExcel = faFileExcel;
+  dtOptions: any;
   dtTrigger: Subject<any> = new Subject<any>();
 
   tituloStatus: string = '';
@@ -57,6 +60,19 @@ export class PcpDescOpsComponent implements OnInit {
         responsive: true,
         autoWidth: true,
         order: [[3, 'asc']],
+        dom: 'Bfrtip',
+        buttons: [
+          {
+            extend: 'print',
+            text: '<a style="color: #898989">Imprimir</a>',
+            titleAttr: 'Exportar para excel',
+          },
+          {
+            extend: 'excelHtml5',
+            text: '<a style="color: #898989">Excel</a>',
+            titleAttr: 'Exportar para excel',
+          },
+        ],
       };
 
       this.tituloStatus = this._route.snapshot.paramMap.get('status')!;
@@ -114,9 +130,7 @@ export class PcpDescOpsComponent implements OnInit {
         x.css_class = 'atraso';
       }
 
-      if (x.DS_COORDENADO) {
-        x.DS_COORDENADO = x.CATEGORIA + ' ' + x.DS_COORDENADO;
-      } else {
+      if (!x.DS_COORDENADO) {
         x.DS_COORDENADO = x.DS_GRUPO;
       }
       x['dias_faccao'] = Math.floor(

@@ -5,23 +5,22 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
-import { NbLayoutModule, NbMenuModule, NbThemeModule } from '@nebular/theme';
+import { NbLayoutModule, NbThemeModule } from '@nebular/theme';
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginGuard } from './guard/login.guard';
 import { NivelGuard } from './guard/nivel.guard';
 import { InterceptorService } from './services/interceptor.service';
 import { SharedComponentsModule } from './shared/shared-components.module';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
 
 registerLocaleData(localePt);
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -37,13 +36,15 @@ registerLocaleData(localePt);
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable
       // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
-    })
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
+    FontAwesomeModule,
   ],
   providers: [
-    LoginGuard, NivelGuard,
+    LoginGuard,
+    NivelGuard,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },
-    { provide: LOCALE_ID, useValue: 'pt-BR' }
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
   ],
   bootstrap: [AppComponent],
 })

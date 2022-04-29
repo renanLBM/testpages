@@ -26,7 +26,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoStatusComponent implements OnDestroy, OnInit {
-  dtOptions: DataTables.Settings = {};
+  dtOptions: any;
   dtTrigger: Subject<any> = new Subject<any>();
 
   tituloStatus: string = '';
@@ -61,7 +61,21 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
         pagingType: 'full_numbers',
         pageLength: 15,
         responsive: true,
-        order: [[5, 'desc']],
+        processing: true,
+        order: [[2, 'desc']],
+        dom: 'Bfrtip',
+        buttons: [
+          {
+            extend: 'print',
+            text: '<a style="color: #898989">Imprimir</a>',
+            titleAttr: 'Exportar para excel',
+          },
+          {
+            extend: 'excelHtml5',
+            text: '<a style="color: #898989">Excel</a>',
+            titleAttr: 'Exportar para excel',
+          },
+        ],
       };
 
       this.tituloStatus = this._route.snapshot.paramMap.get('status')!;
@@ -73,7 +87,11 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
             this.listFaccoes = o;
 
             this.listFaccoes.forEach((x) => {
-              this.faccaoList.push({ local: x['DS_LOCAL'], qnt_p: x['QT_OP'], status: x['Status'] });
+              this.faccaoList.push({
+                local: x['DS_LOCAL'],
+                qnt_p: x['QT_OP'],
+                status: x['Status'],
+              });
             });
 
             let uniq: any[] = [];
@@ -94,7 +112,8 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
             }, {});
             // conta peças em atraso
             let pecas_at = this.faccaoList.reduce((prev, cur) => {
-              prev[cur.local+'-'+cur.status] = (prev[cur.local+'-'+cur.status] || 0) + parseInt(cur.qnt_p);
+              prev[cur.local + '-' + cur.status] =
+                (prev[cur.local + '-' + cur.status] || 0) + parseInt(cur.qnt_p);
               return prev;
             }, {});
 
@@ -113,11 +132,13 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                     qnt: qnt_ops[f],
                     qnt_pecas: parseInt(qnt_pecas[f]).toLocaleString('pt-Br'),
                     qnt_atraso: this.listFaccoes
-                    .filter(
-                      (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
+                      .filter(
+                        (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
                       )
                       .length.toLocaleString(),
-                    pecas_atraso: parseInt(pecas_at[f+'-Em atraso'] || 0).toLocaleString('pt-Br') ,
+                    pecas_atraso: parseInt(
+                      pecas_at[f + '-Em atraso'] || 0
+                    ).toLocaleString('pt-Br'),
                     color: '',
                     alteracoes: motivos.length,
                   },
@@ -217,11 +238,9 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
 
   openAtraso(id: NumberInput, name: string) {
     let alteracoes;
-    if(this.tituloStatus == 'Geral') {
-      alteracoes = this.motivoList.filter(
-        (m) => m.CD_LOCAL == id
-      );
-    }else{
+    if (this.tituloStatus == 'Geral') {
+      alteracoes = this.motivoList.filter((m) => m.CD_LOCAL == id);
+    } else {
       alteracoes = this.motivoList.filter(
         (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
       );
