@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Faccoes } from 'src/app/models/faccao';
-import { Motivos } from 'src/app/models/motivo';
+import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
 import { AuditorService } from 'src/app/services/auditor.service';
@@ -116,11 +116,14 @@ export class PcpDescOpsComponent implements OnInit {
     this.tituloLocal = this.faccaoList[0].DS_LOCAL;
 
     this.faccaoList.map((x) => {
-      let atraso = this.motivoList.filter(
-        (_) =>
-          _.NR_CICLO + '-' + _.NR_OP + '-' + _.CD_REFERENCIA ==
-          x.NR_CICLO + '-' + x.NR_OP + '-' + x.CD_REFERENCIA
-      )[0];
+      let atraso!: Motivo;
+      if (this.motivoList.toString() != 'error') {
+        atraso = this.motivoList.filter(
+          (_) =>
+            _.NR_CICLO + '-' + _.NR_OP + '-' + _.CD_REFERENCIA ==
+            x.NR_CICLO + '-' + x.NR_OP + '-' + x.CD_REFERENCIA
+        )[0];
+      }
       let dtEnt = new Date(x.DT_ENTRADA);
       let hj = new Date();
 

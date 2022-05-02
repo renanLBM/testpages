@@ -122,7 +122,10 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
 
             uniq.map((f: string, index: number) => {
               id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
-              motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
+
+              if (this.motivoList.toString() != 'error') {
+                motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
+              }
 
               this.faccao.push(
                 ...[
@@ -190,9 +193,11 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
 
             uniq.map((f: string, index: number) => {
               id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
-              motivos = this.motivoList.filter(
-                (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
-              );
+              if (this.motivoList.toString() != 'error') {
+                motivos = this.motivoList.filter(
+                  (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
+                );
+              }
 
               this.faccao.push(
                 ...[
