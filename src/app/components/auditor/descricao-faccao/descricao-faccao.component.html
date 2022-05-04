@@ -1,14 +1,16 @@
 <nb-layout>
   <nb-layout-column>
+    <!-- error message -->
     <div *ngIf="loadingError; else filter" style="text-align: center;">
       <h3>Erro ao carregar os dados!</h3>
       <h3>Tente novamente mais tarde.</h3>
     </div>
 
+    <!-- filter component -->
     <ng-template #filter>
       <div class="filter-wrapper">
         <nb-form-field>
-          <input type="text" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar Ciclo, OP ou Ref">
+          <input type="text" id="filtro" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar Ciclo, OP ou Ref">
           <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">
             <nb-icon icon="close-square-outline" aria-label="pesquisar">
             </nb-icon>
@@ -21,35 +23,32 @@
       </div>
     </ng-template>
 
-    <div *ngIf="_loadingService.isLoading | async">
-      <div class="card-wrapper">
-        <nb-card [nbSpinner]="true" nbSpinnerStatus="primary">
-          <nb-card-body>
-            <div class="c-body-wrapper">
-              <div class="c-img">
-                <img src="../../../../assets/not-found.png" alt="op-img">
-              </div>
-              <div class="c-desc">
-                <div class="c-header">
-                  <div>
-                    <h4>Ref:</h4>
-                  </div>
-                  <div class="bt-edit">
-                    <nb-icon icon="plus-square-outline"></nb-icon>
-                  </div>
-                </div>
-                <div class="c-body">
-                  <span>...</span>
-                  <p><b>Previsão:</b></p>
-                  <p><b>Ciclo: </b> / <b>OP: </b></p>
-                  <p><b>Descrição:</b></p>
-                  <p><b>Drop:</b></p>
-                  <p class="c-qnt"><b>Peças:</b></p>
-                </div>
-              </div>
-            </div>
-          </nb-card-body>
-        </nb-card>
+    <!-- toolbar -->
+    <div class="toolbar-wrapper">
+      <div class="group-wrapper">
+        <nb-card-body>
+          <nb-select placeholder="Semana" [(selected)]="semanaAtual" (selectedChange)="filtraSemana($event)" status="primary">
+            <nb-option *ngFor="let item of semanaList" value="{{item}}">Semana {{ item }}</nb-option>
+          </nb-select>
+        </nb-card-body>
+      </div>
+      <div class="toolbar-info">
+        <div class="toolbar-value">
+          <div>
+            OP's:
+          </div>
+          <div class="h6">
+            {{qntOPs}}
+          </div>
+        </div>
+        <div class="toolbar-value">
+          <div>
+            Peças:
+          </div>
+          <div class="h6">
+            {{qntPecas}}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -94,5 +93,39 @@
     <ng-template #listaVazia>
       <h4 style="text-align: center;">Nenhum item encontrado..</h4>
     </ng-template>
+
+
+    <!-- placeholder while loading -->
+    <div *ngIf="_loadingService.isLoading | async">
+      <div class="card-wrapper">
+        <nb-card [nbSpinner]="true" nbSpinnerStatus="primary">
+          <nb-card-body>
+            <div class="c-body-wrapper">
+              <div class="c-img">
+                <img src="../../../../assets/not-found.png" alt="op-img">
+              </div>
+              <div class="c-desc">
+                <div class="c-header">
+                  <div>
+                    <h4>Ref:</h4>
+                  </div>
+                  <div class="bt-edit">
+                    <nb-icon icon="plus-square-outline"></nb-icon>
+                  </div>
+                </div>
+                <div class="c-body">
+                  <span>...</span>
+                  <p><b>Previsão:</b></p>
+                  <p><b>Ciclo: </b> / <b>OP: </b></p>
+                  <p><b>Descrição:</b></p>
+                  <p><b>Drop:</b></p>
+                  <p class="c-qnt"><b>Peças:</b></p>
+                </div>
+              </div>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
   </nb-layout-column>
 </nb-layout>

@@ -8,6 +8,7 @@ export interface descOP {
   op?: number,
   ref: number,
   previsao: string,
+  semana?: number,
   descricao?: string,
   drop?: string,
   novaprevisao: string,

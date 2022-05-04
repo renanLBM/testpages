@@ -32,6 +32,10 @@ export class DescricaoFaccaoComponent implements OnInit {
   emptyList: boolean = false;
   loadingError: boolean = false;
 
+  qntOPs: number = 0;
+  qntPecas: number = 0;
+  semanaAtual: string = '0';
+  semanaList: number[] = [];
   filtroAtivo: boolean = false;
   listOPs!: OPs;
   descOP: descOP[] = [];
@@ -55,12 +59,20 @@ export class DescricaoFaccaoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // pegar a semana atual
+    let currentdate = new Date();
+    let oneJan = new Date(currentdate.getFullYear(), 0, 1);
+    let numberOfDays = Math.floor(
+      (currentdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000)
+    );
+    this.semanaAtual = Math.ceil(
+      (currentdate.getDay() + 1 + numberOfDays) / 7
+    ).toString();
+
     this._setTitle.setTitle('Carregando...');
     // pega todos os dados da tabela de alterações
-    this._auditorService
-      .getMotivos()
-      .subscribe((motivo) => {
-        this.motivoList = motivo
+    this._auditorService.getMotivos().subscribe((motivo) => {
+      this.motivoList = motivo;
 
       let id = this._route.snapshot.paramMap.get('id')!;
       this._opsService.getOpById(id).subscribe({
@@ -114,7 +126,19 @@ export class DescricaoFaccaoComponent implements OnInit {
             let prev = new Date(i.PREV_RETORNO)
               .toLocaleString('pt-br')
               .substring(0, 10);
+
+            // pega semana da op
+            let prevdate = new Date(i.PREV_RETORNO);
+            let oneJan = new Date(prevdate.getFullYear(), 0, 1);
+            let numberOfDays = Math.floor(
+              (prevdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000)
+            );
+            let prevSemana = Math.ceil(
+              (prevdate.getDay() + 1 + numberOfDays) / 7
+            );
+
             this.descOP.push({
+              semana: prevSemana,
               cd_local: i.CD_LOCAL,
               local: i.DS_LOCAL,
               cod:
@@ -154,12 +178,36 @@ export class DescricaoFaccaoComponent implements OnInit {
               }
             });
           });
+
+          // lista de numero de semanas(por data da OP) da facção
+          this.descOP.forEach((o) => {
+            this.semanaList.push(o.semana!);
+            this.semanaList = [...new Set(this.semanaList)];
+          });
+
+          // verifica a semana mais proxima
+          let closestSemana = this.semanaList.reduce((a, b) => {
+            let aDiff = Math.abs(a - parseInt(this.semanaAtual));
+            let bDiff = Math.abs(b - parseInt(this.semanaAtual));
+
+            if (aDiff == bDiff) {
+              return a > b ? a : b;
+            } else {
+              return bDiff < aDiff ? b : a;
+            }
+          });
+
+          // troca semana atual para a mais proxima
+          this.semanaAtual = closestSemana.toString();
+
           let title = this.descOP[0].local
             .replace('COSTURA', '')
             .replace('ESTAMPARIA', '')
             .replace('TERCEIROS', '');
           this._setTitle.setTitle(title);
           this.descOP$.next(this.descOP);
+          // filtra somente a semana atual
+          this.filtraSemana(parseInt(this.semanaAtual));
         },
         error: (e) => {
           console.error(e);
@@ -207,7 +255,11 @@ export class DescricaoFaccaoComponent implements OnInit {
     } else {
       this.filtroAtivo = true;
       this.descOP$.next(
-        this.descOP.filter((_) => _.cod.includes(filterValue.toUpperCase()))
+        this.descOP.filter(
+          (_) =>
+            _.cod.includes(filterValue.toUpperCase()) &&
+            _.semana == parseInt(this.semanaAtual)
+        )
       );
       this.descOP$.subscribe((x) => (this.emptyList = !x.length));
     }
@@ -216,7 +268,31 @@ export class DescricaoFaccaoComponent implements OnInit {
   limpaFiltro(item: HTMLInputElement): void {
     this.filtroAtivo = false;
     item.value = '';
-    this.descOP$.next(this.descOP);
+    this.descOP$.next(
+      this.descOP.filter((_) => _.semana == parseInt(this.semanaAtual))
+    );
+  }
+
+  filtraSemana(event: number, item?: HTMLInputElement) {
+    if (event == 0) {
+      this.descOP$.next(this.descOP);
+    } else {
+      this.descOP$.next(this.descOP.filter((_) => _.semana == event));
+      this.descOP$.subscribe((x) => {
+        this.emptyList = !x.length;
+        this.qntOPs = x.length;
+        let opsFiltered: any[] = [];
+        x.forEach((_) => {
+          opsFiltered.push(_['qnt']);
+        });
+        this.qntPecas = opsFiltered.reduce((prev, cur) => {
+          return parseInt(prev) + parseInt(cur);
+        }, 0);
+      });
+
+      (document.getElementById('filtro') as HTMLInputElement)!.value = '';
+      this.filtroAtivo = false;
+    }
   }
 
   openWindow(ref: string) {

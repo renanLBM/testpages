@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NbButtonModule, NbCardModule, NbFormFieldModule, NbIconModule, NbInputModule, NbLayoutModule, NbSpinnerModule, NbTooltipModule } from '@nebular/theme';
+import { NbButtonModule, NbCardModule, NbFormFieldModule, NbIconModule, NbInputModule, NbLayoutModule, NbSelectModule, NbSpinnerModule, NbTabsetModule, NbTooltipModule } from '@nebular/theme';
+import { LazyLoadImageModule, LAZYLOAD_IMAGE_HOOKS, ScrollHooks } from 'ng-lazyload-image';
 import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
 import { AuditorRoutingModule } from './auditor-routing.module';
 import { DescricaoFaccaoComponent } from './descricao-faccao/descricao-faccao.component';
 import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
-import { LazyLoadImageModule, LAZYLOAD_IMAGE_HOOKS, ScrollHooks } from 'ng-lazyload-image';
 
 
 @NgModule({
@@ -24,6 +24,7 @@ import { LazyLoadImageModule, LAZYLOAD_IMAGE_HOOKS, ScrollHooks } from 'ng-lazyl
     NbInputModule,
     NbFormFieldModule,
     NbLayoutModule,
+    NbSelectModule,
     NbSpinnerModule,
     NbTooltipModule,
     AuditorRoutingModule,

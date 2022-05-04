@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { descOP } from 'src/app/models/descOP';
@@ -11,7 +11,11 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss'],
 })
-export class DialogComponent {
+export class DialogComponent implements OnInit {
+  latitude = 0;
+  longitude = 0;
+  retorno!: number;
+
   user = '';
   motivos = [
     'Alterado sequencia de produção',
@@ -45,6 +49,23 @@ export class DialogComponent {
     private _auditorService: AuditorService
   ) {}
 
+  ngOnInit() {
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this.latitude = pos.coords.latitude;
+          this.longitude = pos.coords.longitude;
+        },
+        (err) => console.error(`ERROR(${err.code}) ${err.message}`),
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
+        }
+      );
+    }
+  }
+
   remove() {
     this.prev = '';
     this.removed = true;
@@ -63,14 +84,22 @@ export class DialogComponent {
       MOTIVO: 'removido',
       USUARIO: this.user,
       DT_INSERIDO: new Date().toLocaleString('pt-Br'),
+      latitude: this.latitude,
+      longitude: this.longitude,
     };
 
     this._auditorService.removeMotivo(this.novoMotivo);
-
-    this.dialogRef.close({
-      prev: '',
-      motivo: this.i_motivo,
-      removed: this.removed,
+    this._auditorService.removeMotivo(this.novoMotivo).subscribe({
+      next: (ret) => {
+        this.dialogRef.close({
+          prev: '',
+          motivo: this.i_motivo,
+          removed: this.removed,
+        });
+      },
+      error: (err) => {
+        alert(`ERROR(${err.code}) ${err.message}`)
+      }
     });
   }
 
@@ -108,14 +137,22 @@ export class DialogComponent {
       MOTIVO: this.motivos[nMotivo.motivoControl],
       USUARIO: this.user,
       DT_INSERIDO: new Date().toLocaleString('pt-Br'),
+      latitude: this.latitude,
+      longitude: this.longitude,
     };
 
     if (this.novoMotivo.MOTIVO && this.novoMotivo.NOVA_PREVISAO) {
-      this._auditorService.setMotivo(this.novoMotivo);
-      this.dialogRef.close({
-        prev: novaData,
-        motivo: this.novoMotivo.MOTIVO,
-        removed: this.removed,
+      this._auditorService.setMotivo(this.novoMotivo).subscribe({
+        next: (ret) => {
+          this.dialogRef.close({
+            prev: novaData,
+            motivo: this.novoMotivo.MOTIVO,
+            removed: this.removed,
+          });
+        },
+        error: (err) => {
+          alert(`ERROR(${err.code}) ${err.message}`)
+        }
       });
     }
 

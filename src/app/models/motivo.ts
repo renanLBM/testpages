@@ -10,7 +10,9 @@ export interface Motivo {
   NOVA_PREVISAO: string,
   MOTIVO: string,
   USUARIO: string,
-  DT_INSERIDO: string
+  DT_INSERIDO: string,
+  latitude?: number,
+  longitude?: number,
 }
 
 export type Motivos = Array<Motivo>;

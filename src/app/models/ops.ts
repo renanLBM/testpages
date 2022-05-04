@@ -18,6 +18,7 @@ export interface OP {
   DT_ENTRADA: number,
   PREV_RETORNO: Date,
   QT_OP: number,
+  semana?: string,
   Status: string,
   dias_faccao?: number,
   motivo_atraso?: string,
