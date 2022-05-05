@@ -29,14 +29,21 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
 })
 export class DescricaoFaccaoComponent implements OnInit {
   defaultImage = '../../../../assets/not-found.png';
-  emptyList: boolean = false;
   loadingError: boolean = false;
+  emptyList: boolean = false;
+  filtroAtivo: boolean = false;
 
   qntOPs: number = 0;
   qntPecas: number = 0;
+
   semanaAtual: string = '0';
+  semanaAtualNumber: number = 0;
+  semanaSelecionada: string = '0';
+  closestSemana: number = 0;
   semanaList: number[] = [];
-  filtroAtivo: boolean = false;
+  semanaListAtraso: number[] = [];
+  semanaListFuturo: number[] = [];
+
   listOPs!: OPs;
   descOP: descOP[] = [];
   descOP$: BehaviorSubject<descOP[]> = new BehaviorSubject(this.descOP);
@@ -68,6 +75,8 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.semanaAtual = Math.ceil(
       (currentdate.getDay() + 1 + numberOfDays) / 7
     ).toString();
+    this.semanaSelecionada = this.semanaAtual;
+    this.semanaAtualNumber = parseInt(this.semanaAtual);
 
     this._setTitle.setTitle('Carregando...');
     // pega todos os dados da tabela de alterações
@@ -183,12 +192,19 @@ export class DescricaoFaccaoComponent implements OnInit {
           this.descOP.forEach((o) => {
             this.semanaList.push(o.semana!);
             this.semanaList = [...new Set(this.semanaList)];
+
+            this.semanaListAtraso = this.semanaList.filter(
+              (_) => _ < this.semanaAtualNumber
+            );
+            this.semanaListFuturo = this.semanaList.filter(
+              (_) => _ > this.semanaAtualNumber
+            );
           });
 
           // verifica a semana mais proxima
-          let closestSemana = this.semanaList.reduce((a, b) => {
-            let aDiff = Math.abs(a - parseInt(this.semanaAtual));
-            let bDiff = Math.abs(b - parseInt(this.semanaAtual));
+          this.closestSemana = this.semanaList.reduce((a, b) => {
+            let aDiff = Math.abs(a - parseInt(this.semanaSelecionada));
+            let bDiff = Math.abs(b - parseInt(this.semanaSelecionada));
 
             if (aDiff == bDiff) {
               return a > b ? a : b;
@@ -198,7 +214,7 @@ export class DescricaoFaccaoComponent implements OnInit {
           });
 
           // troca semana atual para a mais proxima
-          this.semanaAtual = closestSemana.toString();
+          this.semanaSelecionada = this.closestSemana.toString();
 
           let title = this.descOP[0].local
             .replace('COSTURA', '')
@@ -207,7 +223,7 @@ export class DescricaoFaccaoComponent implements OnInit {
           this._setTitle.setTitle(title);
           this.descOP$.next(this.descOP);
           // filtra somente a semana atual
-          this.filtraSemana(parseInt(this.semanaAtual));
+          this.filtraSemana(parseInt(this.semanaSelecionada));
         },
         error: (e) => {
           console.error(e);
@@ -252,15 +268,28 @@ export class DescricaoFaccaoComponent implements OnInit {
     if (filterValue == '') {
       this.filtroAtivo = false;
       this.descOP$.next(this.descOP);
+      if (this.semanaSelecionada != "Todas") {
+        this.descOP$.next(
+          this.descOP.filter(
+            (_) => _.semana == parseInt(this.semanaSelecionada)
+          )
+        );
+      }
     } else {
       this.filtroAtivo = true;
-      this.descOP$.next(
-        this.descOP.filter(
-          (_) =>
-            _.cod.includes(filterValue.toUpperCase()) &&
-            _.semana == parseInt(this.semanaAtual)
-        )
-      );
+      if (this.semanaSelecionada != "Todas") {
+        this.descOP$.next(
+          this.descOP.filter(
+            (_) =>
+              _.cod.includes(filterValue.toUpperCase()) &&
+              _.semana == parseInt(this.semanaSelecionada)
+          )
+        );
+      } else {
+        this.descOP$.next(
+          this.descOP.filter((_) => _.cod.includes(filterValue.toUpperCase()))
+        );
+      }
       this.descOP$.subscribe((x) => (this.emptyList = !x.length));
     }
   }
@@ -268,13 +297,21 @@ export class DescricaoFaccaoComponent implements OnInit {
   limpaFiltro(item: HTMLInputElement): void {
     this.filtroAtivo = false;
     item.value = '';
-    this.descOP$.next(
-      this.descOP.filter((_) => _.semana == parseInt(this.semanaAtual))
-    );
+    this.descOP$.next(this.descOP);
+    if(!!this.semanaSelecionada){
+      this.descOP$.next(
+        this.descOP.filter((_) => _.semana == parseInt(this.semanaSelecionada))
+      );
+    }
   }
 
-  filtraSemana(event: number, item?: HTMLInputElement) {
+  filtraSemana(event: number, reset?: boolean) {
+    if (reset) {
+      this.semanaSelecionada = '';
+    }
     if (event == 0) {
+      this.semanaSelecionada = 'Todas';
+      (document.getElementById('filtro') as HTMLInputElement)!.value = '';
       this.descOP$.next(this.descOP);
     } else {
       this.descOP$.next(this.descOP.filter((_) => _.semana == event));
@@ -292,6 +329,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
       (document.getElementById('filtro') as HTMLInputElement)!.value = '';
       this.filtroAtivo = false;
+      this.semanaSelecionada = event.toString();
     }
   }
 

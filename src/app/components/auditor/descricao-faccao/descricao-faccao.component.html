@@ -10,7 +10,8 @@
     <ng-template #filter>
       <div class="filter-wrapper">
         <nb-form-field>
-          <input type="text" id="filtro" #filtro nbInput (keyup)="filtroOP($event)" placeholder="Filtrar Ciclo, OP ou Ref">
+          <input type="text" id="filtro" #filtro nbInput (keyup)="filtroOP($event)"
+            placeholder="Filtrar Ciclo, OP ou Ref">
           <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">
             <nb-icon icon="close-square-outline" aria-label="pesquisar">
             </nb-icon>
@@ -25,17 +26,24 @@
 
     <!-- toolbar -->
     <div class="toolbar-wrapper">
-      <div class="group-wrapper">
-        <nb-card-body>
-          <nb-select placeholder="Semana" [(selected)]="semanaAtual" (selectedChange)="filtraSemana($event)" status="primary">
-            <nb-option *ngFor="let item of semanaList" value="{{item}}">Semana {{ item }}</nb-option>
-          </nb-select>
-        </nb-card-body>
+      <div class="tag-wrapper">
+        <span>Semana selecionada: <b>{{semanaSelecionada}}</b> </span>
+        <nb-tag-list style="margin: 5px;">
+          <nb-tag status="default" appearance="filled" text="Todas"
+            (click)="filtraSemana(0, true)"></nb-tag>
+          <nb-tag status="danger" appearance="outline" *ngFor="let item of semanaListAtraso" text="Sem. {{item}}"
+            (click)="filtraSemana(item, true)"></nb-tag>
+          <nb-tag *ngIf="semanaAtualNumber == closestSemana" status="primary" appearance="filled" text="Sem. {{semanaAtualNumber}}"
+            (click)="filtraSemana(semanaAtualNumber, true)"></nb-tag>
+          <nb-tag status="success" appearance="outline" *ngFor="let item of semanaListFuturo" text="Sem. {{item}}"
+            (click)="filtraSemana(item, true)"></nb-tag>
+        </nb-tag-list>
       </div>
+
       <div class="toolbar-info">
         <div class="toolbar-value">
           <div>
-            OP's:
+            Qtd. OP's:
           </div>
           <div class="h6">
             {{qntOPs}}
@@ -43,7 +51,7 @@
         </div>
         <div class="toolbar-value">
           <div>
-            Peças:
+            Qtd. Peças:
           </div>
           <div class="h6">
             {{qntPecas}}

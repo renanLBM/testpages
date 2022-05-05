@@ -152,10 +152,12 @@ export class DialogComponent implements OnInit {
         },
         error: (err) => {
           alert(`ERROR(${err.code}) ${err.message}`)
+          this.err = true;
         }
       });
+    }else {
+      this.err = true;
     }
 
-    this.err = true;
   }
 }

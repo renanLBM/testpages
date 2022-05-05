@@ -1,7 +1,7 @@
 {
-  "name": "facao-control",
-  "short_name": "facao-control",
-  "theme_color": "#1976d2",
+  "name": "FacControl",
+  "short_name": "FacControl",
+  "theme_color": "#131324",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
