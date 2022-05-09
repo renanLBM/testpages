@@ -27,7 +27,7 @@
     <!-- toolbar -->
     <div class="toolbar-wrapper">
       <div class="tag-wrapper">
-        <span>Semana selecionada: <b>{{semanaSelecionada}}</b>  (de {{ dataIni | date: 'dd/MM/yyyy' }} a {{ dataFim | date: 'dd/MM/yyyy' }})</span>
+        <span>Semana selecionada: <b>{{semanaSelecionada}}</b>  <span *ngIf="semanaSelecionada != 'Todas'"> (de {{ dataIni | date: 'dd/MM/yyyy' }} a {{ dataFim | date: 'dd/MM/yyyy' }})</span></span>
         <nb-tag-list style="margin: 5px;">
           <nb-tag status="basic" appearance="outline" text=" Todas "
             (click)="filtraSemana(0, true)"></nb-tag>
