@@ -27,9 +27,9 @@
     <!-- toolbar -->
     <div class="toolbar-wrapper">
       <div class="tag-wrapper">
-        <span>Semana selecionada: <b>{{semanaSelecionada}}</b> </span>
+        <span>Semana selecionada: <b>{{semanaSelecionada}}</b>  (de {{ dataIni | date: 'dd/MM/yyyy' }} a {{ dataFim | date: 'dd/MM/yyyy' }})</span>
         <nb-tag-list style="margin: 5px;">
-          <nb-tag status="default" appearance="filled" text="Todas"
+          <nb-tag status="basic" appearance="outline" text=" Todas "
             (click)="filtraSemana(0, true)"></nb-tag>
           <nb-tag status="danger" appearance="outline" *ngFor="let item of semanaListAtraso" text="Sem. {{item}}"
             (click)="filtraSemana(item, true)"></nb-tag>
@@ -81,9 +81,9 @@
                 <div class="c-body">
                   <span [ngClass]="[item.status_color]" class="c-status">{{ item.status }}</span>
                   <p style="font-size: 15px;"><b>Previsão de retorno:</b> {{ item.previsao }}</p>
-                  <div *ngIf="item.checked">
-                    <p class="nv-prev"><b>Nova previsão:</b> {{ item.novaprevisao }}</p>
-                    <p class="nv-prev"><b>Motivo atraso:</b> {{ item.motivo_atraso }}</p>
+                  <div class="nv-prev" *ngIf="item.checked">
+                    <p class="nv-prev-text"><b>Nova previsão:</b> {{ item.novaprevisao }}</p>
+                    <p class="nv-prev-text"><b>Motivo atraso:</b> {{ item.motivo_atraso }}</p>
                   </div>
                   <p><b>Ciclo:</b> {{ item.ciclo }} / <b>OP:</b> {{ item.op }}</p>
                   <!-- <p style="line-height: 0;"></p> -->
@@ -99,7 +99,7 @@
     </div>
 
     <ng-template #listaVazia>
-      <h4 style="text-align: center;">Nenhum item encontrado..</h4>
+      <h4 class="error-notfound">Nenhum item encontrado..</h4>
     </ng-template>
 
 

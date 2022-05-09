@@ -1,5 +1,99 @@
 <nb-layout>
   <nb-layout-column>
+
+    <!-- <div class="card-wrapper">
+      <nb-card class="cards" accent="info" *ngFor="let i of OpTipoList$ | async">
+        <nb-card-header style="cursor: pointer;" [routerLink]="['/pcp/descricao/', i.name]">{{ i.name }}</nb-card-header>
+        <nb-card-body>
+          <div class="total-wrapper">
+            <div class="total-value">
+              <div class="total-title">
+                Total OP's:
+              </div>
+              <div class="h6">
+                {{i.tipos}}
+              </div>
+            </div>
+            <div class="total-value">
+              <div class="total-title">
+                Total Peças:
+              </div>
+              <div class="h6">
+                {{i.qnt_pecas_tipo}}
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div class="description-wrapper">
+            <div class="description">
+              <span class="description-status-success">Em andamento:</span>
+              <div class="description-info">
+                <div class="description-value">
+                  <div class="description-title">
+                    OP's:
+                  </div>
+                  <div class="h6">
+                    {{i.qnt}}
+                  </div>
+                </div>
+                <div class="description-value">
+                  <div class="description-title">
+                    Peças:
+                  </div>
+                  <div class="h6">
+                    {{i.status}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="description">
+              <span class="description-status-danger">Em atraso</span>
+              <div class="description-info">
+                <div class="description-value">
+                  <div class="description-title">
+                    OP's:
+                  </div>
+                  <div class="h6">
+                    10
+                  </div>
+                </div>
+                <div class="description-value">
+                  <div class="description-title">
+                    Peças:
+                  </div>
+                  <div class="h6">
+                    100
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="description">
+              <span class="description-status-warning">Pendente</span>
+              <div class="description-info">
+                <div class="description-value">
+                  <div class="description-title">
+                    OP's:
+                  </div>
+                  <div class="h6">
+                    10
+                  </div>
+                </div>
+                <div class="description-value">
+                  <div class="description-title">
+                    Peças:
+                  </div>
+                  <div class="h6">
+                    100
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+    <hr>-->
+
     <div *ngIf="_loadingService.isLoading | async">
       <div class="card-wrapper">
         <div *ngFor="let i of color">
@@ -8,11 +102,11 @@
         </div>
       </div>
     </div>
-
     <div class="card-wrapper">
       <div *ngFor="let item of OpList$ | async">
-        <fc-card [loading]="false" [title]="item.name" [text_desc]="'Qnt. peças'" [qnt_atraso]="item.qnt_pecas!" [qnt_ops]="item.qnt" [c_status]="item.color!" [show_desc]="true"
-          [routerLink]="['/pcp/descricao/', item.name]" >
+        <fc-card [loading]="false" [title]="item.name" [text_desc]="'Qnt. peças'" [qnt_atraso]="item.qnt_pecas!"
+          [qnt_ops]="item.qnt" [c_status]="item.color!" [show_desc]="true"
+          [routerLink]="['/pcp/descricao/', item.name]">
         </fc-card>
       </div>
     </div>

@@ -9,6 +9,7 @@ import {
   NbIconModule,
   NbInputModule,
   NbLayoutModule,
+  NbSelectModule,
   NbSpinnerModule,
   NbTooltipModule
 } from '@nebular/theme';
@@ -34,6 +35,7 @@ import { PCPRoutingModule } from './pcp-routing.module';
     NbLayoutModule,
     NbIconModule,
     NbInputModule,
+    NbSelectModule,
     NbSpinnerModule,
     NbTooltipModule,
   ],

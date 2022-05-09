@@ -1,7 +1,76 @@
+@import "../../../../themes.scss";
+
+nb-layout-column {
+  padding: 0 !important;
+}
+
+.h6 {
+  font-size: 1.125rem;
+  font-family: Open Sans, sans-serif;
+  font-weight: 700;
+  line-height: 1.5rem;
+}
+
 .card-wrapper {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.cards {
+  margin: 10px;
+}
+
+.total-wrapper {
+  display: flex;
+  justify-content: space-around;
+
+  .total-value {
+    text-align: center;
+  }
+}
+
+.description-wrapper {
+  display: flex;
+
+  .description {
+    text-align: center;
+    padding: 5px;
+
+    .description-status-success {
+      font-weight: 600;
+      color: nb-theme(color-success-600);
+    }
+
+    .description-status-danger {
+      font-weight: 600;
+      color: nb-theme(color-danger-600);
+    }
+
+    .description-status-warning {
+      font-weight: 600;
+      color: nb-theme(color-warning-600);
+    }
+  }
+}
+
+.description-info {
+  display: flex;
+  // flex-direction: column;
+  width: 10em;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-top: 10px;
+
+  .description-title {
+    font-size: 12px;
+  }
+
+  .description-value {
+    margin: 0 10px;
+    text-align: center;
+  }
+
 }
 
 .filter-wrapper {

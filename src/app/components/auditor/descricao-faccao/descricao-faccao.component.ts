@@ -35,6 +35,8 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   qntOPs: number = 0;
   qntPecas: number = 0;
+  dataIni!: Date;
+  dataFim!: Date;
 
   semanaAtual: string = '0';
   semanaAtualNumber: number = 0;
@@ -268,7 +270,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     if (filterValue == '') {
       this.filtroAtivo = false;
       this.descOP$.next(this.descOP);
-      if (this.semanaSelecionada != "Todas") {
+      if (this.semanaSelecionada != 'Todas') {
         this.descOP$.next(
           this.descOP.filter(
             (_) => _.semana == parseInt(this.semanaSelecionada)
@@ -277,7 +279,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       }
     } else {
       this.filtroAtivo = true;
-      if (this.semanaSelecionada != "Todas") {
+      if (this.semanaSelecionada != 'Todas') {
         this.descOP$.next(
           this.descOP.filter(
             (_) =>
@@ -290,7 +292,13 @@ export class DescricaoFaccaoComponent implements OnInit {
           this.descOP.filter((_) => _.cod.includes(filterValue.toUpperCase()))
         );
       }
-      this.descOP$.subscribe((x) => (this.emptyList = !x.length));
+      this.descOP$.subscribe((x) => {
+        this.emptyList = !x.length;
+        let dia = new Date(x[0].previsao).getDay();
+        console.log(dia);
+        // this.dataIni = dia.getDay()
+        // this.dataFim =
+      });
     }
   }
 
@@ -298,7 +306,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.filtroAtivo = false;
     item.value = '';
     this.descOP$.next(this.descOP);
-    if(!!this.semanaSelecionada){
+    if (this.semanaSelecionada != 'Todas') {
       this.descOP$.next(
         this.descOP.filter((_) => _.semana == parseInt(this.semanaSelecionada))
       );
@@ -316,6 +324,9 @@ export class DescricaoFaccaoComponent implements OnInit {
     } else {
       this.descOP$.next(this.descOP.filter((_) => _.semana == event));
       this.descOP$.subscribe((x) => {
+        // pega primeiro e último dia da semana para mostrar na toolbar
+        this.getFirsAndLastWeekDay(x[0].previsao);
+
         this.emptyList = !x.length;
         this.qntOPs = x.length;
         let opsFiltered: any[] = [];
@@ -369,5 +380,21 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.filtraMaior(item.ref);
       this.changeDetectorRef.detectChanges();
     });
+  }
+
+  getFirsAndLastWeekDay(datePred: string) {
+    // pegar o primeiro e último dia da semana
+    let dia = datePred.substring(0, 2);
+    let mes = datePred.substring(3, 5);
+    let ano = datePred.substring(6, 10);
+    let newDate = new Date(mes + '/' + dia + '/' + ano);
+    let dataSemana = new Date(
+      newDate.getTime() - (3 * 86400000)
+    );
+
+    this.dataIni = new Date(
+      newDate.getTime() - (dataSemana.getDay() * 86400000)
+    );
+    this.dataFim = new Date(this.dataIni.getTime() + 6 * 86400000);
   }
 }
