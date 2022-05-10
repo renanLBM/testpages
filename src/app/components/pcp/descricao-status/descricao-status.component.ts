@@ -81,7 +81,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
       this.tituloStatus = this._route.snapshot.paramMap.get('status')!;
       this._setTitle.setTitle(this.tituloStatus);
 
-      if (this.tituloStatus == 'Geral') {
+      if (this.tituloStatus == 'Total') {
         this._opsService.getAllOPs().subscribe({
           next: (o) => {
             this.listFaccoes = o;
@@ -243,7 +243,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
 
   openAtraso(id: NumberInput, name: string) {
     let alteracoes;
-    if (this.tituloStatus == 'Geral') {
+    if (this.tituloStatus == 'Total') {
       alteracoes = this.motivoList.filter((m) => m.CD_LOCAL == id);
     } else {
       alteracoes = this.motivoList.filter(

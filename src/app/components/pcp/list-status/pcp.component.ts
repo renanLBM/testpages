@@ -86,7 +86,6 @@ export class PcpComponent implements OnInit {
         });
 
         this.uniqTipo.map((s: string, index: number) => {
-          console.log(s);
           this.OpTipoList.push(
             ...[
               {
@@ -120,7 +119,6 @@ export class PcpComponent implements OnInit {
           a.tipos! < b.tipos! ? 1 : b.tipos! < a.tipos! ? -1 : 0
         );
 
-        console.log(this.OpTipoList);
         this.OpTipoList$.next(this.OpTipoList);
         this.OpList$.next(this.OpList);
 
