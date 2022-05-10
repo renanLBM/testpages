@@ -79,7 +79,7 @@ export class PcpDescOpsComponent implements OnInit {
       this.facIdStatus = this._route.snapshot.paramMap.get('faccaoid')!;
       this._setTitle.setTitle(this.tituloStatus);
 
-      if (this.tituloStatus == 'Geral') {
+      if (this.tituloStatus == 'Total') {
         this._opsService.getAllOPs().subscribe({
           next: (list) => {
             this.getOPS(list);
