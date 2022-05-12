@@ -110,45 +110,47 @@ export class PcpDescOpsComponent implements OnInit {
   }
 
   getOPS(thisOPs: OPs) {
-    this.faccaoList = thisOPs.filter(
-      (x) => x.CD_LOCAL == parseInt(this.facIdStatus)
-    );
-    this.tituloLocal = this.faccaoList[0].DS_LOCAL;
-
-    this.faccaoList.map((x) => {
-      let atraso!: Motivo;
-      if (this.motivoList.toString() != 'error') {
-        atraso = this.motivoList.filter(
-          (_) =>
-            _.NR_CICLO + '-' + _.NR_OP + '-' + _.CD_REFERENCIA ==
-            x.NR_CICLO + '-' + x.NR_OP + '-' + x.CD_REFERENCIA
-        )[0];
-      }
-      let dtEnt = new Date(x.DT_ENTRADA);
-      let hj = new Date();
-
-      let dtPrev = new Date(x.PREV_RETORNO);
-      x.css_class = 'andamento';
-      if (dtPrev < hj) {
-        x.css_class = 'atraso';
-      }
-
-      if (!x.DS_COORDENADO) {
-        x.DS_COORDENADO = x.DS_GRUPO;
-      }
-      x['dias_faccao'] = Math.floor(
-        (hj.getTime() - dtEnt.getTime()) / (24 * 3600 * 1000)
+    if(thisOPs){
+      this.faccaoList = thisOPs.filter(
+        (x) => x.CD_LOCAL == parseInt(this.facIdStatus)
       );
+      this.tituloLocal = this.faccaoList[0].DS_LOCAL;
 
-      //  verifica se teve atraso para essa OP
-      if (atraso) {
-        x['motivo_atraso'] = atraso.MOTIVO;
-        x['nova_previsao'] = atraso.NOVA_PREVISAO;
-      } else {
-        x['motivo_atraso'] = '-';
-        x['nova_previsao'] = '-';
-      }
-    });
+      this.faccaoList.map((x) => {
+        let atraso!: Motivo;
+        if (this.motivoList.toString() != 'error') {
+          atraso = this.motivoList.filter(
+            (_) =>
+              _.NR_CICLO + '-' + _.NR_OP + '-' + _.CD_REFERENCIA ==
+              x.NR_CICLO + '-' + x.NR_OP + '-' + x.CD_REFERENCIA
+          )[0];
+        }
+        let dtEnt = new Date(x.DT_ENTRADA);
+        let hj = new Date();
+
+        let dtPrev = new Date(x.PREV_RETORNO);
+        x.css_class = 'andamento';
+        if (dtPrev < hj) {
+          x.css_class = 'atraso';
+        }
+
+        if (!x.DS_COORDENADO) {
+          x.DS_COORDENADO = x.DS_GRUPO;
+        }
+        x['dias_faccao'] = Math.floor(
+          (hj.getTime() - dtEnt.getTime()) / (24 * 3600 * 1000)
+        );
+
+        //  verifica se teve atraso para essa OP
+        if (atraso) {
+          x['motivo_atraso'] = atraso.MOTIVO;
+          x['nova_previsao'] = atraso.NOVA_PREVISAO;
+        } else {
+          x['motivo_atraso'] = '-';
+          x['nova_previsao'] = '-';
+        }
+      });
+    }
   }
 
   voltar() {
