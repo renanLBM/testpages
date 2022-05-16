@@ -11,6 +11,7 @@ export interface Motivo {
   MOTIVO: string,
   USUARIO: string,
   DT_INSERIDO: string,
+  cod: string,
   latitude?: number,
   longitude?: number,
 }

@@ -15,7 +15,6 @@ import { LanguagePtBr } from 'src/app/models/ptBr';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsService } from 'src/app/services/ops.service';
-import { DialogTableOpComponent } from 'src/app/shared/components/dialog-table-op/dialog-table-op.component';
 import { DialogTableComponent } from 'src/app/shared/components/dialog-table/dialog-table.component';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
@@ -36,6 +35,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   color: string[] = ['info', 'warning', 'primary', 'success'];
 
   listFaccoes: OPs = [];
+  codigoList: any[] = [];
   faccaoList: any[] = [];
   motivoList: Motivos = [];
   faccao: Faccoes = [];
@@ -122,9 +122,11 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
 
             uniq.map((f: string, index: number) => {
               id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
+              this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
+
 
               if (this.motivoList.toString() != 'error') {
-                motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
+                motivos = this.motivoList.filter((m) => this.codigoList.includes(m.cod) && m.CD_LOCAL == id);
               }
 
               this.faccao.push(
@@ -244,10 +246,10 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   openAtraso(id: NumberInput, name: string) {
     let alteracoes;
     if (this.tituloStatus == 'Total') {
-      alteracoes = this.motivoList.filter((m) => m.CD_LOCAL == id);
+      alteracoes = this.motivoList.filter((m) => this.codigoList.includes(m.cod) && m.CD_LOCAL == id);
     } else {
       alteracoes = this.motivoList.filter(
-        (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
+        (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus && this.codigoList.includes(m.cod)
       );
     }
     this.NbDdialogService.open(DialogTableComponent, {
@@ -259,22 +261,22 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     });
   }
 
-  openOps(id: NumberInput, name: string) {
-    let alteracoes = this.motivoList.filter(
-      (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
-    );
-    let ops = this.listFaccoes.filter(
-      (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
-    );
-    this.NbDdialogService.open(DialogTableOpComponent, {
-      context: {
-        ops: ops,
-        motivos: alteracoes,
-        status: this.tituloStatus,
-        name: name,
-      },
-    });
-  }
+  // openOps(id: NumberInput, name: string) {
+  //   let alteracoes = this.motivoList.filter(
+  //     (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
+  //   );
+  //   let ops = this.listFaccoes.filter(
+  //     (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
+  //   );
+  //   this.NbDdialogService.open(DialogTableOpComponent, {
+  //     context: {
+  //       ops: ops,
+  //       motivos: alteracoes,
+  //       status: this.tituloStatus,
+  //       name: name,
+  //     },
+  //   });
+  // }
 
   ngOnDestroy(): void {
     // Do not forget to unsubscribe the event

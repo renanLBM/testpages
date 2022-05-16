@@ -1,6 +1,7 @@
 import { NbComponentStatus } from "@nebular/theme";
 
 export interface OP {
+  cod?: string,
   NR_CICLO: number,
   NR_OP: number,
   DS_MARCA: string,

@@ -73,6 +73,7 @@ export class DialogComponent implements OnInit {
     this.user = JSON.parse(this._userService.getSession()).nome;
 
     this.novoMotivo = {
+      cod: '',
       CD_LOCAL: this.prevOP.cd_local,
       NR_CICLO: this.prevOP.ciclo!,
       NR_OP: this.prevOP.op!,
@@ -126,6 +127,7 @@ export class DialogComponent implements OnInit {
     this.user = JSON.parse(this._userService.getSession()).nome;
 
     this.novoMotivo = {
+      cod: '',
       CD_LOCAL: this.prevOP.cd_local,
       NR_CICLO: this.prevOP.ciclo!,
       NR_OP: this.prevOP.op!,
