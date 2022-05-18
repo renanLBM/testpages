@@ -11,9 +11,11 @@ export interface Motivo {
   MOTIVO: string,
   USUARIO: string,
   DT_INSERIDO: string,
+  Status_Atual?: string,
   cod: string,
   latitude?: number,
   longitude?: number,
+  Valida?: string
 }
 
 export type Motivos = Array<Motivo>;

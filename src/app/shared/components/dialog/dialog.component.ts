@@ -12,6 +12,8 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./dialog.component.scss'],
 })
 export class DialogComponent implements OnInit {
+  loading = false;
+
   latitude = 0;
   longitude = 0;
   retorno!: number;
@@ -23,6 +25,7 @@ export class DialogComponent implements OnInit {
     'Atraso da facção',
     'Complexidade alta',
     'Conserto',
+    'Modelagem',
     'Reposição de corte',
     'Reprovado na inspeção',
   ];
@@ -50,6 +53,8 @@ export class DialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.loading = false;
+
     if(navigator.geolocation){
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -67,10 +72,12 @@ export class DialogComponent implements OnInit {
   }
 
   remove() {
+    this.loading = true;
+
     this.prev = '';
     this.removed = true;
     this.i_motivo = '';
-    this.user = JSON.parse(this._userService.getSession()).nome;
+    this.user = this._userService.getSession().nome;
 
     this.novoMotivo = {
       cod: '',
@@ -105,6 +112,8 @@ export class DialogComponent implements OnInit {
   }
 
   cancel() {
+    this.loading = true;
+
     this.dialogRef.close({
       prev: this.prev,
       motivo: this.i_motivo,
@@ -124,7 +133,7 @@ export class DialogComponent implements OnInit {
       novaData = this.prev;
     }
 
-    this.user = JSON.parse(this._userService.getSession()).nome;
+    this.user = this._userService.getSession().nome;
 
     this.novoMotivo = {
       cod: '',
@@ -144,6 +153,7 @@ export class DialogComponent implements OnInit {
     };
 
     if (this.novoMotivo.MOTIVO && this.novoMotivo.NOVA_PREVISAO) {
+      this.loading = true;
       this._auditorService.setMotivo(this.novoMotivo).subscribe({
         next: (ret) => {
           this.dialogRef.close({

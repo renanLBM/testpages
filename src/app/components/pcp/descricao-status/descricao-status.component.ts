@@ -197,7 +197,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
               id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
               if (this.motivoList.toString() != 'error') {
                 motivos = this.motivoList.filter(
-                  (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus
+                  (m) => m.CD_LOCAL == id && m.Status_Atual == this.tituloStatus
                 );
               }
 
@@ -249,7 +249,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
       alteracoes = this.motivoList.filter((m) => this.codigoList.includes(m.cod) && m.CD_LOCAL == id);
     } else {
       alteracoes = this.motivoList.filter(
-        (m) => m.CD_LOCAL == id && m.Status == this.tituloStatus && this.codigoList.includes(m.cod)
+        (m) => m.CD_LOCAL == id && m.Status_Atual == this.tituloStatus && m.Valida == "NÃO AJUSTADO"
       );
     }
     this.NbDdialogService.open(DialogTableComponent, {

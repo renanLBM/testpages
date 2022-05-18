@@ -117,6 +117,9 @@ export class PcpDescOpsComponent implements OnInit {
       this.tituloLocal = this.faccaoList[0].DS_LOCAL;
 
       this.faccaoList.map((x) => {
+        x.DT_ENTRADA = `${x.DT_ENTRADA.substring(6,10)}-${x.DT_ENTRADA.substring(3,5)}-${x.DT_ENTRADA.substring(0,2)}  04:00:00`;
+        x.PREV_RETORNO = `${x.PREV_RETORNO.substring(6,10)}-${x.PREV_RETORNO.substring(3,5)}-${x.PREV_RETORNO.substring(0,2)} 04:00:00`;
+
         let atraso!: Motivo;
         if (this.motivoList.toString() != 'error') {
           atraso = this.motivoList.filter(
@@ -125,10 +128,12 @@ export class PcpDescOpsComponent implements OnInit {
               x.NR_CICLO + '-' + x.NR_OP + '-' + x.CD_REFERENCIA
           )[0];
         }
-        let dtEnt = new Date(x.DT_ENTRADA);
+
         let hj = new Date();
 
+        let dataEntrada = new Date(x.DT_ENTRADA);
         let dtPrev = new Date(x.PREV_RETORNO);
+
         x.css_class = 'andamento';
         if (dtPrev < hj) {
           x.css_class = 'atraso';
@@ -138,7 +143,7 @@ export class PcpDescOpsComponent implements OnInit {
           x.DS_COORDENADO = x.DS_GRUPO;
         }
         x['dias_faccao'] = Math.floor(
-          (hj.getTime() - dtEnt.getTime()) / (24 * 3600 * 1000)
+          (hj.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
         );
 
         //  verifica se teve atraso para essa OP

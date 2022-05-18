@@ -29,6 +29,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { DialogTableComponent } from './components/dialog-table/dialog-table.component';
 import { DataTablesModule } from 'angular-datatables';
 import { DialogTableOpComponent } from './components/dialog-table-op/dialog-table-op.component';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { DialogTableOpComponent } from './components/dialog-table-op/dialog-tabl
     HeaderComponent,
     LoginComponent,
     NotFoundComponent,
+    HomeComponent,
   ],
   imports: [
     RouterModule,

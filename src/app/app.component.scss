@@ -1,0 +1,11 @@
+@import "../themes.scss";
+
+nb-layout-column {
+  margin: 0 !important;
+  padding: 0 !important;
+
+}
+
+nb-card {
+  background-color: nb-theme(background-color) !important;
+}

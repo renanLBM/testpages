@@ -28,7 +28,7 @@ export class UserService {
         { observe: 'response' }
       )
       .pipe(
-        tap((res) => {
+        tap((res: any) => {
           this.setUser(res.body);
           this.logged.next(true);
         })
@@ -39,11 +39,13 @@ export class UserService {
     return this.usuarioSubject.asObservable();
   }
 
-  setUser(userB: any) {
-    this.usuarioSubject.next(userB);
-    let userF = JSON.parse(userB);
-    this.nivel = userF.nivel;
-    this.setSession();
+  setUser(userB: string) {
+    if(userB){
+      let userF: User = JSON.parse(userB);
+      this.usuarioSubject.next(userF);
+      this.nivel = userF.nivel;
+      this.setSession();
+    }
   }
 
   setSession() {
@@ -52,7 +54,7 @@ export class UserService {
     });
   }
 
-  getSession() {
+  getSession(): User {
     const loggedUser = sessionStorage.getItem('user');
     return JSON.parse(loggedUser!);
   }
@@ -67,9 +69,8 @@ export class UserService {
 
   getNivel(): number {
     try{
-      let userS: User = JSON.parse(this.getSession());
+      let userS: User = this.getSession();
       this.nivel = userS.nivel;
-      return this.nivel;
     }catch (err) {
       this.nivel = 0;
     }

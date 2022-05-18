@@ -7,10 +7,12 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import {
   NbDialogService,
+  NbMenuService,
   NbWindowControlButtonsConfig,
   NbWindowService,
 } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { descOP } from 'src/app/models/descOP';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
@@ -28,6 +30,8 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoFaccaoComponent implements OnInit {
+  counter: number = 0;
+  counterClick: number = 0;
   defaultImage = '../../../../assets/not-found.png';
   loadingError: boolean = false;
   emptyList: boolean = false;
@@ -56,6 +60,8 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
 
+  items = [{ title: 'Profile' }, { title: 'Logout' }];
+
   constructor(
     private _setTitle: SetTitleServiceService,
     public _loadingService: LoadingService,
@@ -64,7 +70,8 @@ export class DescricaoFaccaoComponent implements OnInit {
     private _route: ActivatedRoute,
     private NbDdialogService: NbDialogService,
     private windowService: NbWindowService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private nbMenuService: NbMenuService
   ) {}
 
   ngOnInit(): void {
@@ -89,8 +96,23 @@ export class DescricaoFaccaoComponent implements OnInit {
       this._opsService.getOpById(id).subscribe({
         next: (x) => {
           x.sort((a, b) => {
-            let x = new Date(a.PREV_RETORNO);
-            let y = new Date(b.PREV_RETORNO);
+            let dataRetornoA = `${a.PREV_RETORNO.substring(
+              6,
+              10
+            )}-${a.PREV_RETORNO.substring(3, 5)}-${a.PREV_RETORNO.substring(
+              0,
+              2
+            )}`;
+            let dataRetornoB = `${b.PREV_RETORNO.substring(
+              6,
+              10
+            )}-${b.PREV_RETORNO.substring(3, 5)}-${b.PREV_RETORNO.substring(
+              0,
+              2
+            )}`;
+
+            let x = new Date(dataRetornoA);
+            let y = new Date(dataRetornoB);
 
             if (x > y) {
               return 1;
@@ -104,7 +126,15 @@ export class DescricaoFaccaoComponent implements OnInit {
           let imgListAll: string[] = [];
           let maior;
 
-          x.forEach((i) => {
+          x.map((i) => {
+            console.log('antes', i.PREV_RETORNO);
+            i.DT_ENTRADA = `${i.DT_ENTRADA.substring(6, 10)}-${i.DT_ENTRADA.substring(3, 5)}-${i.DT_ENTRADA.substring(0, 2)} 04:00:00`;
+            i.PREV_RETORNO = `${i.PREV_RETORNO.substring(6, 10)}-${i.PREV_RETORNO.substring(3, 5)}-${i.PREV_RETORNO.substring(0, 2)} 04:00:00`;
+            console.log(
+              'depois',
+              new Date(i.PREV_RETORNO).toLocaleString('pt-Br')
+            );
+
             let newImage = new Image();
             newImage.src =
               this.imgUrl +
@@ -134,12 +164,12 @@ export class DescricaoFaccaoComponent implements OnInit {
 
             maior = this.filtraMaior(i.CD_REFERENCIA);
 
-            let prev = new Date(i.PREV_RETORNO)
-              .toLocaleString('pt-br')
-              .substring(0, 10);
+            let prevdate = new Date(i.PREV_RETORNO);
+            let prev = prevdate
+              ? prevdate.toLocaleString('pt-br').substring(0, 10)
+              : '01/01/2001';
 
             // pega semana da op
-            let prevdate = new Date(i.PREV_RETORNO);
             let oneJan = new Date(prevdate.getFullYear(), 0, 1);
             let numberOfDays = Math.floor(
               (prevdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000)
@@ -220,6 +250,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
           let title = this.descOP[0].local
             .replace('COSTURA', '')
+            .replace('CONSERTO', '')
             .replace('ESTAMPARIA', '')
             .replace('TERCEIROS', '');
           this._setTitle.setTitle(title);
@@ -344,6 +375,26 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
   }
 
+  openMenu(item: descOP) {
+    // dropdown menu
+    this.nbMenuService
+      .onItemClick()
+      .pipe(
+        filter(({ tag }) => tag === 'auditor-list'),
+        map(({ item: { title } }) => title)
+      )
+      .subscribe((title) => {
+        this.counterClick++;
+        console.log(this.counter, this.counterClick);
+        if (this.counter == this.counterClick) {
+          if (title == 'Profile') {
+            this.open(item);
+            // console.log(item.ref);
+          }
+        }
+      });
+  }
+
   openWindow(ref: string) {
     const buttonsConfig: NbWindowControlButtonsConfig = {
       minimize: false,
@@ -360,6 +411,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   open(item: descOP) {
+    this.counter++;
     this.NbDdialogService.open(DialogComponent, {
       context: {
         prevOP: item,
@@ -380,6 +432,8 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.filtraMaior(item.ref);
       this.changeDetectorRef.detectChanges();
     });
+
+    this.counter == 0;
   }
 
   getFirsAndLastWeekDay(datePred: string) {
@@ -388,13 +442,9 @@ export class DescricaoFaccaoComponent implements OnInit {
     let mes = datePred.substring(3, 5);
     let ano = datePred.substring(6, 10);
     let newDate = new Date(mes + '/' + dia + '/' + ano);
-    let dataSemana = new Date(
-      newDate.getTime() - (3 * 86400000)
-    );
+    let dataSemana = new Date(newDate.getTime() - 3 * 86400000);
 
-    this.dataIni = new Date(
-      newDate.getTime() - (dataSemana.getDay() * 86400000)
-    );
+    this.dataIni = new Date(newDate.getTime() - dataSemana.getDay() * 86400000);
     this.dataFim = new Date(this.dataIni.getTime() + 6 * 86400000);
   }
 }

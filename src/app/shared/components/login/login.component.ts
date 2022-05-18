@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this._setTitle.setTitle('FacControl - Acessar');
+    this._setTitle.setTitle('FacçãoControl - Acessar');
   }
 
   login() {
@@ -37,7 +37,6 @@ export class LoginComponent implements OnInit {
         this._setTitle.setTitle('FacControl - Acessar');
         this._router.navigate(['login']);
         alert('Erro de login ou senha!');
-        console.log('error log', err);
       },
     });
   }

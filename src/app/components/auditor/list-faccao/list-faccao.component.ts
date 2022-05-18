@@ -30,7 +30,7 @@ export class ListFaccaoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this._setTitle.setTitle('FacControl - Auditor');
+    this._setTitle.setTitle('Auditor');
     this._opsService.getAllOPs().subscribe({
       next: (list) => {
         this.listFaccoes = list;

@@ -8,7 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
-import { NbLayoutModule, NbThemeModule } from '@nebular/theme';
+import { NbCardModule, NbLayoutModule, NbMenuModule, NbRouteTabsetModule, NbTabsetModule, NbThemeModule } from '@nebular/theme';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,7 +28,11 @@ registerLocaleData(localePt);
     ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    NbCardModule,
+    NbTabsetModule,
+    NbRouteTabsetModule,
     NbEvaIconsModule,
+    NbMenuModule.forRoot(),
     NbThemeModule.forRoot({ name: 'default' }),
     NbLayoutModule,
     SharedComponentsModule,
