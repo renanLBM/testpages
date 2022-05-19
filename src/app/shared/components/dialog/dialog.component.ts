@@ -19,7 +19,7 @@ export class DialogComponent implements OnInit {
   retorno!: number;
 
   user = '';
-  motivos = [
+  motivosAtraso = [
     'Alterado sequencia de produção',
     'Atraso de aviamento',
     'Atraso da facção',
@@ -36,6 +36,7 @@ export class DialogComponent implements OnInit {
   @Input() prevOP!: descOP;
   @Input() prev: string = '';
   @Input() i_motivo: string = '';
+  @Input() tipo: string = '';
 
   dialogForm = new FormGroup({
     motivoControl: new FormControl(),
@@ -123,14 +124,29 @@ export class DialogComponent implements OnInit {
 
   submit() {
     let nMotivo = this.dialogForm.value;
-    let novaData = '';
+
+    let dataInserida = new Date(nMotivo.dtControl);
+
+    if(dataInserida.getTime() < (new Date().getTime())){
+      this.err = true;
+      return;
+    }
+
+    let novaDataForm = '';
+    let novoMotivoForm = '';
 
     if (nMotivo.dtControl) {
-      novaData = new Date(nMotivo.dtControl)
+      novaDataForm = dataInserida
         .toLocaleString('pt-Br')
         .substring(0, 10);
     } else {
-      novaData = this.prev;
+      novaDataForm = this.prev;
+    }
+
+    if(this.tipo == "Adiantamento") {
+      novoMotivoForm = "Adiantamento";
+    }else {
+      novoMotivoForm = this.motivosAtraso[nMotivo.motivoControl];
     }
 
     this.user = this._userService.getSession().nome;
@@ -144,8 +160,8 @@ export class DialogComponent implements OnInit {
       PREV_RETORNO: this.prevOP.previsao,
       QT_OP: this.prevOP.qnt!,
       Status: this.prevOP.status!,
-      NOVA_PREVISAO: novaData,
-      MOTIVO: this.motivos[nMotivo.motivoControl],
+      NOVA_PREVISAO: novaDataForm,
+      MOTIVO: novoMotivoForm,
       USUARIO: this.user,
       DT_INSERIDO: new Date().toLocaleString('pt-Br'),
       latitude: this.latitude,
@@ -157,7 +173,7 @@ export class DialogComponent implements OnInit {
       this._auditorService.setMotivo(this.novoMotivo).subscribe({
         next: (ret) => {
           this.dialogRef.close({
-            prev: novaData,
+            prev: novaDataForm,
             motivo: this.novoMotivo.MOTIVO,
             removed: this.removed,
           });

@@ -105,17 +105,36 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
               prev[cur.local] = (prev[cur.local] || 0) + 1;
               return prev;
             }, {});
+
+            let qnt_ops_total = 0;
+            for (var key in qnt_ops) {
+              qnt_ops_total += qnt_ops[key];
+            }
+
             // conta peças
             let qnt_pecas = this.faccaoList.reduce((prev, cur) => {
               prev[cur.local] = (prev[cur.local] || 0) + parseInt(cur.qnt_p);
               return prev;
             }, {});
+
+            let qnt_pecas_total = 0;
+            for (var key in qnt_pecas) {
+              qnt_pecas_total += qnt_pecas[key];
+            }
+
             // conta peças em atraso
             let pecas_at = this.faccaoList.reduce((prev, cur) => {
               prev[cur.local + '-' + cur.status] =
                 (prev[cur.local + '-' + cur.status] || 0) + parseInt(cur.qnt_p);
               return prev;
             }, {});
+
+            let pecas_at_total = 0;
+            for (var key in pecas_at) {
+              if (key.includes('-Em atraso')) {
+                pecas_at_total += pecas_at[key];
+              }
+            }
 
             let id = 0;
             let motivos = [];
@@ -124,9 +143,10 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
               id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
               this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
 
-
               if (this.motivoList.toString() != 'error') {
-                motivos = this.motivoList.filter((m) => this.codigoList.includes(m.cod) && m.CD_LOCAL == id);
+                motivos = this.motivoList.filter(
+                  (m) => this.codigoList.includes(m.cod) && m.CD_LOCAL == id
+                );
               }
 
               this.faccao.push(
@@ -149,6 +169,19 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                   },
                 ]
               );
+            });
+
+            this.faccao.push({
+              id: 99999,
+              name: 'Geral',
+              qnt: qnt_ops_total,
+              qnt_pecas: qnt_pecas_total.toLocaleString('pt-Br'),
+              qnt_atraso: this.listFaccoes
+                .filter((op) => op.Status == 'Em atraso')
+                .length.toLocaleString(),
+              pecas_atraso: pecas_at_total.toLocaleString('pt-Br'),
+              color: '',
+              alteracoes: this.motivoList.length,
             });
 
             this.faccao
@@ -185,10 +218,19 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
               prev[cur.local] = (prev[cur.local] || 0) + 1;
               return prev;
             }, {});
+            let qnt_ops_total = 0;
+            for (var key in qnt_ops) {
+              qnt_ops_total += qnt_ops[key];
+            }
+
             let qnt_pecas = this.faccaoList.reduce((prev, cur) => {
               prev[cur.local] = (prev[cur.local] || 0) + parseInt(cur.qnt_p);
               return prev;
             }, {});
+            let qnt_pecas_total = 0;
+            for (var key in qnt_pecas) {
+              qnt_pecas_total += qnt_pecas[key];
+            }
 
             let id = 0;
             let motivos = [];
@@ -220,6 +262,17 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
               );
             });
 
+            this.faccao.push({
+              id: 99999,
+              name: 'Geral',
+              qnt: qnt_ops_total,
+              qnt_pecas: qnt_pecas_total.toLocaleString('pt-Br'),
+              color: '',
+              alteracoes: this.motivoList.filter(
+                (m) => m.Status_Atual == this.tituloStatus
+              ).length,
+            });
+
             this.faccao
               .sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0))
               .map(
@@ -246,11 +299,30 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   openAtraso(id: NumberInput, name: string) {
     let alteracoes;
     if (this.tituloStatus == 'Total') {
-      alteracoes = this.motivoList.filter((m) => this.codigoList.includes(m.cod) && m.CD_LOCAL == id);
+      if (id == 99999) {
+        alteracoes = this.motivoList.filter((m) =>
+          this.codigoList.includes(m.cod)
+        );
+      } else {
+        alteracoes = this.motivoList.filter(
+          (m) => this.codigoList.includes(m.cod) && m.CD_LOCAL == id
+        );
+      }
     } else {
-      alteracoes = this.motivoList.filter(
-        (m) => m.CD_LOCAL == id && m.Status_Atual == this.tituloStatus && m.Valida == "NÃO AJUSTADO"
-      );
+      if (id == 99999) {
+        alteracoes = this.motivoList.filter(
+          (m) =>
+            m.Status_Atual == this.tituloStatus &&
+            m.Valida == 'NÃO AJUSTADO'
+        );
+      } else {
+        alteracoes = this.motivoList.filter(
+          (m) =>
+            m.CD_LOCAL == id &&
+            m.Status_Atual == this.tituloStatus &&
+            m.Valida == 'NÃO AJUSTADO'
+        );
+      }
     }
     this.NbDdialogService.open(DialogTableComponent, {
       context: {

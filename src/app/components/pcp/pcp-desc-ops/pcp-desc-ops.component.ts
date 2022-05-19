@@ -39,11 +39,11 @@ export class PcpDescOpsComponent implements OnInit {
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
 
   constructor(
+    public _loadingService: LoadingService,
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
     private _auditorService: AuditorService,
     private _route: ActivatedRoute,
-    public _loadingService: LoadingService,
     private _location: Location
   ) {}
 
@@ -59,7 +59,7 @@ export class PcpDescOpsComponent implements OnInit {
         pageLength: 15,
         responsive: true,
         autoWidth: true,
-        order: [[3, 'asc']],
+        order: [[5, 'asc']],
         dom: 'Bfrtip',
         buttons: [
           {
@@ -110,15 +110,64 @@ export class PcpDescOpsComponent implements OnInit {
   }
 
   getOPS(thisOPs: OPs) {
-    if(thisOPs){
+    if (this.facIdStatus == '99999') {
+      this.faccaoList = thisOPs;
+      this.tituloLocal = "Geral";
+
+      this.faccaoList.map((x) => {
+        x.DS_LOCAL = x.DS_LOCAL
+        .replace('COSTURA ', '')
+        .replace('CONSERTO ', '')
+        .replace('ESTAMPARIA ', '')
+        .replace('TERCEIROS ', '');
+
+        x.DT_ENTRADA = `${x.DT_ENTRADA.substring(6, 10)}-${x.DT_ENTRADA.substring(3, 5)}-${x.DT_ENTRADA.substring(0, 2)}  04:00:00`;
+        x.PREV_RETORNO = `${x.PREV_RETORNO.substring(6, 10)}-${x.PREV_RETORNO.substring(3, 5)}-${x.PREV_RETORNO.substring(0, 2)} 04:00:00`;
+
+        let atraso!: Motivo;
+        if (this.motivoList.toString() != 'error') {
+          atraso = this.motivoList.filter(
+            (_) =>
+              _.NR_CICLO + '-' + _.NR_OP + '-' + _.CD_REFERENCIA ==
+              x.NR_CICLO + '-' + x.NR_OP + '-' + x.CD_REFERENCIA
+          )[0];
+        }
+
+        let hj = new Date();
+
+        let dataEntrada = new Date(x.DT_ENTRADA);
+        let dtPrev = new Date(x.PREV_RETORNO);
+
+        x.css_class = 'andamento';
+        if (dtPrev < hj) {
+          x.css_class = 'atraso';
+        }
+
+        if (!x.DS_COORDENADO) {
+          x.DS_COORDENADO = x.DS_GRUPO;
+        }
+        x['dias_faccao'] = Math.floor(
+          (hj.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
+        );
+
+        //  verifica se teve atraso para essa OP
+        if (atraso) {
+          x['motivo_atraso'] = atraso.MOTIVO;
+          x['nova_previsao'] = atraso.NOVA_PREVISAO;
+        } else {
+          x['motivo_atraso'] = '-';
+          x['nova_previsao'] = '-';
+        }
+      });
+    } else if (thisOPs) {
       this.faccaoList = thisOPs.filter(
         (x) => x.CD_LOCAL == parseInt(this.facIdStatus)
       );
       this.tituloLocal = this.faccaoList[0].DS_LOCAL;
 
       this.faccaoList.map((x) => {
-        x.DT_ENTRADA = `${x.DT_ENTRADA.substring(6,10)}-${x.DT_ENTRADA.substring(3,5)}-${x.DT_ENTRADA.substring(0,2)}  04:00:00`;
-        x.PREV_RETORNO = `${x.PREV_RETORNO.substring(6,10)}-${x.PREV_RETORNO.substring(3,5)}-${x.PREV_RETORNO.substring(0,2)} 04:00:00`;
+        x.DT_ENTRADA = `${x.DT_ENTRADA.substring(6, 10)}-${x.DT_ENTRADA.substring(3, 5)}-${x.DT_ENTRADA.substring(0, 2)}  04:00:00`;
+        x.PREV_RETORNO = `${x.PREV_RETORNO.substring(6, 10)}-${x.PREV_RETORNO.substring(3, 5)}-${x.PREV_RETORNO.substring(0, 2)} 04:00:00`;
 
         let atraso!: Motivo;
         if (this.motivoList.toString() != 'error') {

@@ -31,7 +31,6 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
 })
 export class DescricaoFaccaoComponent implements OnInit {
   counter: number = 0;
-  counterClick: number = 0;
   defaultImage = '../../../../assets/not-found.png';
   loadingError: boolean = false;
   emptyList: boolean = false;
@@ -60,7 +59,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
 
-  items = [{ title: 'Profile' }, { title: 'Logout' }];
+  items = [{ title: 'Atraso' }, { title: 'Adiantamento' }];
 
   constructor(
     private _setTitle: SetTitleServiceService,
@@ -127,13 +126,20 @@ export class DescricaoFaccaoComponent implements OnInit {
           let maior;
 
           x.map((i) => {
-            console.log('antes', i.PREV_RETORNO);
-            i.DT_ENTRADA = `${i.DT_ENTRADA.substring(6, 10)}-${i.DT_ENTRADA.substring(3, 5)}-${i.DT_ENTRADA.substring(0, 2)} 04:00:00`;
-            i.PREV_RETORNO = `${i.PREV_RETORNO.substring(6, 10)}-${i.PREV_RETORNO.substring(3, 5)}-${i.PREV_RETORNO.substring(0, 2)} 04:00:00`;
-            console.log(
-              'depois',
-              new Date(i.PREV_RETORNO).toLocaleString('pt-Br')
-            );
+            i.DT_ENTRADA = `${i.DT_ENTRADA.substring(
+              6,
+              10
+            )}-${i.DT_ENTRADA.substring(3, 5)}-${i.DT_ENTRADA.substring(
+              0,
+              2
+            )} 04:00:00`;
+            i.PREV_RETORNO = `${i.PREV_RETORNO.substring(
+              6,
+              10
+            )}-${i.PREV_RETORNO.substring(3, 5)}-${i.PREV_RETORNO.substring(
+              0,
+              2
+            )} 04:00:00`;
 
             let newImage = new Image();
             newImage.src =
@@ -326,7 +332,6 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.descOP$.subscribe((x) => {
         this.emptyList = !x.length;
         let dia = new Date(x[0].previsao).getDay();
-        console.log(dia);
         // this.dataIni = dia.getDay()
         // this.dataFim =
       });
@@ -375,26 +380,6 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
   }
 
-  openMenu(item: descOP) {
-    // dropdown menu
-    this.nbMenuService
-      .onItemClick()
-      .pipe(
-        filter(({ tag }) => tag === 'auditor-list'),
-        map(({ item: { title } }) => title)
-      )
-      .subscribe((title) => {
-        this.counterClick++;
-        console.log(this.counter, this.counterClick);
-        if (this.counter == this.counterClick) {
-          if (title == 'Profile') {
-            this.open(item);
-            // console.log(item.ref);
-          }
-        }
-      });
-  }
-
   openWindow(ref: string) {
     const buttonsConfig: NbWindowControlButtonsConfig = {
       minimize: false,
@@ -410,13 +395,31 @@ export class DescricaoFaccaoComponent implements OnInit {
     });
   }
 
-  open(item: descOP) {
+  // dropdown menu
+  openMenu(item: descOP) {
+    this.nbMenuService
+      .onItemClick()
+      .pipe(
+        filter(({ tag }) => tag === 'auditor-list'),
+        map(({ item: { title } }) => title)
+      )
+      .subscribe((title) => {
+        this.counter++;
+        if (this.counter == 1) {
+          this.open(item, title);
+        }
+      });
+    this.counter = 0;
+  }
+
+  open(item: descOP, tipo: string) {
     this.counter++;
     this.NbDdialogService.open(DialogComponent, {
       context: {
         prevOP: item,
         prev: item.novaprevisao,
         i_motivo: item.motivo_atraso,
+        tipo: tipo
       },
     }).onClose.subscribe((x) => {
       if (!!x.prev) {
@@ -432,8 +435,6 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.filtraMaior(item.ref);
       this.changeDetectorRef.detectChanges();
     });
-
-    this.counter == 0;
   }
 
   getFirsAndLastWeekDay(datePred: string) {
