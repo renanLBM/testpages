@@ -5,7 +5,7 @@
   <nb-card-body>
     <form [formGroup]="dialogForm">
       <div class="body-wrapper">
-        <input style="text-align: center;" nbInput formControlName="dtControl" [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev">
+        <input style="text-align: center;" nbInput formControlName="dtControl" id="dateInput" [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev">
         <nb-datepicker #datepicker [min]="min"></nb-datepicker>
         <br>
         <nb-select placeholder="Motivo da alteração" formControlName="motivoControl" [(selected)]="selectedControl" *ngIf="tipo == 'Atraso'">

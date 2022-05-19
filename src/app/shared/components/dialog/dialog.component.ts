@@ -54,6 +54,7 @@ export class DialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    document.getElementById("dateInput")?.blur();
     this.loading = false;
 
     if(navigator.geolocation){

@@ -303,6 +303,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   filtroOP(event: Event): void {
+    document.getElementById('filtro')?.focus();
     const filterValue = (event.target as HTMLInputElement).value;
     if (filterValue == '') {
       this.filtroAtivo = false;
@@ -443,7 +444,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     let mes = datePred.substring(3, 5);
     let ano = datePred.substring(6, 10);
     let newDate = new Date(mes + '/' + dia + '/' + ano);
-    let dataSemana = new Date(newDate.getTime() - 3 * 86400000);
+    let dataSemana = new Date(newDate.getTime() - 4 * 86400000);
 
     this.dataIni = new Date(newDate.getTime() - dataSemana.getDay() * 86400000);
     this.dataFim = new Date(this.dataIni.getTime() + 6 * 86400000);
