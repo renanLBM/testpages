@@ -80,9 +80,10 @@ export class DescricaoFaccaoComponent implements OnInit {
     let numberOfDays = Math.floor(
       (currentdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000)
     );
-    this.semanaAtual = Math.ceil(
-      (currentdate.getDay() + 1 + numberOfDays) / 7
+    this.semanaAtual = Math.floor(
+      (((currentdate.getDay() + 1 + numberOfDays) - 3)) / 7
     ).toString();
+
     this.semanaSelecionada = this.semanaAtual;
     this.semanaAtualNumber = parseInt(this.semanaAtual);
 
@@ -95,20 +96,14 @@ export class DescricaoFaccaoComponent implements OnInit {
       this._opsService.getOpById(id).subscribe({
         next: (x) => {
           x.sort((a, b) => {
-            let dataRetornoA = `${a.PREV_RETORNO.substring(
-              6,
-              10
-            )}-${a.PREV_RETORNO.substring(3, 5)}-${a.PREV_RETORNO.substring(
-              0,
-              2
-            )}`;
-            let dataRetornoB = `${b.PREV_RETORNO.substring(
-              6,
-              10
-            )}-${b.PREV_RETORNO.substring(3, 5)}-${b.PREV_RETORNO.substring(
-              0,
-              2
-            )}`;
+            let dataRetornoA = `${a.PREV_RETORNO
+              .substring(6, 10)}-${a.PREV_RETORNO
+              .substring(3, 5)}-${a.PREV_RETORNO
+              .substring(0, 2)}`;
+            let dataRetornoB = `${b.PREV_RETORNO
+              .substring(6, 10)}-${b.PREV_RETORNO
+              .substring(3, 5)}-${b.PREV_RETORNO
+              .substring(0, 2)}`;
 
             let x = new Date(dataRetornoA);
             let y = new Date(dataRetornoB);
@@ -126,20 +121,14 @@ export class DescricaoFaccaoComponent implements OnInit {
           let maior;
 
           x.map((i) => {
-            i.DT_ENTRADA = `${i.DT_ENTRADA.substring(
-              6,
-              10
-            )}-${i.DT_ENTRADA.substring(3, 5)}-${i.DT_ENTRADA.substring(
-              0,
-              2
-            )} 04:00:00`;
-            i.PREV_RETORNO = `${i.PREV_RETORNO.substring(
-              6,
-              10
-            )}-${i.PREV_RETORNO.substring(3, 5)}-${i.PREV_RETORNO.substring(
-              0,
-              2
-            )} 04:00:00`;
+            i.DT_ENTRADA = `${i.DT_ENTRADA
+              .substring(6, 10)}-${i.DT_ENTRADA
+              .substring(3, 5)}-${i.DT_ENTRADA
+              .substring(0, 2)} 04:00:00`;
+            i.PREV_RETORNO = `${i.PREV_RETORNO
+              .substring(6, 10)}-${i.PREV_RETORNO
+              .substring(3, 5)}-${i.PREV_RETORNO
+              .substring(0, 2)} 04:00:00`;
 
             let newImage = new Image();
             newImage.src =
@@ -180,9 +169,16 @@ export class DescricaoFaccaoComponent implements OnInit {
             let numberOfDays = Math.floor(
               (prevdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000)
             );
-            let prevSemana = Math.ceil(
-              (prevdate.getDay() + 1 + numberOfDays) / 7
-            );
+            let prevSemana = 0;
+            if(prevdate.getDay() === 0){
+              prevSemana = Math.floor(
+                (((prevdate.getDay() + 1 + numberOfDays))) / 7
+              );
+            }else{
+              prevSemana = Math.abs(Math.floor(
+                (((prevdate.getDay() + 1 + numberOfDays)) - 3) / 7
+              ));
+            }
 
             this.descOP.push({
               semana: prevSemana,
@@ -214,6 +210,7 @@ export class DescricaoFaccaoComponent implements OnInit {
               qnt: i.QT_OP,
             });
             this.descOP.map((op) => {
+              console.log(op);
               if (op.status == 'Em andamento') {
                 op.accent = 'success';
               } else if (op.status == 'Pendente') {
