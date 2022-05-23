@@ -210,7 +210,6 @@ export class DescricaoFaccaoComponent implements OnInit {
               qnt: i.QT_OP,
             });
             this.descOP.map((op) => {
-              console.log(op);
               if (op.status == 'Em andamento') {
                 op.accent = 'success';
               } else if (op.status == 'Pendente') {

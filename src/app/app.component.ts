@@ -1,9 +1,6 @@
 import {
   AfterContentChecked,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  OnInit,
 } from '@angular/core';
 import { NbRouteTab } from '@nebular/theme';
 import { UserService } from './services/user.service';

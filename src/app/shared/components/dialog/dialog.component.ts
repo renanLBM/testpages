@@ -54,7 +54,6 @@ export class DialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    document.getElementById("dateInput")?.blur();
     this.loading = false;
 
     if(navigator.geolocation){
@@ -128,7 +127,9 @@ export class DialogComponent implements OnInit {
 
     let dataInserida = new Date(nMotivo.dtControl);
 
-    if(dataInserida.getTime() < (new Date().getTime())){
+    // the hours of dataInserida is equals to 00:00
+    // needed to sum 23 hours in miliseconds to validation
+    if((dataInserida.getTime() + 82800000) < new Date().getTime()){
       this.err = true;
       return;
     }
