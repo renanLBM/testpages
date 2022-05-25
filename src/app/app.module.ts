@@ -17,7 +17,7 @@ import { NivelGuard } from './guard/nivel.guard';
 import { InterceptorService } from './services/interceptor.service';
 import { SharedComponentsModule } from './shared/shared-components.module';
 
-registerLocaleData(localePt);
+registerLocaleData(localePt, 'pt-BR');
 
 @NgModule({
   declarations: [AppComponent],
@@ -45,10 +45,10 @@ registerLocaleData(localePt);
     FontAwesomeModule,
   ],
   providers: [
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
     LoginGuard,
     NivelGuard,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },
-    { provide: LOCALE_ID, useValue: 'pt-BR' },
   ],
   bootstrap: [AppComponent],
 })

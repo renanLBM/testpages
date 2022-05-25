@@ -35,11 +35,11 @@ export class UserService {
       );
   }
 
-  getUser() {
+  getUser(): Observable<User> {
     return this.usuarioSubject.asObservable();
   }
 
-  setUser(userB: string) {
+  setUser(userB: string): void {
     if(userB){
       let userF: User = JSON.parse(userB);
       this.usuarioSubject.next(userF);
@@ -48,7 +48,7 @@ export class UserService {
     }
   }
 
-  setSession() {
+  setSession(): void {
     this.getUser().subscribe((user) => {
       sessionStorage.setItem('user', JSON.stringify(user));
     });
@@ -59,11 +59,11 @@ export class UserService {
     return JSON.parse(loggedUser!);
   }
 
-  isLogged() {
+  isLogged(): boolean {
     return !!this.getSession();
   }
 
-  getLogged() {
+  getLogged(): Observable<boolean> {
     return this.logged.asObservable();
   }
 
@@ -78,7 +78,7 @@ export class UserService {
     return this.nivel;
   }
 
-  logout() {
+  logout(): void {
     this.usuarioSubject.next({
       nivel: 0,
       nome: '',

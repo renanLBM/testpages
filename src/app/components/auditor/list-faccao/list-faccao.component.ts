@@ -92,8 +92,9 @@ export class ListFaccaoComponent implements OnInit {
   }
 
   filtroFaccao(event: Event): void {
+    document.getElementById('filtro')?.focus();
     const filterValue = (event.target as HTMLInputElement).value;
-    if (filterValue == '') {
+    if (!filterValue) {
       this.OpList$.next(this.OpList);
       this.filtroAtivo = false;
     } else {

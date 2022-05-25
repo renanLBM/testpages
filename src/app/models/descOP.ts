@@ -16,6 +16,7 @@ export interface descOP {
   checked: boolean,
   img?: string,
   status?: string,
+  Situacao?: string,
   status_color?: string,
   accent?: NbComponentStatus,
   qnt?: number,

@@ -107,14 +107,25 @@ nb-tag {
     .nv-prev-text {
       margin: 0;
       line-height: 1;
-      color: #fa767b;
+      color: nb-theme(color-danger-new);
     }
+    // .atraso, .Paradp {
+    //   color: nb-theme(color-danger-new);
+    // }
+
     .c-status{
       font-weight: 600;
     }
-    .Adiantamento {
-      color: #087f23;
+    .Adiantamento, .coleta {
+      color: nb-theme(color-success-new);
     }
+    .fila {
+      color: nb-theme(color-warning-500);
+    }
+    .produção {
+      color: nb-theme(text-basic-color);
+    }
+
   }
 }
 

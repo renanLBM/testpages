@@ -24,6 +24,7 @@ export interface OP {
   dias_faccao?: number,
   motivo_atraso?: string,
   nova_previsao?: string,
+  Situacao?: string,
   css_class?: string
 }
 
