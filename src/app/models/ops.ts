@@ -1,6 +1,7 @@
 import { NbComponentStatus } from "@nebular/theme";
 
 export interface OP {
+  cod?: string,
   NR_CICLO: number,
   NR_OP: number,
   DS_MARCA: string,
@@ -15,14 +16,15 @@ export interface OP {
   DS_COORDENADO: string,
   CD_LOCAL: number,
   DS_LOCAL: string,
-  DT_ENTRADA: number,
-  PREV_RETORNO: Date,
+  DT_ENTRADA: string,
+  PREV_RETORNO: string,
   QT_OP: number,
   semana?: string,
   Status: string,
   dias_faccao?: number,
   motivo_atraso?: string,
   nova_previsao?: string,
+  Situacao?: string,
   css_class?: string
 }
 

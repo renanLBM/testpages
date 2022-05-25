@@ -30,7 +30,7 @@ export class PcpComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this._setTitle.setTitle('FacControl - PCP');
+    this._setTitle.setTitle('PCP');
     this._opsService.getAllOPs().subscribe({
       next: (list) => {
         this.listStatus = list;

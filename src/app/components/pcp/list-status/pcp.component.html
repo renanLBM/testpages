@@ -1,7 +1,7 @@
 <nb-layout>
   <nb-layout-column>
 
-    <!-- <div class="card-wrapper">
+    <div class="card-wrapper">
       <nb-card class="cards" accent="info" *ngFor="let i of OpTipoList$ | async">
         <nb-card-header style="cursor: pointer;" [routerLink]="['/pcp/descricao/', i.name]">{{ i.name }}</nb-card-header>
         <nb-card-body>
@@ -92,7 +92,7 @@
         </nb-card-body>
       </nb-card>
     </div>
-    <hr>-->
+    <hr>
 
     <div *ngIf="_loadingService.isLoading | async">
       <div class="card-wrapper">

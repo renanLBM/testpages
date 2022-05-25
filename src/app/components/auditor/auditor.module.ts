@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import {
   NbButtonModule,
   NbCardModule,
+  NbContextMenuModule,
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
@@ -30,6 +31,7 @@ import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
     LazyLoadImageModule,
     NbButtonModule,
     NbCardModule,
+    NbContextMenuModule,
     NbIconModule,
     NbInputModule,
     NbFormFieldModule,

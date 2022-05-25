@@ -9,12 +9,12 @@
       </div>
     </div>
     <div class="header-container">
-      <div *ngIf="adm && isLoggedIn">
+      <!-- <div *ngIf="adm && isLoggedIn">
         <nb-button-group (valueChange)="updateSingleSelectGroupValue($event)">
           <button nbButtonToggle [routerLink]="['auditor']" nbButton>Aud</button>
           <button nbButtonToggle [routerLink]="['pcp']" nbButton>PCP</button>
         </nb-button-group>
-      </div>
+      </div> -->
       <div class="exit">
         <button ghost nbButton (click)="toggleTheme()">
           <nb-icon *ngIf="checked" icon="sun-outline"></nb-icon>
@@ -22,8 +22,8 @@
         </button>
         <div *ngIf="isLoggedIn">
           <button nbButton ghost class="bt-exit" (click)="sair()">
-            <nb-icon icon="log-out-outline"></nb-icon>
             sair
+            <nb-icon icon="log-out-outline"></nb-icon>
           </button>
         </div>
       </div>

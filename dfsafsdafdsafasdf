@@ -1,0 +1,209 @@
+[33mcommit 4a2ff3a2be6e93dafca487502daca0b411a42507[m[33m ([m[1;36mHEAD -> [m[1;32mhist[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri May 20 16:28:20 2022 -0300
+
+    bugfix - date on the cards and the weeks where diffret
+
+[33mcommit 225f3f2026b0eab334910af0a50d0e2ebd199001[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu May 19 16:48:29 2022 -0300
+
+    adjusting weeks to starting on wednesday - set focus on search - remove focus on dialog motivo
+
+[33mcommit a19c59c03836d2c1eafed9577a9cfd41abb136e0[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu May 19 15:38:50 2022 -0300
+
+    adjust input date - inserted geral in pcp
+
+[33mcommit 8462f042a55da2678d0529893a017f516eb6ac98[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed May 18 08:52:12 2022 -0300
+
+    ajusting date bug
+
+[33mcommit 43b51dacd655730658ecd87c871ed5ad90bdb091[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Mon May 16 14:32:04 2022 -0300
+
+    bugfix - DOP-348
+
+[33mcommit 341add1d2d07c21d3b907a417672cb23acd464b1[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu May 12 07:47:55 2022 -0300
+
+    minor adjusts
+
+[33mcommit 3850b44788639dea7f52017d86b2044adde6e5b9[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue May 10 08:04:02 2022 -0300
+
+    bug fix - geral to Total
+
+[33mcommit 332b21164b93b3b9ff782a281e08450c3e8ea32c[m[33m ([m[1;33mtag: v0.0.1[m[33m, [m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue May 10 07:48:42 2022 -0300
+
+    production V0.0.1
+
+[33mcommit 08fe067b71e2230f9de026524fffa4e2626eff41[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Mon May 9 08:59:00 2022 -0300
+
+    Deploy firebase
+
+[33mcommit 1989096f7edbaefc40af1d040dc117915c60354d[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Mon May 9 08:31:54 2022 -0300
+
+    adding date of week - auditor
+
+[33mcommit 10604833df54373a071ba1ad8f75491414217bef[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu May 5 13:51:55 2022 -0300
+
+    added week filter - auditor
+
+[33mcommit e596d8792126e7c15e70bd3ba443f2da470499bc[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed May 4 11:42:43 2022 -0300
+
+    added toolbar auditor desc
+
+[33mcommit e1f35916e62062cd6685acccd3cbaa318abee390[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Mon May 2 17:04:43 2022 -0300
+
+    motivolist bug fix
+
+[33mcommit 1ac3873f49cbc527cc18ee615b6607fa4e7fcf0f[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Apr 29 14:51:17 2022 -0300
+
+    export to excel
+
+[33mcommit c92401e9fdfce8a2efcb723db60b21aa931a2c65[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Apr 29 08:54:19 2022 -0300
+
+    ico changed
+
+[33mcommit 5d24e0b01d76e55468d5758158e02d3f6b5cea2d[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Apr 28 15:49:10 2022 -0300
+
+    logo changed
+
+[33mcommit 45d474d09b11de76e78abc50733d1f3706c25221[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Apr 28 13:53:36 2022 -0300
+
+    verifica login
+
+[33mcommit 8071adc94c6bf5e6ac10bcffeb838900b6011f68[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Apr 28 10:02:26 2022 -0300
+
+    V0.01
+
+[33mcommit 2b3fa650daeb3e541cd824293d30fd8cea3d4ed7[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Apr 26 14:42:14 2022 -0300
+
+    bug fix - adm button group
+
+[33mcommit ba6ffbad5cbb0314fa056f5610314003df3a07a6[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Apr 26 14:25:57 2022 -0300
+
+    bug fix - adm nivel
+
+[33mcommit 8b9bb6ce2eb3d01d67a9f9f670b4c2203d7144c4[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Apr 26 13:42:31 2022 -0300
+
+    pcp - created table to description page
+
+[33mcommit d24d5942ca95a89949bb96b48126268b47ee15c7[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Mon Apr 25 14:08:30 2022 -0300
+
+    PCP table added
+
+[33mcommit 1dcb939a310e2acd577410fa28b923dfe524f5cb[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Apr 20 11:05:25 2022 -0300
+
+    bug fix - motivo atraso
+
+[33mcommit 71665d4678f85328ea6cd03c6b14f7c1abccede7[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Apr 20 10:19:03 2022 -0300
+
+    bug fix - deployed to firebase
+
+[33mcommit 3e257b8a280552e62890306202a7efeebefafefe[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Apr 14 14:46:54 2022 -0300
+
+    inserted auditor service
+
+[33mcommit 41ab24088e99ee4935a2b39732c6bae290c868b9[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Apr 13 11:48:01 2022 -0300
+
+    varias mudanças.. nem tava fazendo os commits
+
+[33mcommit 1e460e799a707afc763885c29b1f49c64d6463e5[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Apr 6 15:01:48 2022 -0300
+
+    adding img on description
+
+[33mcommit 251b9b612401adcd354acf5ed48011a1703c58d5[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Apr 6 14:17:52 2022 -0300
+
+    update op description
+
+[33mcommit 9ee2f7300ffb1bd0aa99df361776f8de54af62fb[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Mar 31 15:24:43 2022 -0300
+
+    clear filter button
+
+[33mcommit 6d1efa8026fa0263cf54801ac3963ed84918bb1e[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Mar 31 11:37:48 2022 -0300
+
+    responsive layout bug fix
+
+[33mcommit bd2cfa5b5149c9efba6d91148029c94719cb58b2[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Mar 31 11:18:10 2022 -0300
+
+    bug fixes
+
+[33mcommit f4e012642f318321478b5837a81ded64e273075b[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Mar 31 11:17:23 2022 -0300
+
+    bub fix
+
+[33mcommit 99c17ba42d44ad42a2924befd3385aaf79eb0371[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Mar 31 10:50:51 2022 -0300
+
+    changed backend to google sheets
+
+[33mcommit a0ac0bc46177ccfa08508c9fe5eb8224eb03a496[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Mon Mar 28 16:46:38 2022 -0300
+
+    first commit
+
+[33mcommit 4d3e9a661cac640117eaab2d43b2ffd66b3cdc6f[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Mar 24 16:44:27 2022 -0300
+
+    initial commit
