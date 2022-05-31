@@ -4,6 +4,11 @@
   </nb-layout-header>
   <nb-sidebar fixed state="collapsed"></nb-sidebar>
   <nb-layout-column>
+    <nb-card *ngIf="adm && isLoggedIn, else user">
+      <nb-card-body>
+        <nb-route-tabset [tabs]="tabs" fullWidth></nb-route-tabset>
+      </nb-card-body>
+    </nb-card>
     <ng-template #user>
       <router-outlet></router-outlet>
     </ng-template>
