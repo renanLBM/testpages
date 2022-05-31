@@ -2,97 +2,23 @@
   <nb-layout-column>
 
     <div class="card-wrapper">
-      <nb-card class="cards" accent="info" *ngFor="let i of OpTipoList$ | async">
-        <nb-card-header style="cursor: pointer;" [routerLink]="['/pcp/descricao/', i.name]">{{ i.name }}</nb-card-header>
-        <nb-card-body>
-          <div class="total-wrapper">
-            <div class="total-value">
-              <div class="total-title">
-                Total OP's:
-              </div>
-              <div class="h6">
-                {{i.tipos}}
-              </div>
-            </div>
-            <div class="total-value">
-              <div class="total-title">
-                Total Peças:
-              </div>
-              <div class="h6">
-                {{i.qnt_pecas_tipo}}
-              </div>
-            </div>
-          </div>
-          <hr>
-          <div class="description-wrapper">
-            <div class="description">
-              <span class="description-status-success">Em andamento:</span>
-              <div class="description-info">
-                <div class="description-value">
-                  <div class="description-title">
-                    OP's:
-                  </div>
-                  <div class="h6">
-                    {{i.qnt}}
-                  </div>
-                </div>
-                <div class="description-value">
-                  <div class="description-title">
-                    Peças:
-                  </div>
-                  <div class="h6">
-                    {{i.status}}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="description">
-              <span class="description-status-danger">Em atraso</span>
-              <div class="description-info">
-                <div class="description-value">
-                  <div class="description-title">
-                    OP's:
-                  </div>
-                  <div class="h6">
-                    10
-                  </div>
-                </div>
-                <div class="description-value">
-                  <div class="description-title">
-                    Peças:
-                  </div>
-                  <div class="h6">
-                    100
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="description">
-              <span class="description-status-warning">Pendente</span>
-              <div class="description-info">
-                <div class="description-value">
-                  <div class="description-title">
-                    OP's:
-                  </div>
-                  <div class="h6">
-                    10
-                  </div>
-                </div>
-                <div class="description-value">
-                  <div class="description-title">
-                    Peças:
-                  </div>
-                  <div class="h6">
-                    100
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </nb-card-body>
-      </nb-card>
+      <div class="bt-menu">
+        <button nbButton [matMenuTriggerFor]="menuO">Origem</button>
+        <mat-menu #menuO="matMenu">
+          <ng-container *ngFor="let origem of menuOrigem">
+            <button mat-menu-item>{{origem}}</button>
+          </ng-container>
+        </mat-menu>
+      </div>
+      <div class="bt-menu">
+        <button nbButton [matMenuTriggerFor]="menuC">Coleção</button>
+        <mat-menu #menuC="matMenu">
+          <ng-container *ngFor="let colecao of menuColecao">
+            <button style="width: 450px" mat-menu-item>{{colecao}}</button>
+          </ng-container>
+        </mat-menu>
+      </div>
     </div>
-    <hr>
 
     <div *ngIf="_loadingService.isLoading | async">
       <div class="card-wrapper">
@@ -102,7 +28,7 @@
         </div>
       </div>
     </div>
-    <div class="card-wrapper">
+    <div class="card-wrapper status-wrapper">
       <div *ngFor="let item of OpList$ | async">
         <fc-card [loading]="false" [title]="item.name" [text_desc]="'Qnt. peças'" [qnt_atraso]="item.qnt_pecas!"
           [qnt_ops]="item.qnt" [c_status]="item.color!" [show_desc]="true"
@@ -110,5 +36,38 @@
         </fc-card>
       </div>
     </div>
+
+    <hr>
+
+    <div class="card-wrapper">
+      <nb-card class="cards tipo-wrapper" [ngClass]="item.status!" [accent]="item.colorAccent!"
+        *ngFor="let item of statusTipo$ | async">
+        <nb-card-header>{{ item.status }}</nb-card-header>
+        <div class="tipo-body" *ngFor="let i of item.tipo">
+          <nb-card-header style="cursor: pointer;" [routerLink]="['/pcp/descricao', i.status, i.name]">{{ i.name }}
+          </nb-card-header>
+          <nb-card-body>
+            <div class="total-value">
+              <div class="total-title">
+                Total OP's:
+              </div>
+              <div class="h6">
+                {{i.qnt}}
+              </div>
+            </div>
+            <div class="total-value">
+              <div class="total-title">
+                Total Peças:
+              </div>
+              <div class="h6">
+                {{i.qnt_pecas | number: '1.0'}}
+              </div>
+            </div>
+          </nb-card-body>
+          <hr>
+        </div>
+      </nb-card>
+    </div>
+
   </nb-layout-column>
 </nb-layout>

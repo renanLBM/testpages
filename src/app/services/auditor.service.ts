@@ -25,7 +25,6 @@ export class AuditorService {
         if (res == 'ok') {
           return 1;
         }
-
         return 0;
       })
     );

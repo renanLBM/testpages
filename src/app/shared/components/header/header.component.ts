@@ -1,6 +1,12 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Router } from '@angular/router';
-import { NbThemeService } from '@nebular/theme';
+import { NbSidebarService, NbThemeService } from '@nebular/theme';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from '../../set-title-service.service';
 
@@ -19,11 +25,12 @@ export class HeaderComponent implements OnInit {
   @Input() checked: boolean = true;
 
   constructor(
-    private themeService: NbThemeService,
+    private _sidebarService: NbSidebarService,
+    private _themeService: NbThemeService,
     private _setTitle: SetTitleServiceService,
     private _userService: UserService,
-    private router: Router,
-    private cd: ChangeDetectorRef
+    private _router: Router,
+    private _cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -32,7 +39,10 @@ export class HeaderComponent implements OnInit {
       this.adm = n == 99;
       this.headerTitle = t;
       this.showIcon = true;
-      if (this.headerTitle.includes('Login') || this.headerTitle.includes('usuário')) {
+      if (
+        this.headerTitle.includes('Login') ||
+        this.headerTitle.includes('usuário')
+      ) {
         this.showIcon = false;
       }
     });
@@ -44,22 +54,26 @@ export class HeaderComponent implements OnInit {
 
   updateSingleSelectGroupValue(value: any): void {
     this.singleSelectGroupValue = value;
-    this.cd.markForCheck();
+    this._cd.markForCheck();
   }
 
   toggleTheme(): void {
     this.checked = !this.checked;
     if (this.checked) {
-      this.themeService.changeTheme('default');
+      this._themeService.changeTheme('default');
     } else {
-      this.themeService.changeTheme('dark');
+      this._themeService.changeTheme('dark');
     }
+  }
+
+  toggleSidebar(): void {
+    this._sidebarService.toggle();
   }
 
   sair() {
     this._userService.logout();
     let n = this._userService.getNivel() || 0;
     this.adm = n == 99;
-    this.router.navigateByUrl('');
+    this._router.navigateByUrl('');
   }
 }

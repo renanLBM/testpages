@@ -17,6 +17,7 @@ nb-card-footer {
   text-align: center;
   font-weight: 600;
 }
+
 nb-card-footer:hover {
   background-color: rgba(112, 128, 144, 0.5);
 }
@@ -26,30 +27,35 @@ nb-card-footer:hover {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+
+  .total-op {
+    width: 50%;
+
+    p {
+      margin: 30px 0 10px;
+      padding: 0;
+      font-size: 36px;
+      font-weight: 600;
+    }
+
+    margin: 10px 0;
+    border-right: 1px solid rgb(151, 151, 151);
+  }
+
+  .total-op-false {
+    width: 50%;
+
+    p {
+      margin: 30px 0 10px;
+      padding: 0;
+      font-size: 36px;
+      font-weight: 600;
+    }
+
+    margin: 10px 0;
+  }
 }
 
-.total-op {
-  width: 50%;
-  p {
-    margin: 30px 0 10px;
-    padding: 0;
-    font-size: 36px;
-    font-weight: 600;
-  }
-  margin: 10px 0 ;
-  border-right: 1px solid rgb(151, 151, 151);
-}
-
-.total-op-false {
-  width: 50%;
-  p {
-    margin: 30px 0 10px;
-    padding: 0;
-    font-size: 36px;
-    font-weight: 600;
-  }
-  margin: 10px 0 ;
-}
 
 .desc-op {
   width: 50%;
@@ -62,6 +68,7 @@ nb-card-footer:hover {
   span {
     font-size: 14px;
   }
+
   p {
     color: red;
     font-weight: 600;

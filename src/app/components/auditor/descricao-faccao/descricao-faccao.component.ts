@@ -51,6 +51,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   semanaListFuturo: number[] = [];
 
   listOPs!: OPs;
+  tempOP!: descOP;
   descOP: descOP[] = [];
   descOP$: BehaviorSubject<descOP[]> = new BehaviorSubject(this.descOP);
 
@@ -87,8 +88,8 @@ export class DescricaoFaccaoComponent implements OnInit {
     let numberOfDays: number = Math.floor(
       (currentdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000)
     );
-    this.semanaAtual = Math.floor(
-      (currentdate.getDay() + 1 + numberOfDays - 3) / 7
+    this.semanaAtual = (
+      Math.floor((currentdate.getDay() + 1 + numberOfDays - 3) / 7) + 2
     ).toString();
 
     this.semanaSelecionada = this.semanaAtual;
@@ -194,13 +195,13 @@ export class DescricaoFaccaoComponent implements OnInit {
               );
               let prevSemana = 0;
               if (prevdate.getDay() === 0) {
-                prevSemana = Math.floor(
-                  (prevdate.getDay() + 1 + numberOfDays) / 7
-                );
+                prevSemana =
+                  Math.floor((prevdate.getDay() + 1 + numberOfDays) / 7) + 2;
               } else {
-                prevSemana = Math.abs(
-                  Math.floor((prevdate.getDay() + 1 + numberOfDays - 3) / 7)
-                );
+                prevSemana =
+                  Math.abs(
+                    Math.floor((prevdate.getDay() + 1 + numberOfDays - 3) / 7)
+                  ) + 2;
               }
 
               this.descOP.push({
@@ -439,7 +440,8 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   // dropdown menu
-  openMenu(item: descOP) {
+  openMenu(opEnviada: descOP) {
+    this.tempOP = opEnviada;
     this.nbMenuService
       .onItemClick()
       .pipe(
@@ -449,38 +451,38 @@ export class DescricaoFaccaoComponent implements OnInit {
       .subscribe((title) => {
         this.counter++; // se tirar isso o menu abre mil vezes
         if (this.counter == 1) {
-          this.open(item, title);
+          this.open(title);
         }
       });
     this.counter = 0;
   }
 
-  open(item: descOP, tipo: string) {
+  open(tipo: string) {
     let ehApontamento = tipo == 'Apontamento de Produção';
     this.NbDdialogService.open(DialogComponent, {
       context: {
-        prevOP: item,
-        prev: item.novaprevisao,
-        i_motivo: item.motivo_atraso,
+        prevOP: this.tempOP,
+        prev: this.tempOP.novaprevisao,
+        i_motivo: this.tempOP.motivo_atraso,
         tipo: tipo,
-        situacao: item.Situacao,
+        situacao: this.tempOP.Situacao,
         apontamento: ehApontamento,
       },
     }).onClose.subscribe((x) => {
       if (ehApontamento) {
-        item.Situacao = x.situacao;
+        this.tempOP.Situacao = x.situacao;
       }
       if (!!x.prev) {
-        item.novaprevisao = x.prev;
-        item.motivo_atraso = x.motivo;
-        item.checked = true;
+        this.tempOP.novaprevisao = x.prev;
+        this.tempOP.motivo_atraso = x.motivo;
+        this.tempOP.checked = true;
       }
       if (x.removed) {
-        item.novaprevisao = '';
-        item.checked = false;
+        this.tempOP.novaprevisao = '';
+        this.tempOP.checked = false;
       }
 
-      this.filtraMaiorMotivo(item.ref);
+      this.filtraMaiorMotivo(this.tempOP.ref);
       this.changeDetectorRef.detectChanges();
     });
   }

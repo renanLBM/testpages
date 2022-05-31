@@ -1,62 +1,66 @@
-<div class="back-button">
-  <div class="titulo-wrapper">
-    <h3>{{ tituloLocal }}</h3>
-  </div>
-  <div class="bt-voltar-wrapper">
-    <button nbButton outline status="primary" size="small" class="bt-voltar" (click)="voltar()">
-      Voltar
-    </button>
-  </div>
-</div>
-<div *ngIf="_loadingService.isLoading | async; else allOPs">
-  <div class="card-wrapper">
-    <nb-card [nbSpinner]="true" nbSpinnerSize="giant" nbSpinnerStatus="primary">
-      <nb-card-body>
-      </nb-card-body>
-    </nb-card>
-  </div>
-</div>
-<ng-template #allOPs>
-  <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
-    <thead>
-      <tr>
-        <th>Cód</th>
-        <th>Tipo</th>
-        <th>Coordenado</th>
-        <th *ngIf="tituloLocal == 'Geral'">Local</th>
-        <th>Peças</th>
-        <th>Previsão Retorno</th>
-        <th>Dias na Facção</th>
-        <th>Motivo Alteração</th>
-        <th>Nova Previsão</th>
-      </tr>
-    </thead>
-    <tbody *ngIf="!emptyList">
-      <tr *ngFor="let item of listOPs$ | async">
-        <td>{{ item.NR_CICLO + '-' + item.NR_OP + '-' + item.CD_REFERENCIA }}</td>
-        <td>{{ item.DS_TIPO + '-' + item.CATEGORIA }}</td>
-        <td class="img-hover">
-          <a>
-            <span><img [src]="imgUrl + item.CD_REFERENCIA.toString() +
+<nb-layout>
+  <nb-layout-column>
+    <div class="back-button">
+      <div class="titulo-wrapper">
+        <h3>{{ tituloLocal }}</h3>
+      </div>
+      <div class="bt-voltar-wrapper">
+        <button nbButton outline status="primary" size="small" class="bt-voltar" (click)="voltar()">
+          Voltar
+        </button>
+      </div>
+    </div>
+    <div *ngIf="_loadingService.isLoading | async; else allOPs">
+      <div class="card-wrapper">
+        <nb-card [nbSpinner]="true" nbSpinnerSize="giant" nbSpinnerStatus="primary">
+          <nb-card-body>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+    <ng-template #allOPs>
+      <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+        <thead>
+          <tr>
+            <th>Cód</th>
+            <th>Tipo</th>
+            <th>Coordenado</th>
+            <th *ngIf="tituloLocal == 'Geral'">Local</th>
+            <th>Peças</th>
+            <th>Previsão Retorno</th>
+            <th>Dias na Facção</th>
+            <th>Motivo Alteração</th>
+            <th>Nova Previsão</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="!emptyList">
+          <tr *ngFor="let item of listOPs$ | async">
+            <td>{{ item.NR_CICLO + '-' + item.NR_OP + '-' + item.CD_REFERENCIA }}</td>
+            <td>{{ item.DS_TIPO + '-' + item.CATEGORIA }}</td>
+            <td class="img-hover">
+              <a>
+                <span><img [src]="imgUrl + item.CD_REFERENCIA.toString() +
               '/' + item.CD_REFERENCIA.toString() + '-1.jpg'" alt="image" height="200"
-              onerror="this.onerror=null;this.src='../../../../assets/not-found.png'" /></span>
-              {{ item.DS_COORDENADO }}</a>
+                    onerror="this.onerror=null;this.src='../../../../assets/not-found.png'" /></span>
+                {{ item.DS_COORDENADO }}</a>
             </td>
-        <td *ngIf="tituloLocal == 'Geral'">{{ item.DS_LOCAL }}</td>
-        <td>{{ item.QT_OP }}</td>
-        <td ngClass="{{item.css_class}}">
-          {{ item.PREV_RETORNO | date: "yyyy-MM-dd" }}
-          <!-- {{item.PREV_RETORNO | date:"dd/MM/yyyy" }} -->
-        </td>
-        <td>{{ item.dias_faccao }}</td>
-        <td>{{ item.motivo_atraso }}</td>
-        <td>{{ item.nova_previsao }}</td>
-      </tr>
-    </tbody>
-    <tbody *ngIf="emptyList">
-      <tr>
-        <td colspan="3" class="no-data-available">No data!</td>
-      </tr>
-    </tbody>
-  </table>
-</ng-template>
+            <td *ngIf="tituloLocal == 'Geral'">{{ item.DS_LOCAL }}</td>
+            <td>{{ item.QT_OP }}</td>
+            <td ngClass="{{item.css_class}}">
+              {{ item.PREV_RETORNO | date: "yyyy-MM-dd" }}
+              <!-- {{item.PREV_RETORNO | date:"dd/MM/yyyy" }} -->
+            </td>
+            <td>{{ item.dias_faccao }}</td>
+            <td>{{ item.motivo_atraso }}</td>
+            <td>{{ item.nova_previsao }}</td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="emptyList">
+          <tr>
+            <td colspan="3" class="no-data-available">No data!</td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-template>
+  </nb-layout-column>
+</nb-layout>
