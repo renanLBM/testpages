@@ -1,17 +1,17 @@
 <nb-layout>
   <nb-layout-column>
 
-    <div class="card-wrapper">
-      <div class="bt-menu">
-        <button nbButton [matMenuTriggerFor]="menuO">Origem</button>
+    <div class="bt-wrapper">
+      <div class="bt-menu-wrapper">
+        <button class="bt-menu" nbButton [matMenuTriggerFor]="menuO">Origem<nb-icon
+            icon="arrow-ios-downward-outline"></nb-icon></button>
         <mat-menu #menuO="matMenu">
           <ng-container *ngFor="let origem of menuOrigem">
             <button mat-menu-item>{{origem}}</button>
           </ng-container>
         </mat-menu>
-      </div>
-      <div class="bt-menu">
-        <button nbButton [matMenuTriggerFor]="menuC">Coleção</button>
+        <button class="bt-menu" nbButton [matMenuTriggerFor]="menuC">Coleção<nb-icon
+            icon="arrow-ios-downward-outline"></nb-icon></button>
         <mat-menu #menuC="matMenu">
           <ng-container *ngFor="let colecao of menuColecao">
             <button style="width: 450px" mat-menu-item>{{colecao}}</button>

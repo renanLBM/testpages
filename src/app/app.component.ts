@@ -1,5 +1,5 @@
 import { AfterContentChecked, Component } from '@angular/core';
-import { NbMenuItem } from '@nebular/theme';
+import { NbMenuItem, NbSidebarService } from '@nebular/theme';
 import { UserService } from './services/user.service';
 import { SetTitleServiceService } from './shared/set-title-service.service';
 
@@ -40,8 +40,9 @@ export class AppComponent implements AfterContentChecked {
   adm: boolean = false;
 
   constructor(
+    private _sidebarService: NbSidebarService,
     private _setTitle: SetTitleServiceService,
-    private _userService: UserService,
+    private _userService: UserService
   ) {}
 
   ngAfterContentChecked(): void {
@@ -52,5 +53,7 @@ export class AppComponent implements AfterContentChecked {
     this.isLoggedIn = this._userService.isLogged();
   }
 
-  toggle() {}
+  toggle(): void {
+    this._sidebarService.toggle();
+  }
 }

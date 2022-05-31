@@ -2,9 +2,9 @@
   <nb-layout-header fixed>
     <fc-header (toggleSidebar)="toggle"></fc-header>
   </nb-layout-header>
-  <nb-sidebar fixed state="collapsed">
+  <nb-sidebar fixed state="collapsed" autoCollapse>
     <nb-card>
-      <nb-menu [items]="items">
+      <nb-menu (click)="toggle()" [items]="items">
       </nb-menu>
     </nb-card>
   </nb-sidebar>

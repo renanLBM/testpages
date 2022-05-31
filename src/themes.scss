@@ -3,21 +3,20 @@
 @import '~@nebular/theme/styles/themes/dark';
 @import '~@nebular/theme/styles/themes/default';
 
-$nb-themes: nb-register-theme((
-  // add your variables here like:
-  color-tb-header-bg: #131324,
-  color-tb-even-bg: #101024,
-  color-primary-900: #29157a,
-  color-danger-new: #fa767b,
-  color-success-new: #00b887
-  ), dark, dark);
+$nb-themes: nb-register-theme(( // add your variables here like:
+      color-hero-button-custom: #252547,
+      color-tb-header-bg: #131324,
+      color-tb-even-bg: #101024,
+      color-primary-900: #29157a,
+      color-danger-new: #fa767b,
+      color-success-new: #00b887), dark, dark);
 
-$nb-themes: nb-register-theme((
-  // add your variables here like:
-  // color-bg: #4ca6ff,
-  color-tb-header-bg: #9f9faf,
-  color-tb-even-bg: #d9d9d9,
-  color-primary-900: #091c7a,
-  color-danger-new: #db2c66,
-  color-success-new: #087f23,
-), default, default);
+$nb-themes: nb-register-theme(( // add your variables here like:
+      // color-bg: #4ca6ff,
+      color-hero-button-custom: #e4e9f2,
+      color-tb-header-bg: #9f9faf,
+      color-tb-even-bg: #d9d9d9,
+      color-primary-900: #091c7a,
+      color-danger-new: #db2c66,
+      color-success-new: #087f23,
+    ), default, default);

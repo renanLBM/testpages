@@ -2,11 +2,13 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
-  OnInit,
-  Output,
+  OnInit
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { NbSidebarService, NbThemeService } from '@nebular/theme';
+import {
+  NbSidebarService,
+  NbThemeService
+} from '@nebular/theme';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from '../../set-title-service.service';
 

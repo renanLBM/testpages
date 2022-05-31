@@ -12,6 +12,23 @@ nb-layout-column {
   line-height: 1.5rem;
 }
 
+.bt-wrapper {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+
+  .bt-menu-wrapper {
+    margin-right: 2.5em;
+    .bt-menu {
+      border: 0;
+      background-color: nb-theme(color-hero-button-custom);
+      color: nb-theme(text-basic-color);
+      margin: 0 15px;
+    }
+  }
+}
+
 .card-wrapper {
   padding: 30px 0 0;
   display: flex;
