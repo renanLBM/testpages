@@ -14,6 +14,10 @@ const routes: Routes = [
     component: DescricaoStatusComponent,
   },
   {
+    path: 'descricao/:status/:origem',
+    component: DescricaoStatusComponent,
+  },
+  {
     path: 'ops-descricao/:status/:faccaoid',
     component: PcpDescOpsComponent,
   }

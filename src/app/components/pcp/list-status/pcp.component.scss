@@ -2,6 +2,7 @@
 
 nb-layout-column {
   padding: 0 !important;
+  background-color: rgba(0,0,0,0);
 }
 
 .h6 {
@@ -12,9 +13,39 @@ nb-layout-column {
 }
 
 .card-wrapper {
+  padding: 30px 0 0;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.status-wrapper {
+  justify-content: space-around;
+}
+
+.tipo-wrapper {
+  width: 425px;
+  // height: 1000px;
+
+  .tipo-body {
+    margin-top: 10px !important;
+
+    nb-card-header {
+      margin-bottom: 10px;
+      border: 0 !important;
+    }
+
+    nb-card-body {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      text-align: center;
+    }
+  }
+
+  hr {
+    margin-bottom: 0;
+  }
 }
 
 .cards {

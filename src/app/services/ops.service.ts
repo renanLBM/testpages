@@ -22,7 +22,11 @@ export class OpsService {
     return this._httpClient.get<OPs>(`${API}/api/getop/${id}`);
   }
 
-  getOpByStatus(status: string): Observable<OPs> {
-    return this._httpClient.get<OPs>(`${API}/api/getopbystatus/${status}`);
+  getOpByStatus(status: string, origem?: string): Observable<OPs> {
+    if(!origem){
+      return this._httpClient.get<OPs>(`${API}/api/getopbystatus/${status}`);
+    }else{
+      return this._httpClient.get<OPs>(`${API}/api/getopbyorigem/${status}/${origem}`);
+    }
   }
 }

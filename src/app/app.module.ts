@@ -8,7 +8,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
-import { NbLayoutModule, NbThemeModule } from '@nebular/theme';
+import {
+  NbCardModule,
+  NbLayoutModule,
+  NbMenuModule,
+  NbRouteTabsetModule,
+  NbSidebarModule,
+  NbTabsetModule,
+  NbThemeModule,
+} from '@nebular/theme';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,7 +25,7 @@ import { NivelGuard } from './guard/nivel.guard';
 import { InterceptorService } from './services/interceptor.service';
 import { SharedComponentsModule } from './shared/shared-components.module';
 
-registerLocaleData(localePt);
+registerLocaleData(localePt, 'pt-BR');
 
 @NgModule({
   declarations: [AppComponent],
@@ -28,9 +36,14 @@ registerLocaleData(localePt);
     ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    NbCardModule,
+    NbLayoutModule,
+    NbMenuModule.forRoot(),
+    NbRouteTabsetModule,
+    NbSidebarModule.forRoot(),
+    NbTabsetModule,
     NbEvaIconsModule,
     NbThemeModule.forRoot({ name: 'default' }),
-    NbLayoutModule,
     SharedComponentsModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
@@ -41,10 +54,10 @@ registerLocaleData(localePt);
     FontAwesomeModule,
   ],
   providers: [
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
     LoginGuard,
     NivelGuard,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },
-    { provide: LOCALE_ID, useValue: 'pt-BR' },
   ],
   bootstrap: [AppComponent],
 })

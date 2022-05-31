@@ -1,23 +1,38 @@
-<nb-card>
+<nb-card [nbSpinner]="loading">
   <nb-card-header>
-    <h3>Nova previsão</h3>
+    <div *ngIf="!apontamento, else apontamentoHeader">
+      <h3>Nova previsão de {{tipo}}</h3>
+    </div>
+    <ng-template #apontamentoHeader>
+      <h3>{{tipo}}</h3>
+    </ng-template>
   </nb-card-header>
   <nb-card-body>
     <form [formGroup]="dialogForm">
-      <div class="body-wrapper">
-        <input nbInput formControlName="dtControl" [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev">
+      <div class="body-wrapper" *ngIf="!apontamento, else apontamentoBody">
+        <input style="text-align: center;" nbInput formControlName="dtControl" id="dateInput"
+          [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev">
         <nb-datepicker #datepicker [min]="min"></nb-datepicker>
         <br>
-        <nb-select placeholder="Motivo da alteração" formControlName="motivoControl" [(selected)]="selectedControl">
+        <nb-select placeholder="Motivo da alteração" formControlName="motivoControl" *ngIf="tipo == 'Atraso'">
           <nb-option value="">Selecionar</nb-option>
-          <nb-option *ngFor="let motivo of motivos; let i = index" [value]="i">{{ motivo }}</nb-option>
+          <nb-option *ngFor="let motivo of motivosAtraso; let i = index" [value]="i">{{ motivo }}</nb-option>
         </nb-select>
       </div>
+      <ng-template #apontamentoBody>
+        <div class="body-wrapper">
+          <nb-select placeholder="Motivo da alteração" formControlName="situacaoControl" [(selected)]="selected">
+            <nb-option value="">Selecionar</nb-option>
+            <nb-option *ngFor="let situacao of situacaoList; let i = index" [value]="i">{{ situacao }}</nb-option>
+          </nb-select>
+          <!-- <input nbInput type="datetime-local"> -->
+        </div>
+      </ng-template>
     </form>
     <div *ngIf="err" style="text-align: center;">
-      <span style="color: red; font-size: 9px;">Todos os campos são obrigatórios!</span>
+      <span style="color: red; font-size: 9px;">Data inserida incorreta ou campos em branco!</span>
     </div>
-    <div *ngIf="!!prev" class="data-inserida-wrapper">
+    <div *ngIf="!!prev && !apontamento" class="data-inserida-wrapper">
       <span class="data-inserida">Última data inserida: {{prev}}
         <div class="bt-remover">
           <nb-icon (click)="remove()" icon="close-square-outline"></nb-icon>

@@ -1,10 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Faccao } from 'src/app/models/faccao';
+import { Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
+
+type NbComponentStatus =
+  | 'basic'
+  | 'primary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'control';
+
+interface TipoPorStatus {
+  status?: string;
+  qnt_total?: number;
+  pecas_total?: number;
+  tipo?: Faccoes;
+  colorAccent?: NbComponentStatus;
+}
 
 @Component({
   selector: 'fc-pcp',
@@ -13,15 +30,34 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
 })
 export class PcpComponent implements OnInit {
   color: string[] = ['warning', 'info', 'success', 'danger', 'primary'];
+  menuOrigem: string[] = [];
+  menuColecao: string[] = [];
 
-  listStatus: OPs = [];
+  listStatus!: OPs;
   tipoList: any[] = [];
   uniqTipo: any[] = [];
   uniqStatus: any[] = [];
-  OpTipoList: Faccao[] = [];
-  OpList: Faccao[] = [];
-  OpList$: BehaviorSubject<Faccao[]> = new BehaviorSubject(this.OpList);
-  OpTipoList$: BehaviorSubject<Faccao[]> = new BehaviorSubject(this.OpTipoList);
+  OpList: Faccoes = [];
+  OpList$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.OpList);
+  OpTipoList: Faccoes = [];
+
+  statusTipo: TipoPorStatus[] = [
+    {
+      status: 'Total',
+      colorAccent: 'info',
+    },
+    {
+      status: 'Em andamento',
+      colorAccent: 'success',
+    },
+    {
+      status: 'Em atraso',
+      colorAccent: 'danger',
+    },
+  ];
+  statusTipo$: BehaviorSubject<TipoPorStatus[]> = new BehaviorSubject(
+    this.statusTipo
+  );
 
   constructor(
     private _setTitle: SetTitleServiceService,
@@ -30,74 +66,89 @@ export class PcpComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this._setTitle.setTitle('FacControl - PCP');
+    this._setTitle.setTitle('PCP');
     this._opsService.getAllOPs().subscribe({
       next: (list) => {
         this.listStatus = list;
 
-        // Tipo
         this.listStatus.forEach((x) => {
-          this.tipoList.push({ tipo: x['DS_TIPO'], status: x['Status'], qnt_p: x['QT_OP'] });
+          this.menuOrigem.push(x.DS_CLASS);
+          this.menuOrigem = [...new Set(this.menuOrigem)];
+
+          this.menuColecao.push(x.DS_DROP);
+          this.menuColecao = [...new Set(this.menuColecao)];
+
+          this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
+
+          this.tipoList.push({
+            // tipo: x['DS_CLASS'].replace(' - PRIVATE LABEL', ''),
+            tipo: x['DS_TIPO'],
+            status: x['Status'],
+            qnt_p: x['QT_OP'],
+          });
         });
         this.listStatus.forEach((x) => {
-          this.tipoList.push({tipo: 'Total', status: 'Total', qnt_p: x['QT_OP'] });
+          this.tipoList.push({
+            tipo: 'Total',
+            status: x['Status'],
+            qnt_p: x['QT_OP'],
+          });
         });
 
+        // set unique type
         this.tipoList.forEach((f) => {
-          this.uniqTipo.push(f.tipo);
-          this.uniqTipo = [...new Set(this.uniqTipo)].filter((item) => item !== '');
+          this.uniqTipo.push(f.tipo + '-' + f.status);
+          this.uniqTipo = [...new Set(this.uniqTipo)].filter(
+            (item) => item !== ''
+          );
         });
-
-        let qntOpsTipo = this.tipoList.reduce((prev, cur) => {
-          prev[cur.tipo] = (prev[cur.tipo] || 0) + 1;
-          return prev;
-        }, {});
-        let qntPecasTipo = this.tipoList.reduce((prev, cur) => {
-          prev[cur.tipo] = (prev[cur.tipo] || 0) + parseInt(cur.qnt_p);
-          return prev;
-        }, {});
-
+        // set unique status
         this.tipoList.forEach((f) => {
           this.uniqStatus.push(f.status);
-          this.uniqStatus = [...new Set(this.uniqStatus)].filter((item) => item !== '');
+          this.uniqStatus = [...new Set(this.uniqStatus)].filter(
+            (item) => item !== ''
+          );
         });
-        let qntOpsStatus = this.tipoList.reduce((prev, cur) => {
-          prev[cur.status] = (prev[cur.status] || 0) + 1;
-          return prev;
-        }, {});
-        let qntPecasStatus = this.tipoList.reduce((prev, cur) => {
-          prev[cur.status] = (prev[cur.status] || 0) + parseInt(cur.qnt_p);
-          return prev;
-        }, {});
+
+        let qntOpsStatus = this.tipoList
+          .filter((tl) => tl.tipo == 'Total')
+          .reduce((prev, cur) => {
+            prev[cur.status] = (prev[cur.status] || 0) + 1;
+            return prev;
+          }, {});
+        let qntPecasStatus = this.tipoList
+          .filter((tl) => tl.tipo == 'Total')
+          .reduce((prev, cur) => {
+            prev[cur.status] = (prev[cur.status] || 0) + parseInt(cur.qnt_p);
+            return prev;
+          }, {});
+        let totalOpsStatus = this.tipoList
+          .filter((tl) => tl.tipo == 'Total')
+          .reduce((prev, cur) => {
+            prev[cur.tipo] = (prev[cur.tipo] || 0) + 1;
+            return prev;
+          }, {});
+        let totalPecasStatus = this.tipoList
+          .filter((tl) => tl.tipo == 'Total')
+          .reduce((prev, cur) => {
+            prev[cur.tipo] = (prev[cur.tipo] || 0) + parseInt(cur.qnt_p);
+            return prev;
+          }, {});
 
         this.uniqStatus.map((s: string, index: number) => {
-          this.OpList.push(
-            ...[
-              {
-                name: s,
-                tipos: qntOpsTipo[s],
-                qnt_pecas_tipo: qntPecasTipo[s],
-                qnt: qntOpsStatus[s],
-                status: qntOpsStatus[s],
-                qnt_pecas: parseInt(qntPecasStatus[s]).toLocaleString('pt-Br'),
-              },
-            ]
-          );
+          this.OpList.push({
+            name: s,
+            qnt: qntOpsStatus[s],
+            qnt_pecas: parseInt(qntPecasStatus[s]).toLocaleString('pt-Br'),
+          });
+          s;
         });
-
-        this.uniqTipo.map((s: string, index: number) => {
-          this.OpTipoList.push(
-            ...[
-              {
-                name: s,
-                tipos: qntOpsTipo[s],
-                qnt_pecas_tipo: qntPecasTipo[s],
-                qnt: qntOpsStatus[s],
-                status: qntOpsStatus[s],
-                qnt_pecas: parseInt(qntPecasStatus[s]).toLocaleString('pt-Br'),
-              },
-            ]
-          );
+        this.OpList.push({
+          name: 'Total',
+          qnt: totalOpsStatus['Total'],
+          qnt_pecas: parseInt(totalPecasStatus['Total']).toLocaleString(
+            'pt-Br'
+          ),
         });
 
         this.OpList.map((op) => {
@@ -115,67 +166,83 @@ export class PcpComponent implements OnInit {
         this.OpList.sort((a, b) =>
           a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0
         );
+
+        let qntTotalPecasTipo = this.tipoList.reduce((prev, cur) => {
+          prev[cur.tipo] = (prev[cur.tipo] || 0) + parseInt(cur.qnt_p);
+          return prev;
+        }, {});
+        let qntTotalOpsTipo = this.tipoList.reduce((prev, cur) => {
+          prev[cur.tipo] = (prev[cur.tipo] || 0) + 1;
+          return prev;
+        }, {});
+        let qntPecasTipo = this.tipoList.reduce((prev, cur) => {
+          prev[cur.tipo + '-' + cur.status] =
+            (prev[cur.tipo + '-' + cur.status] || 0) + parseInt(cur.qnt_p);
+          return prev;
+        }, {});
+        let qntOpsTipo = this.tipoList.reduce((prev, cur) => {
+          prev[cur.tipo + '-' + cur.status] =
+            (prev[cur.tipo + '-' + cur.status] || 0) + 1;
+          return prev;
+        }, {});
+
+        let objectArray = Object.keys(qntTotalPecasTipo).map((key) => [
+          key,
+          qntTotalPecasTipo[key],
+        ]);
+        for (let i of objectArray) {
+          if (i[0] != 'Total') {
+            this.OpTipoList.push(
+              ...[
+                {
+                  name: i[0],
+                  qnt: qntTotalOpsTipo[i[0]],
+                  status: 'Total',
+                  qnt_pecas: i[1],
+                },
+              ]
+            );
+          }
+        }
+        this.uniqTipo.map((s: string, index: number) => {
+          if (s.split('-')[0] != 'Total') {
+            this.OpTipoList.push(
+              ...[
+                {
+                  name: s.split('-')[0],
+                  qnt: qntOpsTipo[s],
+                  status: s.split('-')[1],
+                  qnt_pecas: qntPecasTipo[s],
+                },
+              ]
+            );
+          }
+        });
+
         this.OpTipoList.sort((a, b) =>
-          a.tipos! < b.tipos! ? 1 : b.tipos! < a.tipos! ? -1 : 0
+          +a.qnt_pecas! < +b.qnt_pecas!
+            ? 1
+            : +b.qnt_pecas! < +a.qnt_pecas!
+            ? -1
+            : 0
         );
 
-        this.OpTipoList$.next(this.OpTipoList);
-        this.OpList$.next(this.OpList);
+        this.statusTipo.forEach((s) => {
+          let tmpOP: Faccoes = [];
+          this.OpTipoList.filter((n) => n.status?.includes(s.status!)).forEach(
+            (op) => {
+              tmpOP.push(op);
+            }
+          );
+          let idx = this.statusTipo.findIndex((st) => st.status == s.status);
+          this.statusTipo[idx] = {
+            status: this.statusTipo[idx].status,
+            tipo: tmpOP,
+            colorAccent: this.statusTipo[idx].colorAccent,
+          };
+        });
 
-        // ----------------------------- Tipo End
-
-
-        // // Status
-        // this.listStatus.forEach((x) => {
-        //   this.OpsList.push({ status: x['Status'], qnt_p: x['QT_OP'] });
-        // });
-        // this.listStatus.forEach((x) => {
-        //   this.OpsList.push({ status: 'Geral', qnt_p: x['QT_OP'] });
-        // });
-
-        // let uniq: any[] = [];
-        // this.OpsList.forEach((f) => {
-        //   uniq.push(f.status);
-        //   uniq = [...new Set(uniq)].filter((item) => item !== '');
-        // });
-
-        // let qntOps = this.OpsList.reduce((prev, cur) => {
-        //   prev[cur.status] = (prev[cur.status] || 0) + 1;
-        //   return prev;
-        // }, {});
-        // let qntPecas = this.OpsList.reduce((prev, cur) => {
-        //   prev[cur.status] = (prev[cur.status] || 0) + parseInt(cur.qnt_p);
-        //   return prev;
-        // }, {});
-
-        // uniq.map((s: string, index: number) => {
-        //   this.OpList.push(
-        //     ...[
-        //       {
-        //         name: s,
-        //         qnt: qntOps[s],
-        //         qntPecas: parseInt(qntPecas[s]).toLocaleString('pt-Br'),
-        //       },
-        //     ]
-        //   );
-        // });
-
-        // this.OpList.map((op) => {
-        //   if (op.name == 'Em andamento') {
-        //     op.color = 'success';
-        //   } else if (op.name == 'Pendente') {
-        //     op.color = 'warning';
-        //   } else if (op.name == 'Em atraso') {
-        //     op.color = 'danger';
-        //   } else {
-        //     op.color = 'primary';
-        //   }
-        // });
-
-        // this.OpList.sort((a, b) =>
-        //   a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0
-        // );
-
+        this.statusTipo$.next(this.statusTipo);
         this.OpList$.next(this.OpList);
       },
       error: (err: Error) => console.error(err),

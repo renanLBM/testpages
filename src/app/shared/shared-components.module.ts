@@ -12,23 +12,24 @@ import {
   NbIconModule,
   NbInputModule,
   NbLayoutModule,
-  NbMenuModule,
   NbPopoverModule,
   NbSelectModule,
   NbSidebarModule,
   NbSpinnerModule,
-  NbToggleModule, NbWindowModule
+  NbToggleModule,
+  NbWindowModule
 } from '@nebular/theme';
+import { DataTablesModule } from 'angular-datatables';
 import { NgxUsefulSwiperModule } from 'ngx-useful-swiper';
 import { CardComponent } from './components/card/card.component';
 import { CarosselComponent } from './components/carossel/carossel.component';
+import { DialogTableOpComponent } from './components/dialog-table-op/dialog-table-op.component';
+import { DialogTableComponent } from './components/dialog-table/dialog-table.component';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { HeaderComponent } from './components/header/header.component';
+import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
-import { DialogTableComponent } from './components/dialog-table/dialog-table.component';
-import { DataTablesModule } from 'angular-datatables';
-import { DialogTableOpComponent } from './components/dialog-table-op/dialog-table-op.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { DialogTableOpComponent } from './components/dialog-table-op/dialog-tabl
     HeaderComponent,
     LoginComponent,
     NotFoundComponent,
+    HomeComponent,
   ],
   imports: [
     RouterModule,
@@ -73,6 +75,6 @@ import { DialogTableOpComponent } from './components/dialog-table-op/dialog-tabl
     HeaderComponent,
     LoginComponent,
     NotFoundComponent,
-  ],
+  ]
 })
 export class SharedComponentsModule {}

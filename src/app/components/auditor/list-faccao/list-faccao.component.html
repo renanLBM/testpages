@@ -12,7 +12,7 @@
     <ng-template #allOPs>
       <div class="filter-wrapper">
         <nb-form-field>
-          <input type="text" #filtro nbInput (keyup)="filtroFaccao($event)" placeholder="Filtrar facção">
+          <input type="text" id="filtro" #filtro nbInput (keyup)="filtroFaccao($event)" placeholder="Filtrar facção">
           <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">
             <nb-icon icon="close-square-outline" aria-label="pesquisar">
             </nb-icon>

@@ -107,20 +107,25 @@ nb-tag {
     .nv-prev-text {
       margin: 0;
       line-height: 1;
-      color: #fa767b;
+      color: nb-theme(color-danger-new);
     }
+    // .atraso, .Paradp {
+    //   color: nb-theme(color-danger-new);
+    // }
+
     .c-status{
       font-weight: 600;
     }
-    .em-andamento {
-      color: #087f23;
+    .Adiantamento, .coleta {
+      color: nb-theme(color-success-new);
     }
-    .pendente {
-      color: #ffc107;
+    .fila {
+      color: nb-theme(color-warning-500);
     }
-    .em-atraso{
-      color: #fa767b;
+    .produção {
+      color: nb-theme(text-basic-color);
     }
+
   }
 }
 

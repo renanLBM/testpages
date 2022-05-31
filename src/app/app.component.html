@@ -1,8 +1,14 @@
 <nb-layout>
   <nb-layout-header fixed>
-    <fc-header></fc-header>
+    <fc-header (toggleSidebar)="toggle"></fc-header>
   </nb-layout-header>
+  <nb-sidebar fixed state="collapsed">
+    <nb-card>
+      <nb-menu [items]="items">
+      </nb-menu>
+    </nb-card>
+  </nb-sidebar>
   <nb-layout-column>
-    <router-outlet></router-outlet>
+      <router-outlet></router-outlet>
   </nb-layout-column>
 </nb-layout>

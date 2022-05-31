@@ -7,18 +7,18 @@
             <th>Facção</th>
             <th>Qnt. OP's</th>
             <th>Total Peças</th>
-            <th *ngIf="tituloStatus == 'Geral'">OP's em atraso</th>
-            <th *ngIf="tituloStatus == 'Geral'">Peças em Atraso</th>
+            <th *ngIf="tituloStatus == 'Total'">OP's em atraso</th>
+            <th *ngIf="tituloStatus == 'Total'">Peças em Atraso</th>
             <th>Alterações</th>
           </tr>
         </thead>
         <tbody *ngIf="!emptyList">
           <tr *ngFor="let item of faccao$ | async; trackBy: trackByFaccao">
-            <td>{{ item.name }}</td>
+            <td [ngClass]="item.name">{{ item.name }}</td>
             <td><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id!]">{{ item.qnt }}</a></td>
             <td>{{ item.qnt_pecas }}</td>
-            <td *ngIf="tituloStatus == 'Geral'" class="atraso">{{ item.qnt_atraso }}</td>
-            <td *ngIf="tituloStatus == 'Geral'" class="atraso">{{ item.pecas_atraso }}</td>
+            <td *ngIf="tituloStatus == 'Total'" class="atraso">{{ item.qnt_atraso }}</td>
+            <td *ngIf="tituloStatus == 'Total'" class="atraso">{{ item.pecas_atraso }}</td>
             <td *ngIf="item.alteracoes! >= 1"><a class="link-desc" (click)="openAtraso(item.id!, item.name)">{{ item.alteracoes
                 }}</a></td>
             <td *ngIf="item.alteracoes! < 1">{{ item.alteracoes }}</td>
