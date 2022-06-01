@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NbMenuService, NbSidebarService } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
 import { Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';

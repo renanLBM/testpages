@@ -1,5 +1,12 @@
 <nb-layout>
   <nb-layout-column>
+    <div class="back-button">
+      <div class="bt-voltar-wrapper">
+        <button nbButton outline status="primary" size="small" class="bt-voltar" (click)="voltar()">
+          Voltar
+        </button>
+      </div>
+    </div>
     <div>
       <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
         <thead>

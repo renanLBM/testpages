@@ -25,6 +25,7 @@
             <th>Cód</th>
             <th>Tipo</th>
             <th>Coordenado</th>
+            <th *ngIf="tituloLocal == 'Geral'">Cód. Local</th>
             <th *ngIf="tituloLocal == 'Geral'">Local</th>
             <th>Peças</th>
             <th>Previsão Retorno</th>
@@ -44,6 +45,7 @@
                     onerror="this.onerror=null;this.src='../../../../assets/not-found.png'" /></span>
                 {{ item.DS_COORDENADO }}</a>
             </td>
+            <td *ngIf="tituloLocal == 'Geral'">{{ item.CD_LOCAL }}</td>
             <td *ngIf="tituloLocal == 'Geral'">{{ item.DS_LOCAL }}</td>
             <td>{{ item.QT_OP }}</td>
             <td ngClass="{{item.css_class}}">

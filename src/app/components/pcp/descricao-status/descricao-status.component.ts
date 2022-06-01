@@ -1,4 +1,5 @@
 import { NumberInput } from '@angular/cdk/coercion';
+import { Location } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -48,8 +49,9 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     private _opsService: OpsService,
     private _auditorService: AuditorService,
     private _route: ActivatedRoute,
-    public _loadingService: LoadingService,
-    private NbDdialogService: NbDialogService
+    private _location: Location,
+    private NbDdialogService: NbDialogService,
+    public _loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
@@ -85,73 +87,39 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
 
       this._setTitle.setTitle(this.tituloStatus);
 
+      // clicado em total - sem filtro por tipo
       if (this.tituloStatus == 'Total' && !this.origem) {
         this._opsService.getAllOPs().subscribe({
           next: (o) => {
             this.listFaccoes = o;
+            // transforma o cod em uma lista
+            this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
 
-            this.listFaccoes.forEach((x) => {
-              this.faccaoList.push({
-                origen: x['DS_TIPO'],
-                local: x['DS_LOCAL'],
-                qnt_p: x['QT_OP'],
-                status: x['Status'],
-              });
-            });
+            this.motivoList = this.motivoList.filter((m) =>
+              this.codigoList.includes(m.cod)
+            );
 
-            let uniq: any[] = [];
-            this.faccaoList.forEach((f) => {
-              uniq.push(f.local);
-              uniq = [...new Set(uniq)].filter((item) => item !== '');
-            });
-
-            // conta ops
-            let qnt_ops = this.faccaoList.reduce((prev, cur) => {
-              prev[cur.local] = (prev[cur.local] || 0) + 1;
-              return prev;
-            }, {});
-
-            let qnt_ops_total = 0;
-            for (var key in qnt_ops) {
-              qnt_ops_total += qnt_ops[key];
-            }
-
-            // conta peças
-            let qnt_pecas = this.faccaoList.reduce((prev, cur) => {
-              prev[cur.local] = (prev[cur.local] || 0) + parseInt(cur.qnt_p);
-              return prev;
-            }, {});
-
-            let qnt_pecas_total = 0;
-            for (var key in qnt_pecas) {
-              qnt_pecas_total += qnt_pecas[key];
-            }
-
-            // conta peças em atraso
-            let pecas_at = this.faccaoList.reduce((prev, cur) => {
-              prev[cur.local + '-' + cur.status] =
-                (prev[cur.local + '-' + cur.status] || 0) + parseInt(cur.qnt_p);
-              return prev;
-            }, {});
-
-            let pecas_at_total = 0;
-            for (var key in pecas_at) {
-              if (key.includes('-Em atraso')) {
-                pecas_at_total += pecas_at[key];
-              }
-            }
+            // chama a funcção de somar os totais de ops e peças
+            let {
+              nomesUnicos,
+              qntOpsLocal,
+              qntOpsTotal,
+              qntPecasLocal,
+              qntPecasTotal,
+              qntOpsAtrasoLocal,
+              qntOpsAtrasolTotal,
+              pecasAtrasoLocal,
+              pecasAtrasoTotal,
+            } = this.contabilizaTotais();
 
             let id = 0;
             let motivos = [];
 
-            uniq.map((f: string, index: number) => {
-              id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
-              this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
+            nomesUnicos.map((f: string, index: number) => {
+              id = this.faccaoList.find((x) => x.local == f)?.id_local!;
 
               if (this.motivoList.toString() != 'error') {
-                motivos = this.motivoList.filter(
-                  (m) => this.codigoList.includes(m.cod) && m.CD_LOCAL == id
-                );
+                motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
               }
 
               this.faccao.push(
@@ -159,15 +127,13 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                   {
                     id: id,
                     name: f,
-                    qnt: qnt_ops[f],
-                    qnt_pecas: parseInt(qnt_pecas[f]).toLocaleString('pt-Br'),
-                    qnt_atraso: this.listFaccoes
-                      .filter(
-                        (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
-                      )
-                      .length.toLocaleString(),
+                    qnt: qntOpsLocal[f],
+                    qnt_pecas: parseInt(qntPecasLocal[f]).toLocaleString(
+                      'pt-Br'
+                    ),
+                    qnt_atraso: qntOpsAtrasoLocal[f + '-Em atraso'] || 0,
                     pecas_atraso: parseInt(
-                      pecas_at[f + '-Em atraso'] || 0
+                      pecasAtrasoLocal[f + '-Em atraso'] || 0
                     ).toLocaleString('pt-Br'),
                     color: '',
                     alteracoes: motivos.length,
@@ -179,12 +145,10 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
             this.faccao.push({
               id: 99999,
               name: 'Geral',
-              qnt: qnt_ops_total,
-              qnt_pecas: qnt_pecas_total.toLocaleString('pt-Br'),
-              qnt_atraso: this.listFaccoes
-                .filter((op) => op.Status == 'Em atraso')
-                .length.toLocaleString(),
-              pecas_atraso: pecas_at_total.toLocaleString('pt-Br'),
+              qnt: qntOpsTotal,
+              qnt_pecas: qntPecasTotal.toLocaleString('pt-Br'),
+              qnt_atraso: qntOpsAtrasolTotal.toLocaleString('pt-Br'),
+              pecas_atraso: pecasAtrasoTotal.toLocaleString('pt-Br'),
               color: '',
               alteracoes: this.motivoList.length,
             });
@@ -210,74 +174,43 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
           .subscribe({
             next: (list) => {
               this.listFaccoes = list;
+              this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
 
-              this.listFaccoes.forEach((x) => {
-                this.faccaoList.push({
-                  id_local: x['CD_LOCAL'],
-                  orige: x['DS_TIPO'],
-                  local: x['DS_LOCAL'],
-                  status: x['Status'],
-                  qnt_p: x['QT_OP'],
-                });
-              });
-
-              let uniq: any[] = [];
-              this.faccaoList.forEach((f) => {
-                uniq.push(f.local);
-                uniq = [...new Set(uniq)].filter((item) => item !== '');
-              });
-
-              let qnt_ops = this.faccaoList.reduce((prev, cur) => {
-                prev[cur.local] = (prev[cur.local] || 0) + 1;
-                return prev;
-              }, {});
-              let qnt_ops_total = 0;
-              for (var key in qnt_ops) {
-                qnt_ops_total += qnt_ops[key];
-              }
-
-              let qnt_pecas = this.faccaoList.reduce((prev, cur) => {
-                prev[cur.local] = (prev[cur.local] || 0) + parseInt(cur.qnt_p);
-                return prev;
-              }, {});
-              let qnt_pecas_total = 0;
-              for (var key in qnt_pecas) {
-                qnt_pecas_total += qnt_pecas[key];
-              }
-
-              // conta peças em atraso
-              let pecas_at = this.faccaoList.reduce((prev, cur) => {
-                prev[cur.local + '-' + cur.status] =
-                  (prev[cur.local + '-' + cur.status] || 0) +
-                  parseInt(cur.qnt_p);
-                return prev;
-              }, {});
-
-              let pecas_at_total = 0;
-              for (var key in pecas_at) {
-                if (key.includes('-Em atraso')) {
-                  pecas_at_total += pecas_at[key];
-                }
-              }
+              // chama a funcção de somar os totais de ops e peças
+              let {
+                nomesUnicos,
+                qntOpsLocal,
+                qntOpsTotal,
+                qntPecasLocal,
+                qntPecasTotal,
+                pecasAtrasoLocal,
+                pecasAtrasoTotal,
+              } = this.contabilizaTotais();
 
               let id = 0;
-              let motivos = [];
+              let motivos: Motivos = [];
 
               let idList: any[] = [];
               this.faccaoList.forEach((x) => idList.push(x.id_local));
-              this.newMotivoList = this.motivoList.filter(ob => !idList.includes(ob.CD_LOCAL));
+              // this.motivoList = this.motivoList.filter(
+              //   (ob) => !idList.includes(ob.CD_LOCAL)
+              // );
 
-              uniq.map((f: string, index: number) => {
-                id = this.listFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
+              nomesUnicos.map((f: string, index: number) => {
+                id = this.faccaoList.find((x) => x.local == f)?.id_local!;
                 if (this.motivoList.toString() != 'error') {
                   if (this.tituloStatus == 'Total') {
-                    motivos = this.newMotivoList.filter((m) => m.CD_LOCAL == id);
+                    motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
                   } else {
-                    motivos = this.newMotivoList.filter(
+                    motivos = this.motivoList.filter(
                       (m) =>
                         m.CD_LOCAL == id && m.Status_Atual == this.tituloStatus
                     );
                   }
+                }
+                // filtra lista de motivos vazios e insere em um novo array
+                if (motivos[0]) {
+                  this.newMotivoList.push(motivos[0]);
                 }
 
                 this.faccao.push(
@@ -285,15 +218,17 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                     {
                       id: id,
                       name: f,
-                      qnt: qnt_ops[f],
-                      qnt_pecas: parseInt(qnt_pecas[f]).toLocaleString('pt-Br'),
-                      qnt_atraso: this.listFaccoes
+                      qnt: qntOpsLocal[f],
+                      qnt_pecas: parseInt(qntPecasLocal[f]).toLocaleString(
+                        'pt-Br'
+                      ),
+                      qnt_atraso: this.faccaoList
                         .filter(
                           (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
                         )
                         .length.toLocaleString(),
                       pecas_atraso: parseInt(
-                        pecas_at[f + '-Em atraso'] || 0
+                        pecasAtrasoLocal[f + '-Em atraso'] || 0
                       ).toLocaleString('pt-Br'),
                       color: '',
                       alteracoes: motivos.length,
@@ -306,23 +241,21 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                 this.faccao.push({
                   id: 99999,
                   name: 'Geral',
-                  qnt: qnt_ops_total,
-                  qnt_pecas: qnt_pecas_total.toLocaleString('pt-Br'),
-                  qnt_atraso: this.listFaccoes
+                  qnt: qntOpsTotal,
+                  qnt_pecas: qntPecasTotal.toLocaleString('pt-Br'),
+                  qnt_atraso: this.faccaoList
                     .filter((op) => op.Status == 'Em atraso')
                     .length.toLocaleString(),
-                  pecas_atraso: pecas_at_total.toLocaleString('pt-Br'),
+                  pecas_atraso: pecasAtrasoTotal.toLocaleString('pt-Br'),
                   color: '',
-                  alteracoes: this.newMotivoList.filter(
-                    (m) => m.Status_Atual == this.tituloStatus
-                  ).length,
+                  alteracoes: this.newMotivoList.length,
                 });
               } else {
                 this.faccao.push({
                   id: 99999,
                   name: 'Geral',
-                  qnt: qnt_ops_total,
-                  qnt_pecas: qnt_pecas_total.toLocaleString('pt-Br'),
+                  qnt: qntOpsTotal,
+                  qnt_pecas: qntPecasTotal.toLocaleString('pt-Br'),
                   color: '',
                   alteracoes: this.newMotivoList.filter(
                     (m) => m.Status_Atual == this.tituloStatus
@@ -349,34 +282,26 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     });
   }
 
-  trackByFaccao(_index: number, faccao: Faccao) {
-    return faccao.id;
-  }
-
   openAtraso(id: NumberInput, name: string) {
+    let geral = id == 99999;
     let alteracoes;
     if (this.tituloStatus == 'Total') {
-      if (id == 99999) {
-        alteracoes = this.motivoList.filter((m) =>
-          this.codigoList.includes(m.cod)
-        );
-      } else {
-        alteracoes = this.motivoList.filter(
+      alteracoes = this.motivoList;
+      console.log(id);
+      console.log(this.codigoList.includes('1531'));
+      console.log(this.newMotivoList);
+      if (!geral) {
+        alteracoes = this.newMotivoList.filter(
           (m) => this.codigoList.includes(m.cod) && m.CD_LOCAL == id
         );
       }
     } else {
-      if (id == 99999) {
-        alteracoes = this.motivoList.filter(
-          (m) =>
-            m.Status_Atual == this.tituloStatus && m.Valida == 'NÃO AJUSTADO'
-        );
-      } else {
-        alteracoes = this.motivoList.filter(
-          (m) =>
-            m.CD_LOCAL == id &&
-            m.Status_Atual == this.tituloStatus &&
-            m.Valida == 'NÃO AJUSTADO'
+      alteracoes = this.newMotivoList.filter(
+        (m) => m.Status_Atual == this.tituloStatus
+      );
+      if (!geral) {
+        alteracoes = this.newMotivoList.filter(
+          (m) => m.CD_LOCAL == id && m.Status_Atual == this.tituloStatus
         );
       }
     }
@@ -389,8 +314,98 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     });
   }
 
+  contabilizaTotais() {
+    this.listFaccoes.forEach((x) => {
+      this.faccaoList.push({
+        id_local: x['CD_LOCAL'],
+        origen: x['DS_TIPO'],
+        local: x['DS_LOCAL'],
+        status: x['Status'],
+        qnt_p: x['QT_OP'],
+      });
+    });
+
+    // pega a lista de id_local únicos
+    let uniq = this.faccaoList.flatMap((x) => x.local);
+    uniq = [...new Set(uniq)].filter((item) => item !== '');
+
+    // conta ops por local
+    let qnt_ops = this.faccaoList.reduce((prev, cur) => {
+      prev[cur.local] = (prev[cur.local] || 0) + 1;
+      return prev;
+    }, {});
+
+    // soma o total de ops
+    let qnt_ops_total = 0;
+    for (var key in qnt_ops) {
+      qnt_ops_total += qnt_ops[key];
+    }
+
+    // conta peças
+    let qnt_pecas = this.faccaoList.reduce((prev, cur) => {
+      prev[cur.local] = (prev[cur.local] || 0) + parseInt(cur.qnt_p);
+      return prev;
+    }, {});
+
+    // soma o total de peças
+    let qnt_pecas_total = 0;
+    for (var key in qnt_pecas) {
+      qnt_pecas_total += qnt_pecas[key];
+    }
+
+    // conta peças em atraso
+    let ops_at = this.faccaoList.reduce((prev, cur) => {
+      prev[cur.local + '-' + cur.status] =
+        (prev[cur.local + '-' + cur.status] || 0) + 1;
+      return prev;
+    }, {});
+
+    // soma o total de peças em atraso
+    let ops_at_total = 0;
+    for (var key in ops_at) {
+      if (key.includes('-Em atraso')) {
+        ops_at_total += ops_at[key];
+      }
+    }
+
+    // conta peças em atraso
+    let pecas_at = this.faccaoList.reduce((prev, cur) => {
+      prev[cur.local + '-' + cur.status] =
+        (prev[cur.local + '-' + cur.status] || 0) + parseInt(cur.qnt_p);
+      return prev;
+    }, {});
+
+    // soma o total de peças em atraso
+    let pecas_at_total = 0;
+    for (var key in pecas_at) {
+      if (key.includes('-Em atraso')) {
+        pecas_at_total += pecas_at[key];
+      }
+    }
+
+    return {
+      nomesUnicos: uniq,
+      qntOpsLocal: qnt_ops,
+      qntOpsTotal: qnt_ops_total,
+      qntPecasLocal: qnt_pecas,
+      qntPecasTotal: qnt_pecas_total,
+      qntOpsAtrasoLocal: ops_at,
+      qntOpsAtrasolTotal: ops_at_total,
+      pecasAtrasoLocal: pecas_at,
+      pecasAtrasoTotal: pecas_at_total,
+    };
+  }
+
+  trackByFaccao(_index: number, faccao: Faccao) {
+    return faccao.id;
+  }
+
   ngOnDestroy(): void {
     // Do not forget to unsubscribe the event
     this.dtTrigger.unsubscribe();
+  }
+
+  voltar() {
+    this._location.back();
   }
 }

@@ -19,13 +19,16 @@ export class AppComponent implements AfterContentChecked {
       // expanded: true,
       // children: [
       //   {
-      //     title: 'Change Password',
+      //     title: 'Total',
+      //     link: './pcp/descricao/Total'
       //   },
       //   {
-      //     title: 'Privacy Policy',
+      //     title: 'Em andamento',
+      //     link: './pcp/descricao/Em andamento'
       //   },
       //   {
-      //     title: 'Logout',
+      //     title: 'Em atraso',
+      //     link: './pcp/descricao/Em atraso'
       //   },
       // ],
     },

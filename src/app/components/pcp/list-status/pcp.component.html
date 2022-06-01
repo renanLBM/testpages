@@ -1,7 +1,7 @@
 <nb-layout>
   <nb-layout-column>
 
-    <div class="bt-wrapper">
+    <!-- <div class="bt-wrapper">
       <div class="bt-menu-wrapper">
         <button class="bt-menu" nbButton [matMenuTriggerFor]="menuO">Origem<nb-icon
             icon="arrow-ios-downward-outline"></nb-icon></button>
@@ -18,7 +18,7 @@
           </ng-container>
         </mat-menu>
       </div>
-    </div>
+    </div> -->
 
     <div *ngIf="_loadingService.isLoading | async">
       <div class="card-wrapper">
@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <hr>
+    <!-- <hr>
 
     <div class="card-wrapper">
       <nb-card class="cards tipo-wrapper" [ngClass]="item.status!" [accent]="item.colorAccent!"
@@ -67,7 +67,7 @@
           <hr>
         </div>
       </nb-card>
-    </div>
+    </div> -->
 
   </nb-layout-column>
 </nb-layout>
