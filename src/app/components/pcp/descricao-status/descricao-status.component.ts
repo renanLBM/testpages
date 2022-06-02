@@ -178,7 +178,6 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
           .subscribe({
             next: (list) => {
               this.listFaccoes = list;
-              this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
 
               // chama a funcção de somar os totais de ops e peças
               let {
@@ -193,11 +192,14 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                 pecasAtrasoTotal,
               } = this.contabilizaTotais();
 
+              this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
+
+              this.motivoList = this.motivoList.filter((m) =>
+                this.codigoList.includes(m.cod)
+              );
+
               let id = 0;
               let motivos: Motivos = [];
-
-              let idList: any[] = [];
-              this.faccaoList.forEach((x) => idList.push(x.id_local));
 
               nomesUnicos.map((f: string, index: number) => {
                 id = this.faccaoList.find((x) => x.local == f)?.id_local!;
@@ -212,9 +214,11 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                   }
                 }
                 // filtra lista de motivos vazios e insere em um novo array
-                if (motivos[0]) {
-                  this.newMotivoList.push(motivos[0]);
-                }
+                motivos.forEach((motivo) => {
+                  if (motivo) {
+                    this.newMotivoList.push(motivo);
+                  }
+                });
 
                 this.faccao.push(
                   ...[
@@ -286,11 +290,9 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     let geral = id == 99999;
     let alteracoes;
     if (this.isTotal) {
-      alteracoes = this.newMotivoList;
+      alteracoes = this.motivoList;
       if (!geral) {
-        alteracoes = this.newMotivoList.filter(
-          (m) => m.CD_LOCAL == id
-        );
+        alteracoes = this.motivoList.filter((m) => m.CD_LOCAL == id);
       }
     } else {
       alteracoes = this.newMotivoList.filter(
