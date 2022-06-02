@@ -26,6 +26,7 @@ export class PcpDescOpsComponent implements OnInit {
   tituloStatus: string = '';
   tituloLocal: string = '';
   facIdStatus: string = '';
+  origemStatus: string = '';
   emptyList: boolean = false;
   filtroAtivo: boolean = false;
 
@@ -77,6 +78,7 @@ export class PcpDescOpsComponent implements OnInit {
 
       this.tituloStatus = this._route.snapshot.paramMap.get('status')!;
       this.facIdStatus = this._route.snapshot.paramMap.get('faccaoid')!;
+      this.origemStatus = this._route.snapshot.paramMap.get('origem')!;
       this._setTitle.setTitle(this.tituloStatus);
 
       if (this.tituloStatus == 'Total') {
@@ -110,6 +112,9 @@ export class PcpDescOpsComponent implements OnInit {
   }
 
   getOPS(thisOPs: OPs) {
+    if(this.origemStatus){
+      thisOPs = thisOPs.filter((x) => x.DS_TIPO == this.origemStatus);
+    }
     if (this.facIdStatus == '99999') {
       this.faccaoList = thisOPs;
       this.tituloLocal = "Geral";
@@ -129,7 +134,8 @@ export class PcpDescOpsComponent implements OnInit {
           atraso = this.motivoList.filter(
             (_) =>
               _.NR_CICLO + '-' + _.NR_OP + '-' + _.CD_REFERENCIA ==
-              x.NR_CICLO + '-' + x.NR_OP + '-' + x.CD_REFERENCIA
+              x.NR_CICLO + '-' + x.NR_OP + '-' + x.CD_REFERENCIA &&
+              _.CD_LOCAL == x.CD_LOCAL
           )[0];
         }
 

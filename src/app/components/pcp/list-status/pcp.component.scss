@@ -2,9 +2,15 @@
 
 nb-layout-column {
   padding: 0 !important;
-  background-color: rgba(0,0,0,0);
+  background-color: rgba(0, 0, 0, 0);
 }
 
+.h4 {
+  font-size: 1rem;
+  font-family: Open Sans, sans-serif;
+  font-weight: 700;
+  line-height: 1.5rem;
+}
 .h6 {
   font-size: 1.125rem;
   font-family: Open Sans, sans-serif;
@@ -20,6 +26,7 @@ nb-layout-column {
 
   .bt-menu-wrapper {
     margin-right: 2.5em;
+
     .bt-menu {
       border: 0;
       background-color: nb-theme(color-hero-button-custom);
@@ -29,8 +36,19 @@ nb-layout-column {
   }
 }
 
+.tipo-title-header {
+  text-align: center;
+  min-width: 130px;
+}
+.tipo-title-body {
+  text-align: center;
+  // min-width: 120px;
+  width: 40%;
+}
+
 .card-wrapper {
   padding: 30px 0 0;
+  margin-bottom: 2em;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -44,24 +62,33 @@ nb-layout-column {
   width: 425px;
   // height: 1000px;
 
-  .tipo-body {
+  .header-tipo {
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  nb-card-body {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .body-tipo-wrapper {
+    cursor: pointer;
     margin-top: 10px !important;
 
-    nb-card-header {
-      margin-bottom: 10px;
-      border: 0 !important;
-    }
-
-    nb-card-body {
+    .body-tipo {
       display: flex;
-      justify-content: space-evenly;
-      align-items: center;
+      justify-content: space-around;
+    }
+    .body-tipo-desc {
+      // min-width: 35px;
+      width: 30%;
       text-align: center;
     }
   }
 
   hr {
-    margin-bottom: 0;
+    margin: 0;
   }
 }
 
@@ -76,49 +103,6 @@ nb-layout-column {
   .total-value {
     text-align: center;
   }
-}
-
-.description-wrapper {
-  display: flex;
-
-  .description {
-    text-align: center;
-    padding: 5px;
-
-    .description-status-success {
-      font-weight: 600;
-      color: nb-theme(color-success-600);
-    }
-
-    .description-status-danger {
-      font-weight: 600;
-      color: nb-theme(color-danger-600);
-    }
-
-    .description-status-warning {
-      font-weight: 600;
-      color: nb-theme(color-warning-600);
-    }
-  }
-}
-
-.description-info {
-  display: flex;
-  // flex-direction: column;
-  width: 10em;
-  justify-content: space-evenly;
-  align-items: center;
-  margin-top: 10px;
-
-  .description-title {
-    font-size: 12px;
-  }
-
-  .description-value {
-    margin: 0 10px;
-    text-align: center;
-  }
-
 }
 
 .filter-wrapper {

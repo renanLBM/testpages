@@ -1,24 +1,24 @@
 <nb-layout>
   <nb-layout-column>
 
-    <!-- <div class="bt-wrapper">
+    <div class="bt-wrapper">
       <div class="bt-menu-wrapper">
-        <button class="bt-menu" nbButton [matMenuTriggerFor]="menuO">Origem<nb-icon
-            icon="arrow-ios-downward-outline"></nb-icon></button>
+        <button class="bt-menu" nbButton [matMenuTriggerFor]="menuO">Origem<nb-icon icon="arrow-ios-downward-outline">
+          </nb-icon></button>
         <mat-menu #menuO="matMenu">
           <ng-container *ngFor="let origem of menuOrigem">
             <button mat-menu-item>{{origem}}</button>
           </ng-container>
         </mat-menu>
-        <button class="bt-menu" nbButton [matMenuTriggerFor]="menuC">Coleção<nb-icon
-            icon="arrow-ios-downward-outline"></nb-icon></button>
+        <button class="bt-menu" nbButton [matMenuTriggerFor]="menuC">Coleção<nb-icon icon="arrow-ios-downward-outline">
+          </nb-icon></button>
         <mat-menu #menuC="matMenu">
           <ng-container *ngFor="let colecao of menuColecao">
             <button style="width: 450px" mat-menu-item>{{colecao}}</button>
           </ng-container>
         </mat-menu>
       </div>
-    </div> -->
+    </div>
 
     <div *ngIf="_loadingService.isLoading | async">
       <div class="card-wrapper">
@@ -37,37 +37,26 @@
       </div>
     </div>
 
-    <!-- <hr>
+    <hr>
 
     <div class="card-wrapper">
       <nb-card class="cards tipo-wrapper" [ngClass]="item.status!" [accent]="item.colorAccent!"
         *ngFor="let item of statusTipo$ | async">
-        <nb-card-header>{{ item.status }}</nb-card-header>
-        <div class="tipo-body" *ngFor="let i of item.tipo">
-          <nb-card-header style="cursor: pointer;" [routerLink]="['/pcp/descricao', i.status, i.name]">{{ i.name }}
-          </nb-card-header>
-          <nb-card-body>
-            <div class="total-value">
-              <div class="total-title">
-                Total OP's:
-              </div>
-              <div class="h6">
-                {{i.qnt}}
-              </div>
+        <nb-card-header class="header-tipo">
+          <div class="h6 tipo-title-header">{{ item.status }}</div> | <div>Total OP's:</div> | <div>Total Peças:</div>
+        </nb-card-header>
+        <nb-card-body>
+          <div class="body-tipo-wrapper" *ngFor="let i of item.tipo"  [routerLink]="['/pcp/descricao', i.status, i.name]">
+            <div class="body-tipo">
+              <div class="h4 tipo-title-body">{{ i.name }}</div>
+              <div class="body-tipo-desc">{{i.qnt}}</div>
+              <div class="body-tipo-desc">{{i.qnt_pecas | number: '1.0'}}</div>
             </div>
-            <div class="total-value">
-              <div class="total-title">
-                Total Peças:
-              </div>
-              <div class="h6">
-                {{i.qnt_pecas | number: '1.0'}}
-              </div>
-            </div>
-          </nb-card-body>
-          <hr>
-        </div>
+            <hr>
+          </div>
+        </nb-card-body>
       </nb-card>
-    </div> -->
+    </div>
 
   </nb-layout-column>
 </nb-layout>

@@ -20,6 +20,10 @@ const routes: Routes = [
   {
     path: 'ops-descricao/:status/:faccaoid',
     component: PcpDescOpsComponent,
+  },
+  {
+    path: 'ops-descricao/:status/:faccaoid/:origem',
+    component: PcpDescOpsComponent,
   }
 ];
 

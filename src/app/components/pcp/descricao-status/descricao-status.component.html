@@ -22,7 +22,8 @@
         <tbody *ngIf="!emptyList">
           <tr *ngFor="let item of faccao$ | async; trackBy: trackByFaccao">
             <td [ngClass]="item.name">{{ item.name }}</td>
-            <td><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id!]">{{ item.qnt }}</a></td>
+            <td *ngIf="!haveOrigem"><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id!]">{{ item.qnt }}</a></td>
+            <td *ngIf="haveOrigem"><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id! + '/' + item.tipo]">{{ item.qnt }}</a></td>
             <td>{{ item.qnt_pecas }}</td>
             <td *ngIf="tituloStatus == 'Total'" class="atraso">{{ item.qnt_atraso }}</td>
             <td *ngIf="tituloStatus == 'Total'" class="atraso">{{ item.pecas_atraso }}</td>

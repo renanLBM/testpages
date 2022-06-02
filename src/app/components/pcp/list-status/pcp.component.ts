@@ -220,9 +220,9 @@ export class PcpComponent implements OnInit {
         });
 
         this.OpTipoList.sort((a, b) =>
-          +a.qnt_pecas! < +b.qnt_pecas!
+          a.name! > b.name!
             ? 1
-            : +b.qnt_pecas! < +a.qnt_pecas!
+            : b.name! > a.name!
             ? -1
             : 0
         );
