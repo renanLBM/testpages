@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { MatMenuModule } from '@angular/material/menu';
+import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -26,11 +27,12 @@ import { PCPRoutingModule } from './pcp-routing.module';
   imports: [
     RouterModule,
     CommonModule,
+    FormsModule,
     DataTablesModule,
     FontAwesomeModule,
     PCPRoutingModule,
     SharedComponentsModule,
-    MatMenuModule,
+    MatSelectModule,
     NbButtonModule,
     NbCardModule,
     NbCheckboxModule,

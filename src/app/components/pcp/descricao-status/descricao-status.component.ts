@@ -15,6 +15,7 @@ import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
+import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { DialogTableComponent } from 'src/app/shared/components/dialog-table/dialog-table.component';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
@@ -26,8 +27,16 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoStatusComponent implements OnDestroy, OnInit {
+  // data table variables
   dtOptions: any;
   dtTrigger: Subject<any> = new Subject<any>();
+
+  selectedFilters = {
+    origem: '',
+    colecao: '',
+  };
+
+  color: string[] = ['info', 'warning', 'primary', 'success'];
 
   origem!: string;
   tituloStatus: string = '';
@@ -35,8 +44,6 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   haveOrigem: boolean = false;
   emptyList: boolean = false;
   filtroAtivo: boolean = false;
-
-  color: string[] = ['info', 'warning', 'primary', 'success'];
 
   listFaccoes: OPs = [];
   codigoList: any[] = [];
@@ -49,15 +56,17 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   constructor(
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
+    private _opsFilteredService: OpsFilteredService,
     private _auditorService: AuditorService,
     private _route: ActivatedRoute,
     private _location: Location,
-    private NbDdialogService: NbDialogService,
+    private _dialogService: NbDialogService,
     public _loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
     this._setTitle.setTitle('Carregando...');
+    this.selectedFilters = this._opsFilteredService.getFilter();
 
     this._auditorService.getMotivos().subscribe((m) => {
       this.motivoList = m;
@@ -94,8 +103,10 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
       // clicado em total - sem filtro por tipo
       if (this.isTotal && !this.haveOrigem) {
         this._opsService.getAllOPs().subscribe({
-          next: (o) => {
-            this.listFaccoes = o;
+          next: (list) => {
+            this.listFaccoes = this.filterOPs(list);
+            // this.listFaccoes = list;
+
             // transforma o cod em uma lista
             this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
 
@@ -132,13 +143,9 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                     id: id,
                     name: f,
                     qnt: qntOpsLocal[f],
-                    qnt_pecas: parseInt(qntPecasLocal[f]).toLocaleString(
-                      'pt-Br'
-                    ),
+                    qnt_pecas: qntPecasLocal[f],
                     qnt_atraso: qntOpsAtrasoLocal[f + '-Em atraso'] || 0,
-                    pecas_atraso: parseInt(
-                      pecasAtrasoLocal[f + '-Em atraso'] || 0
-                    ).toLocaleString('pt-Br'),
+                    pecas_atraso: pecasAtrasoLocal[f + '-Em atraso'] || 0,
                     color: '',
                     alteracoes: motivos.length,
                   },
@@ -150,9 +157,9 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
               id: 99999,
               name: 'Geral',
               qnt: qntOpsTotal,
-              qnt_pecas: qntPecasTotal.toLocaleString('pt-Br'),
-              qnt_atraso: qntOpsAtrasoTotal.toLocaleString('pt-Br'),
-              pecas_atraso: pecasAtrasoTotal.toLocaleString('pt-Br'),
+              qnt_pecas: qntPecasTotal,
+              qnt_atraso: qntOpsAtrasoTotal,
+              pecas_atraso: pecasAtrasoTotal,
               color: '',
               alteracoes: this.motivoList.length,
             });
@@ -177,7 +184,8 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
           .getOpByStatus(this.tituloStatus, this.origem)
           .subscribe({
             next: (list) => {
-              this.listFaccoes = list;
+              this.listFaccoes = this.filterOPs(list);
+              // this.listFaccoes = list;
 
               // chama a funcção de somar os totais de ops e peças
               let {
@@ -227,13 +235,9 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                       name: f,
                       tipo: this.origem,
                       qnt: qntOpsLocal[f],
-                      qnt_pecas: parseInt(qntPecasLocal[f]).toLocaleString(
-                        'pt-Br'
-                      ),
+                      qnt_pecas: qntPecasLocal[f],
                       qnt_atraso: qntOpsAtrasoLocal[f + '-Em atraso'] || 0,
-                      pecas_atraso: parseInt(
-                        pecasAtrasoLocal[f + '-Em atraso'] || 0
-                      ).toLocaleString('pt-Br'),
+                      pecas_atraso: pecasAtrasoLocal[f + '-Em atraso'] || 0,
                       color: '',
                       alteracoes: motivos.length,
                     },
@@ -247,9 +251,9 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                   name: 'Geral',
                   tipo: this.origem,
                   qnt: qntOpsTotal,
-                  qnt_pecas: qntPecasTotal.toLocaleString('pt-Br'),
-                  qnt_atraso: qntOpsAtrasoTotal.toLocaleString('pt-Br'),
-                  pecas_atraso: pecasAtrasoTotal.toLocaleString('pt-Br'),
+                  qnt_pecas: qntPecasTotal,
+                  qnt_atraso: qntOpsAtrasoTotal,
+                  pecas_atraso: pecasAtrasoTotal,
                   color: '',
                   alteracoes: this.newMotivoList.length,
                 });
@@ -259,7 +263,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
                   name: 'Geral',
                   tipo: this.origem,
                   qnt: qntOpsTotal,
-                  qnt_pecas: qntPecasTotal.toLocaleString('pt-Br'),
+                  qnt_pecas: qntPecasTotal,
                   color: '',
                   alteracoes: this.newMotivoList.filter(
                     (m) => m.Status_Atual == this.tituloStatus
@@ -305,12 +309,13 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
       }
     }
 
-    this.NbDdialogService.open(DialogTableComponent, {
+    this._dialogService.open(DialogTableComponent, {
       context: {
         motivos: alteracoes,
         status: this.tituloStatus,
         name: name,
       },
+      hasScroll: true,
     });
   }
 
@@ -394,6 +399,28 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
       pecasAtrasoLocal: pecas_at,
       pecasAtrasoTotal: pecas_at_total,
     };
+  }
+
+  filterOPs(OPList: OPs) {
+    let {origem, colecao} = this.selectedFilters;
+    let listFilteredOPs = OPList;
+
+    if (!!origem && !!colecao) {
+      listFilteredOPs = OPList.filter(
+        (x) =>
+          x.DS_CLASS == origem &&
+          x.DS_CICLO == colecao
+      );
+    } else if (!!origem && !colecao) {
+      listFilteredOPs = OPList.filter(
+        (x) => x.DS_CLASS == origem
+      );
+    } else if (!origem && !!colecao) {
+      listFilteredOPs = OPList.filter(
+        (x) => x.DS_CICLO == colecao
+      );
+    }
+    return listFilteredOPs;
   }
 
   trackByFaccao(_index: number, faccao: Faccao) {

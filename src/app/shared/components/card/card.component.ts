@@ -12,7 +12,7 @@ export class CardComponent implements OnInit {
 
   @Input() title: string = '';
   @Input() qnt_ops: number = 0;
-  @Input() qnt_atraso: string = '0';
+  @Input() qnt_atraso: number = 0;
   @Input() per_atraso: number = 0;
   @Input() show_desc: boolean = false;
   @Input() page_desc: string = '';
@@ -24,7 +24,7 @@ export class CardComponent implements OnInit {
 
   ngOnInit(): void {
     if( this.text_desc.includes('peças')){
-      this.qnt_text_desc = this.qnt_atraso.toString();
+      this.qnt_text_desc = this.qnt_atraso.toLocaleString('pt-Br');
     } else {
       this.qnt_text_desc = this.qnt_atraso + ' (' + this.per_atraso + '%)';
     }

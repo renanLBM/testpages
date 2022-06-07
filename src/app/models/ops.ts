@@ -12,6 +12,7 @@ export interface OP {
   DS_COLECAO: string,
   CD_DROP: number,
   DS_DROP: string,
+  DS_CICLO: string,
   CATEGORIA: string,
   DS_COORDENADO: string,
   CD_LOCAL: number,

@@ -1,36 +1,55 @@
 <nb-layout>
   <nb-layout-column>
 
-    <div class="bt-wrapper">
-      <div class="bt-menu-wrapper">
-        <button class="bt-menu" nbButton [matMenuTriggerFor]="menuO">Origem<nb-icon icon="arrow-ios-downward-outline">
-          </nb-icon></button>
-        <mat-menu #menuO="matMenu">
-          <ng-container *ngFor="let origem of menuOrigem">
-            <button mat-menu-item>{{origem}}</button>
-          </ng-container>
-        </mat-menu>
-        <button class="bt-menu" nbButton [matMenuTriggerFor]="menuC">Coleção<nb-icon icon="arrow-ios-downward-outline">
-          </nb-icon></button>
-        <mat-menu #menuC="matMenu">
-          <ng-container *ngFor="let colecao of menuColecao">
-            <button style="width: 450px" mat-menu-item>{{colecao}}</button>
-          </ng-container>
-        </mat-menu>
+
+    <div class="filtro-wrapper">
+      <div class="filtro-menu-wrapper">
+        <div class="filtro-dropdown">
+          <mat-form-field appearance="fill">
+            <mat-label>Origem</mat-label>
+            <mat-select panelClass="filtro-menu" [(ngModel)]="selectedOrigem" name="origemForm">
+              <mat-option (click)="filtrosDropdown()">
+                Limpar filtro
+              </mat-option>
+              <mat-option (click)="filtrosDropdown()" *ngFor="let origem of menuOrigem" [value]="origem">
+                {{origem}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="filtro-dropdown">
+          <mat-form-field appearance="fill">
+            <mat-label>Colecao</mat-label>
+            <mat-select panelClass="filtro-menu" [(ngModel)]="selectedColecao" name="colecaoForm">
+              <mat-option (click)="filtrosDropdown()">
+                Limpar filtro
+              </mat-option>
+              <mat-option (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">
+                {{colecao}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
       </div>
+    </div>
+    <div class="hint-wrapper">
+      <span *ngIf="!!selectedOrigem && !selectedColecao"> Filtro selecionado: {{selectedOrigem}} </span>
+      <span *ngIf="!!selectedColecao && !selectedOrigem"> Filtro selecionado: {{selectedColecao}} </span>
+      <span *ngIf="!!selectedColecao && !!selectedColecao == !!selectedOrigem"> Filtro selecionado2:
+        {{selectedOrigem}} e {{selectedColecao}}</span>
     </div>
 
     <div *ngIf="_loadingService.isLoading | async">
       <div class="card-wrapper">
         <div *ngFor="let i of color">
-          <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [qnt_atraso]="'0'" [c_status]="i" [show_desc]="false">
+          <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [qnt_atraso]="0" [c_status]="i" [show_desc]="false">
           </fc-card>
         </div>
       </div>
     </div>
     <div class="card-wrapper status-wrapper">
       <div *ngFor="let item of OpList$ | async">
-        <fc-card [loading]="false" [title]="item.name" [text_desc]="'Qnt. peças'" [qnt_atraso]="item.qnt_pecas!"
+        <fc-card [loading]="false" [title]="item.name" [text_desc]="'Qnt. peças'" [qnt_atraso]="item.qnt_pecas"
           [qnt_ops]="item.qnt" [c_status]="item.color!" [show_desc]="true"
           [routerLink]="['/pcp/descricao/', item.name]">
         </fc-card>
@@ -46,7 +65,8 @@
           <div class="h6 tipo-title-header">{{ item.status }}</div> | <div>Total OP's:</div> | <div>Total Peças:</div>
         </nb-card-header>
         <nb-card-body>
-          <div class="body-tipo-wrapper" *ngFor="let i of item.tipo"  [routerLink]="['/pcp/descricao', i.status, i.name]">
+          <div class="body-tipo-wrapper" *ngFor="let i of item.tipo"
+            [routerLink]="['/pcp/descricao', i.status, i.name]">
             <div class="body-tipo">
               <div class="h4 tipo-title-body">{{ i.name }}</div>
               <div class="body-tipo-desc">{{i.qnt}}</div>

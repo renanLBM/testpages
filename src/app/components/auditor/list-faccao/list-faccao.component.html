@@ -3,7 +3,7 @@
     <div *ngIf="_loadingService.isLoading | async; else allOPs">
       <div class="card-wrapper">
         <div *ngFor="let i of color">
-          <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [c_status]="i" [qnt_atraso]="'0'" [show_desc]="true" >
+          <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [c_status]="i" [qnt_atraso]="0" [show_desc]="true" >
           </fc-card>
         </div>
       </div>

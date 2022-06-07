@@ -72,8 +72,9 @@ export class ListFaccaoComponent implements OnInit {
                 id: id,
                 name: f,
                 qnt: qnt[f],
-                qnt_atraso: atraso.toLocaleString('pt-Br'),
+                qnt_atraso: atraso,
                 per_atraso: Math.floor(per_atraso * 100),
+                qnt_pecas: 0,
                 color: cor,
               },
             ]

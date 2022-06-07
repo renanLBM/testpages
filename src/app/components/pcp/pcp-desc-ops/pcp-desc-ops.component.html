@@ -47,7 +47,7 @@
             </td>
             <td *ngIf="tituloLocal == 'Geral'">{{ item.CD_LOCAL }}</td>
             <td *ngIf="tituloLocal == 'Geral'">{{ item.DS_LOCAL }}</td>
-            <td>{{ item.QT_OP }}</td>
+            <td>{{ item.QT_OP | number: '1.0' }}</td>
             <td ngClass="{{item.css_class}}">
               {{ item.PREV_RETORNO | date: "yyyy-MM-dd" }}
               <!-- {{item.PREV_RETORNO | date:"dd/MM/yyyy" }} -->

@@ -22,12 +22,12 @@
         <tbody *ngIf="!emptyList">
           <tr *ngFor="let item of faccao$ | async; trackBy: trackByFaccao">
             <td [ngClass]="item.name">{{ item.name }}</td>
-            <td *ngIf="!haveOrigem"><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id!]">{{ item.qnt }}</a></td>
-            <td *ngIf="haveOrigem"><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id! + '/' + item.tipo]">{{ item.qnt }}</a></td>
-            <td>{{ item.qnt_pecas }}</td>
-            <td *ngIf="tituloStatus == 'Total'" class="atraso">{{ item.qnt_atraso }}</td>
-            <td *ngIf="tituloStatus == 'Total'" class="atraso">{{ item.pecas_atraso }}</td>
-            <td *ngIf="item.alteracoes! >= 1"><a class="link-desc" (click)="openAtraso(item.id!, item.name)">{{ item.alteracoes
+            <td *ngIf="!haveOrigem"><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id!]">{{ item.qnt | number: '1.0' }}</a></td>
+            <td *ngIf="haveOrigem"><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id! + '/' + item.tipo]">{{ item.qnt | number: '1.0' }}</a></td>
+            <td>{{ item.qnt_pecas | number: '1.0' }}</td>
+            <td *ngIf="tituloStatus == 'Total'" class="atraso">{{ item.qnt_atraso | number: '1.0' }}</td>
+            <td *ngIf="tituloStatus == 'Total'" class="atraso">{{ item.pecas_atraso | number: '1.0' }}</td>
+            <td *ngIf="item.alteracoes! >= 1"><a class="link-desc" (click)="openAtraso(item.id!, item.name)">{{ item.alteracoes | number: '1.0'
                 }}</a></td>
             <td *ngIf="item.alteracoes! < 1">{{ item.alteracoes }}</td>
           </tr>

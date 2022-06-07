@@ -20,8 +20,9 @@ export class DialogTableComponent implements OnDestroy, OnInit {
   emptyList: boolean = false;
   motivoList$: BehaviorSubject<Motivos> = new BehaviorSubject(this.motivos);
 
-
-  constructor(protected dialogRef: NbDialogRef<DialogTableComponent>) {}
+  constructor(
+    protected _dialogRef: NbDialogRef<DialogTableComponent>
+  ) {}
 
   ngOnInit(): void {
     if (this.motivos.length == 0) {

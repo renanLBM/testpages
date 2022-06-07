@@ -4,7 +4,8 @@
 @import '~@nebular/theme/styles/themes/default';
 
 $nb-themes: nb-register-theme(( // add your variables here like:
-      color-hero-button-custom: #252547,
+      color-hero-button-custom: #222B45,
+      color-hero-button-custom2: #222B45,
       color-tb-header-bg: #131324,
       color-tb-even-bg: #101024,
       color-primary-900: #29157a,
@@ -14,6 +15,7 @@ $nb-themes: nb-register-theme(( // add your variables here like:
 $nb-themes: nb-register-theme(( // add your variables here like:
       // color-bg: #4ca6ff,
       color-hero-button-custom: #e4e9f2,
+      color-hero-button-custom2: #f7f9fc,
       color-tb-header-bg: #9f9faf,
       color-tb-even-bg: #d9d9d9,
       color-primary-900: #091c7a,

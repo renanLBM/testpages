@@ -17,6 +17,7 @@ export interface Motivo {
   latitude?: number,
   longitude?: number,
   Valida?: string
+  ajustado?: string
 }
 
 export type Motivos = Array<Motivo>;

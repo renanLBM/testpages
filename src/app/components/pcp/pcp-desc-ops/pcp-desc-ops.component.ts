@@ -12,6 +12,7 @@ import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 
 @Component({
   selector: 'fc-pcp-desc-ops',
@@ -22,6 +23,10 @@ export class PcpDescOpsComponent implements OnInit {
   faFileExcel = faFileExcel;
   dtOptions: any;
   dtTrigger: Subject<any> = new Subject<any>();
+  selectedFilters = {
+    origem: '',
+    colecao: '',
+  };
 
   tituloStatus: string = '';
   tituloLocal: string = '';
@@ -43,6 +48,7 @@ export class PcpDescOpsComponent implements OnInit {
     public _loadingService: LoadingService,
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
+    private _opsFilteredService: OpsFilteredService,
     private _auditorService: AuditorService,
     private _route: ActivatedRoute,
     private _location: Location
@@ -50,6 +56,7 @@ export class PcpDescOpsComponent implements OnInit {
 
   ngOnInit(): void {
     this._setTitle.setTitle('Carregando...');
+    this.selectedFilters = this._opsFilteredService.getFilter();
 
     this._auditorService.getMotivos().subscribe((m) => {
       this.motivoList = m;
@@ -84,7 +91,8 @@ export class PcpDescOpsComponent implements OnInit {
       if (this.tituloStatus == 'Total') {
         this._opsService.getAllOPs().subscribe({
           next: (list) => {
-            this.getOPS(list);
+            let opsList = this.filterOPs(list);
+            this.getOPS(opsList);
 
             this.listOPs$.next(this.faccaoList);
             this.dtTrigger.next(this.dtOptions);
@@ -97,7 +105,8 @@ export class PcpDescOpsComponent implements OnInit {
       } else {
         this._opsService.getOpByStatus(this.tituloStatus).subscribe({
           next: (list) => {
-            this.getOPS(list);
+            let opsList = this.filterOPs(list);
+            this.getOPS(opsList);
 
             this.listOPs$.next(this.faccaoList);
             this.dtTrigger.next(this.dtOptions);
@@ -211,6 +220,29 @@ export class PcpDescOpsComponent implements OnInit {
         }
       });
     }
+  }
+
+  filterOPs(OPList: OPs) {
+    console.log(OPList);
+    let {origem, colecao} = this.selectedFilters;
+    let listFilteredOPs = OPList;
+
+    if (!!origem && !!colecao) {
+      listFilteredOPs = OPList.filter(
+        (x) =>
+          x.DS_CLASS == origem &&
+          x.DS_CICLO == colecao
+      );
+    } else if (!!origem && !colecao) {
+      listFilteredOPs = OPList.filter(
+        (x) => x.DS_CLASS == origem
+      );
+    } else if (!origem && !!colecao) {
+      listFilteredOPs = OPList.filter(
+        (x) => x.DS_CICLO == colecao
+      );
+    }
+    return listFilteredOPs;
   }
 
   voltar() {
