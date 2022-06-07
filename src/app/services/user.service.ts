@@ -4,9 +4,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user';
+import * as CryptoJS from 'crypto-js';
 
 const API = environment.API_ENV;
-
+const KEY = environment.ENCRIPT_KEY;
 @Injectable({
   providedIn: 'root',
 })
@@ -40,7 +41,7 @@ export class UserService {
   }
 
   setUser(userB: string): void {
-    if(userB){
+    if (userB) {
       let userF: User = JSON.parse(userB);
       this.usuarioSubject.next(userF);
       this.nivel = userF.nivel;
@@ -49,6 +50,7 @@ export class UserService {
   }
 
   setSession(): void {
+
     this.getUser().subscribe((user) => {
       sessionStorage.setItem('user', JSON.stringify(user));
     });
@@ -68,10 +70,10 @@ export class UserService {
   }
 
   getNivel(): number {
-    try{
+    try {
       let userS: User = this.getSession();
       this.nivel = userS.nivel;
-    }catch (err) {
+    } catch (err) {
       this.nivel = 0;
     }
 

@@ -23,6 +23,7 @@ export interface OP {
   semana?: string,
   Status: string,
   dias_faccao?: number,
+  apontamento?: string,
   motivo_atraso?: string,
   nova_previsao?: string,
   Situacao?: string,

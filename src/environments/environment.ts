@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  // API_ENV: 'https://app-controle-ops.herokuapp.com',
+  ENCRIPT_KEY: 'lbm_Secret_Key12',
   API_ENV: 'http://172.16.10.159:8000/',
 
   // API_ENV: 'http://192.168.0.3:8000/',
