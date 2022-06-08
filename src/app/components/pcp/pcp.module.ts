@@ -5,6 +5,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
+  NbAlertModule,
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
@@ -33,6 +34,7 @@ import { PCPRoutingModule } from './pcp-routing.module';
     PCPRoutingModule,
     SharedComponentsModule,
     MatSelectModule,
+    NbAlertModule,
     NbButtonModule,
     NbCardModule,
     NbCheckboxModule,

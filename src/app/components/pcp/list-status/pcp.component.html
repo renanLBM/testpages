@@ -39,6 +39,20 @@
         {{selectedOrigem}} e {{selectedColecao}}</span>
     </div>
 
+
+    <div class="apontamento-wrapper" *ngIf="apontamentoList">
+      <nb-card>
+        <nb-card-header><h4>Apontamento de produção</h4></nb-card-header>
+        <nb-card-body class="apontamento-alert">
+          <nb-alert status="danger">Não informado: {{ apontamentoList.nao_informado | percent:'1.2-2' }}</nb-alert>
+          <nb-alert status="primary">Em fila: {{ apontamentoList.em_fila | percent:'1.2-2' }}</nb-alert>
+          <nb-alert status="info">Em produção: {{ apontamentoList.em_producao | percent:'1.2-2' }}</nb-alert>
+          <nb-alert status="warning">Parado: {{ apontamentoList.parado | percent:'1.2-2' }}</nb-alert>
+          <nb-alert status="success">Disponível: {{ apontamentoList.disponivel | percent:'1.2-2' }}</nb-alert>
+        </nb-card-body>
+      </nb-card>
+    </div>
+
     <div *ngIf="_loadingService.isLoading | async">
       <div class="card-wrapper">
         <div *ngFor="let i of color">
@@ -55,7 +69,6 @@
         </fc-card>
       </div>
     </div>
-
     <hr>
 
     <div class="card-wrapper">

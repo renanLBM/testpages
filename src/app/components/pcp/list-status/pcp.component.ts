@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { Apontamentos } from 'src/app/models/apontamento';
 import { Faccoes } from 'src/app/models/faccao';
-import { OPs } from 'src/app/models/ops';
+import { OP, OPs } from 'src/app/models/ops';
+import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -49,6 +51,14 @@ export class PcpComponent implements OnInit {
   OpList$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.OpList);
   OpTipoList: Faccoes = [];
 
+  apontamentoList = {
+    nao_informado: 0,
+    em_fila: 0,
+    em_producao: 0,
+    parado: 0,
+    disponivel: 0,
+  };
+
   statusTipo: TipoPorStatus[] = [
     {
       status: 'Total',
@@ -71,6 +81,7 @@ export class PcpComponent implements OnInit {
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
     private _opsFilteredService: OpsFilteredService,
+    private _auditorService: AuditorService,
     public _loadingService: LoadingService
   ) {}
 
@@ -155,14 +166,15 @@ export class PcpComponent implements OnInit {
         status: x['Status'],
         qnt: x['QT_OP'],
       });
-    });
-    listFilteredOPs.forEach((x) => {
       this.tipoList.push({
         tipo: 'Total',
         status: x['Status'],
         qnt: x['QT_OP'],
       });
     });
+
+    // contagem dos percentuais de apontamentos
+    this.countApontamento(listFilteredOPs);
 
     // set unique type
     this.tipoList.forEach((f: { tipo: string; status: string }) => {
@@ -348,6 +360,47 @@ export class PcpComponent implements OnInit {
 
     this.statusTipo$.next(this.statusTipo);
     this.OpList$.next(this.OpList);
+  }
+
+  countApontamento(OPs: OPs) {
+    this._auditorService.getApontamento().subscribe((apontamento) => {
+      let situacaoList: string[] = [];
+
+      let codList: string[] = [];
+      OPs.forEach((op: OP) => {
+        codList.push(op.cod!);
+        codList = [...new Set(codList)];
+      })
+
+      let apontamentoFiltered: Apontamentos = apontamento.filter((op) => codList.includes(op.cod!));
+      let qntOpsList = OPs.length;
+
+      // filtrar de acordo com as OPs do input
+      apontamentoFiltered.forEach((a) => {
+        situacaoList.push(a.Situacao!);
+      });
+
+      let situacaoListObj: any | Object = situacaoList.reduce(
+        (prev: { [x: string]: any }, cur: string | number) => {
+          prev[cur] = (prev[cur] || 0) + 1;
+          return prev;
+        },
+        {}
+      );
+
+      let totalSituacao = 0;
+      Object.keys(situacaoListObj).forEach(function (key) {
+        totalSituacao += situacaoListObj[key];
+      });
+
+      this.apontamentoList = {
+        nao_informado: (qntOpsList - totalSituacao) / qntOpsList || 0,
+        em_fila: situacaoListObj['Em fila'] / qntOpsList || 0,
+        em_producao: situacaoListObj['Em produção'] / qntOpsList || 0,
+        parado: situacaoListObj['Parado'] / qntOpsList || 0,
+        disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
+      };
+    });
   }
 
   filtrosDropdown(): void {
