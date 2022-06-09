@@ -43,6 +43,12 @@ table {
     background-color: nb-theme(color-tb-even-bg);
   }
 
+  .link-name {
+    cursor: pointer;
+    text-decoration: none;
+    color: nb-theme(text-basic-color);
+  }
+
   .link-desc {
     cursor: pointer;
     font-weight: 600;
