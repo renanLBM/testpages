@@ -42,8 +42,7 @@ export class HeaderComponent implements OnInit {
       this.headerTitle = t;
       this.showIcon = true;
       if (
-        this.headerTitle.includes('Login') ||
-        this.headerTitle.includes('usuário')
+        this.headerTitle.includes('Acessar')
       ) {
         this.showIcon = false;
       }
@@ -73,6 +72,7 @@ export class HeaderComponent implements OnInit {
   }
 
   sair() {
+    this.showIcon = false;
     this._userService.logout();
     let n = this._userService.getNivel() || 0;
     this.adm = n == 99;

@@ -4,6 +4,12 @@ h1 {
   margin: 0;
 }
 
+.icon-header {
+  margin: 0 10px;
+  font-size: 25px;
+  cursor: pointer;
+}
+
 .header-wrapper {
   display: flex !important;
   justify-content: space-between !important;
@@ -15,6 +21,7 @@ h1 {
     width: auto;
   }
 }
+
 .title {
   font-size: 28px !important;
   line-height: 1;
@@ -26,6 +33,7 @@ h1 {
   cursor: pointer;
   margin-right: 5px;
 }
+
 .sidebar {
   display: block;
   position: fixed;
@@ -50,6 +58,7 @@ h1 {
     line-height: 1;
   }
 }
+
 @media (min-width:376px) and (max-width: 475px) {
   .title {
     font-size: 22px !important;

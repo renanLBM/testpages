@@ -1,10 +1,13 @@
 <nb-layout-header fixed>
   <div class="header-wrapper">
     <div class="header-container">
-      <nb-icon *ngIf="showIcon" (click)="toggleSidebar()" style="margin: 0 10px; font-size: 25px; cursor: pointer;" icon="menu-outline"
+      <nb-icon *ngIf="!showIcon && !adm"  class="icon-header" icon="log-in-outline"
+        aria-label="login">
+      </nb-icon>
+      <nb-icon *ngIf="showIcon && adm" (click)="toggleSidebar()" class="icon-header" icon="menu-outline"
         aria-label="menu">
       </nb-icon>
-      <nb-icon *ngIf="showIcon" [routerLink]="['login']" style="margin: 0 10px; font-size: 25px; cursor: pointer;" icon="home-outline"
+      <nb-icon *ngIf="showIcon" [routerLink]="['login']" class="icon-header" icon="home-outline"
         aria-label="home">
       </nb-icon>
       <div style="cursor: pointer;" [routerLink]="['login']">
@@ -12,12 +15,6 @@
       </div>
     </div>
     <div class="header-container">
-      <!-- <div *ngIf="adm && isLoggedIn">
-        <nb-button-group (valueChange)="updateSingleSelectGroupValue($event)">
-          <button nbButtonToggle [routerLink]="['auditor']" nbButton>Aud</button>
-          <button nbButtonToggle [routerLink]="['pcp']" nbButton>PCP</button>
-        </nb-button-group>
-      </div> -->
       <div class="exit">
         <button ghost nbButton (click)="toggleTheme()">
           <nb-icon *ngIf="checked" icon="sun-outline"></nb-icon>
