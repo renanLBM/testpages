@@ -169,6 +169,7 @@ export class PcpDescOpsComponent implements OnInit {
             (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
           )[0];
         }
+        console.log('apontamento', apontamento);
 
         let hj = new Date();
 
@@ -279,12 +280,24 @@ export class PcpDescOpsComponent implements OnInit {
     let { origem, colecao, apontamentoFilter } = this.selectedFilters;
     let listFilteredOPs = OPList;
 
-    if (!!apontamentoFilter) {
-      let apCodList = this.apontamentoList.flatMap((ap) => ap.cod + ap.CD_LOCAL);
+    console.log(listFilteredOPs);
+    // filtra as ops de acordo com o status filtrado
+    if (!!apontamentoFilter && apontamentoFilter != "Não informado") {
+      let apCodList = this.apontamentoList.flatMap(
+        (ap) => ap.cod + ap.CD_LOCAL
+      );
       listFilteredOPs = listFilteredOPs.filter((x) =>
         apCodList.includes(x.cod! + x.CD_LOCAL)
       );
+    }else if (apontamentoFilter == "Não informado") {
+      let apCodList = this.apontamentoList.flatMap(
+        (ap) => ap.cod + ap.CD_LOCAL
+      );
+      listFilteredOPs = listFilteredOPs.filter((x) =>
+        !apCodList.includes(x.cod! + x.CD_LOCAL)
+      );
     }
+    console.log(apontamentoFilter == "Não informado");
 
     if (!!origem && !!colecao) {
       listFilteredOPs = listFilteredOPs.filter(
@@ -298,9 +311,10 @@ export class PcpDescOpsComponent implements OnInit {
     return listFilteredOPs;
   }
 
+  // filtra somente os apontamentos com o status filtrado
   filterApontamento(ap: Apontamentos): Apontamentos {
     let { apontamentoFilter } = this.selectedFilters;
-    if (!!apontamentoFilter) {
+    if (!!apontamentoFilter && apontamentoFilter != "Não informado") {
       return ap.filter((a) => a.Situacao! == apontamentoFilter);
     }
     return ap;
