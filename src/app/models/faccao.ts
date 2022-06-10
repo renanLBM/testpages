@@ -14,6 +14,7 @@ export interface Faccao {
   origem?: string,
   colecao?: string,
   color?: string,
+  ordem?: number
 }
 
 export type Faccoes = Array<Faccao>;

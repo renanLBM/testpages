@@ -1,6 +1,11 @@
 @import "../../../../themes.scss";
 
-.card-wrapper{
+::ng-deep nb-layout .layout .layout-container .content .columns nb-layout-column {
+  padding-top: 25px;
+  padding-bottom: -10px;
+}
+
+.card-wrapper {
   margin-top: 30px;
 }
 
@@ -27,7 +32,20 @@
   left: 100px;
 }
 
+.tableFixHead {
+  overflow: auto;
+  margin-top: 25px;
+  height: 850px;
+}
+
+.tableFixHead thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 table {
+  border-collapse: collapse;
   width: 100%;
   text-align: center;
   border: 1px solid nb-theme(color-tb-even-bg);
@@ -100,4 +118,10 @@ table {
     right: 40px;
   }
 
+}
+
+@media screen and (max-height: 649px) {
+  .tableFixHead {
+    height: 550px;
+  }
 }

@@ -21,7 +21,6 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginGuard } from './guard/login.guard';
-import { NivelGuard } from './guard/nivel.guard';
 import { InterceptorService } from './services/interceptor.service';
 import { SharedComponentsModule } from './shared/shared-components.module';
 
@@ -30,12 +29,12 @@ registerLocaleData(localePt, 'pt-BR');
 @NgModule({
   declarations: [AppComponent],
   imports: [
-    BrowserModule,
     AppRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
     BrowserAnimationsModule,
+    BrowserModule,
+    FormsModule,
+    HttpClientModule,
+    ReactiveFormsModule,
     NbCardModule,
     NbLayoutModule,
     NbMenuModule.forRoot(),
@@ -56,7 +55,6 @@ registerLocaleData(localePt, 'pt-BR');
   providers: [
     { provide: LOCALE_ID, useValue: 'pt-BR' },
     LoginGuard,
-    NivelGuard,
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },
   ],
   bootstrap: [AppComponent],

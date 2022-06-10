@@ -25,6 +25,10 @@ nb-layout-column {
   }
 }
 
+::ng-deep .nb-tag-list-tags-wrapper {
+  justify-content: center !important;
+}
+
 nb-tag {
   min-width: 89px;
   justify-content: center;
@@ -218,4 +222,5 @@ nb-tag {
   .toolbar-info {
     margin-top: 20px;
   }
+
 }

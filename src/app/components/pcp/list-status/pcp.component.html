@@ -32,23 +32,16 @@
         </div>
       </div>
     </div>
-    <div class="hint-wrapper">
-      <span *ngIf="!!selectedOrigem && !selectedColecao"> Filtro selecionado: {{selectedOrigem}} </span>
-      <span *ngIf="!!selectedColecao && !selectedOrigem"> Filtro selecionado: {{selectedColecao}} </span>
-      <span *ngIf="!!selectedColecao && !!selectedColecao == !!selectedOrigem"> Filtro selecionado2:
-        {{selectedOrigem}} e {{selectedColecao}}</span>
-    </div>
-
 
     <div class="apontamento-wrapper" *ngIf="apontamentoList">
       <nb-card>
         <nb-card-header><h4>Apontamento de produção</h4></nb-card-header>
-        <nb-card-body class="apontamento-alert">
-          <nb-alert status="danger">Não informado: {{ apontamentoList.nao_informado | percent:'1.2-2' }}</nb-alert>
-          <nb-alert status="primary">Em fila: {{ apontamentoList.em_fila | percent:'1.2-2' }}</nb-alert>
-          <nb-alert status="info">Em produção: {{ apontamentoList.em_producao | percent:'1.2-2' }}</nb-alert>
-          <nb-alert status="warning">Parado: {{ apontamentoList.parado | percent:'1.2-2' }}</nb-alert>
-          <nb-alert status="success">Disponível: {{ apontamentoList.disponivel | percent:'1.2-2' }}</nb-alert>
+        <nb-card-body class="apontamento-alert-wrapper">
+          <nb-alert status="danger" (click)="filterApontamento('Não informado')">Não informado: {{ apontamentoList.nao_informado | percent:'1.1-2' }}</nb-alert>
+          <nb-alert status="primary" (click)="filterApontamento('Em fila')">Em fila: {{ apontamentoList.em_fila | percent:'1.1-2' }}</nb-alert>
+          <nb-alert status="info" (click)="filterApontamento('Em produção')">Em produção: {{ apontamentoList.em_producao | percent:'1.1-2' }}</nb-alert>
+          <nb-alert status="warning" (click)="filterApontamento('Parado')">Parado: {{ apontamentoList.parado | percent:'1.1-2' }}</nb-alert>
+          <nb-alert status="success" (click)="filterApontamento('Disponível para coleta')">Coleta: {{ apontamentoList.disponivel | percent:'1.1-2' }}</nb-alert>
         </nb-card-body>
       </nb-card>
     </div>

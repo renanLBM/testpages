@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Apontamentos } from 'src/app/models/apontamento';
 import { Faccoes } from 'src/app/models/faccao';
@@ -40,6 +41,7 @@ export class PcpComponent implements OnInit {
   selectedFilters = {
     origem: this.selectedOrigem,
     colecao: this.selectedColecao,
+    apontamentoFilter: ''
   };
 
   tipoListOriginal: string[] = [];
@@ -82,6 +84,7 @@ export class PcpComponent implements OnInit {
     private _opsService: OpsService,
     private _opsFilteredService: OpsFilteredService,
     private _auditorService: AuditorService,
+    private _router: Router,
     public _loadingService: LoadingService
   ) {}
 
@@ -230,10 +233,12 @@ export class PcpComponent implements OnInit {
       );
 
     this.uniqStatus.map((s: string, index: number) => {
+      let ordem = s == 'Em andamento' ? 1 : 2;
       this.OpList.push({
         name: s,
         qnt: qntOpsStatus[s] || 0,
         qnt_pecas: +qntPecasStatus[s] || 0,
+        ordem: ordem,
       });
       s;
     });
@@ -241,6 +246,7 @@ export class PcpComponent implements OnInit {
       name: 'Total',
       qnt: totalOpsStatus['Total'] || 0,
       qnt_pecas: totalPecasStatus['Total'] || 0,
+      ordem: 0,
     });
 
     this.OpList.map((op) => {
@@ -256,7 +262,7 @@ export class PcpComponent implements OnInit {
     });
 
     this.OpList.sort((a, b) =>
-      a.qnt_pecas < b.qnt_pecas ? 1 : b.qnt_pecas < a.qnt_pecas ? -1 : 0
+      a.ordem! > b.ordem! ? 1 : b.ordem! > a.ordem! ? -1 : 0
     );
 
     let qntTotalPecasTipo = this.tipoList.reduce(
@@ -368,11 +374,13 @@ export class PcpComponent implements OnInit {
 
       let codList: string[] = [];
       OPs.forEach((op: OP) => {
-        codList.push(op.cod!);
+        codList.push(op.cod! + op.CD_LOCAL);
         codList = [...new Set(codList)];
-      })
+      });
 
-      let apontamentoFiltered: Apontamentos = apontamento.filter((op) => codList.includes(op.cod!));
+      let apontamentoFiltered: Apontamentos = apontamento.filter((op) =>
+        codList.includes(op.cod! + op.CD_LOCAL)
+      );
       let qntOpsList = OPs.length;
 
       // filtrar de acordo com as OPs do input
@@ -403,10 +411,24 @@ export class PcpComponent implements OnInit {
     });
   }
 
+  filterApontamento(filtro: string) {
+    this.selectedFilters = {
+      origem: this.selectedOrigem,
+      colecao: this.selectedColecao,
+      apontamentoFilter: filtro
+    };
+
+    // set the filter service to pass to others components
+    this._opsFilteredService.setFilter(this.selectedFilters);
+
+    this._router.navigate(['pcp/ops-descricao/Total/99999'])
+  }
+
   filtrosDropdown(): void {
     this.selectedFilters = {
       origem: this.selectedOrigem,
       colecao: this.selectedColecao,
+      apontamentoFilter: ''
     };
 
     // set the filter service to pass to others components

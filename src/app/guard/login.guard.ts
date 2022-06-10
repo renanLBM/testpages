@@ -23,9 +23,10 @@ export class LoginGuard implements CanActivate {
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree> {
     if (this._userService.isLogged()) {
-      if (this._userService.getNivel() == 1) {
+      let nivel = this._userService.getNivel();
+      if (nivel == 1) {
         this._route.navigate(['auditor']);
-      } else if (this._userService.getNivel() == 2 || this._userService.getNivel() == 99) {
+      } else if (nivel == 2 || nivel == 99) {
         this._route.navigate(['pcp']);
       }
       return false;
