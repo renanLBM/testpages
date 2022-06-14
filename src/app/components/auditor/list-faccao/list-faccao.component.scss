@@ -1,3 +1,33 @@
+@import "../../../../themes.scss";
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: nb-theme(color-hero-button-custom);
+}
+
+::ng-deep .mat-form-field-ripple {
+  background-color: nb-theme(text-basic-color);
+}
+
+::ng-deep .mat-form-field-type-mat-select .mat-form-field-label,
+.mat-select-value {
+  color: nb-theme(text-basic-color) !important;
+}
+
+::ng-deep .mat-select-value {
+  color: nb-theme(text-basic-color) !important;
+  ;
+}
+
+::ng-deep .filtro-menu.mat-select-panel {
+  border: 0;
+  background-color: nb-theme(color-hero-button-custom2);
+}
+
+::ng-deep .mat-option {
+  color: nb-theme(text-basic-color) !important;
+}
+
+
 .card-wrapper {
   display: flex;
   justify-content: center;
@@ -6,7 +36,8 @@
 
 .filter-wrapper {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  justify-content: space-around;
   margin: 0 25px 25px;
 }
 

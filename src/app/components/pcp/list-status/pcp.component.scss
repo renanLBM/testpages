@@ -38,9 +38,6 @@ nb-layout-column {
   background-color: nb-theme(color-hero-button-custom);
 }
 
-// ::ng-deep .mat-form-field-infix{
-//   background-color: nb-theme(color-hero-button-custom);
-// }
 ::ng-deep .mat-form-field-ripple {
   background-color: nb-theme(text-basic-color);
 }
@@ -86,7 +83,6 @@ nb-layout-column {
 }
 
 
-
 .tipo-title-header {
   text-align: center;
   min-width: 130px;
@@ -105,10 +101,6 @@ nb-layout-column {
   justify-content: space-evenly;
   flex-wrap: wrap;
 }
-
-// .status-wrapper {
-//   justify-content: space-evenly;
-// }
 
 .tipo-wrapper {
   width: 425px;

@@ -11,6 +11,19 @@
 
     <ng-template #allOPs>
       <div class="filter-wrapper">
+        <div class="filtro-dropdown">
+          <mat-form-field appearance="fill">
+            <mat-label>Coleção</mat-label>
+            <mat-select panelClass="filtro-menu" [(ngModel)]="selectedColecao" name="colecaoForm">
+              <mat-option (click)="filtrosDropdown()">
+                Limpar filtro
+              </mat-option>
+              <mat-option (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">
+                {{colecao}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
         <nb-form-field>
           <input type="text" id="filtro" #filtro nbInput (keyup)="filtroFaccao($event)" placeholder="Filtrar facção">
           <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">

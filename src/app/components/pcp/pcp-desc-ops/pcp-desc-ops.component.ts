@@ -245,10 +245,7 @@ export class PcpDescOpsComponent implements OnInit {
         let dataEntrada = new Date(x.DT_ENTRADA);
         let dtPrev = new Date(x.PREV_RETORNO);
 
-        x.css_class = 'andamento';
-        if (dtPrev < hj) {
-          x.css_class = 'atraso';
-        }
+        x.css_class = dtPrev < hj ? 'atraso' : 'andamento';
 
         if (!x.DS_COORDENADO) {
           x.DS_COORDENADO = x.DS_GRUPO;
@@ -267,11 +264,7 @@ export class PcpDescOpsComponent implements OnInit {
         }
 
         //  verifica se teve apontamento para essa OP
-        if (apontamento) {
-          x['apontamento'] = apontamento.Situacao;
-        } else {
-          x['apontamento'] = '-';
-        }
+        x['apontamento'] = apontamento ? apontamento.Situacao : '-';
       });
     }
   }
@@ -280,7 +273,6 @@ export class PcpDescOpsComponent implements OnInit {
     let { origem, colecao, apontamentoFilter } = this.selectedFilters;
     let listFilteredOPs = OPList;
 
-    console.log(listFilteredOPs);
     // filtra as ops de acordo com o status filtrado
     if (!!apontamentoFilter && apontamentoFilter != "Não informado") {
       let apCodList = this.apontamentoList.flatMap(
@@ -297,7 +289,6 @@ export class PcpDescOpsComponent implements OnInit {
         !apCodList.includes(x.cod! + x.CD_LOCAL)
       );
     }
-    console.log(apontamentoFilter == "Não informado");
 
     if (!!origem && !!colecao) {
       listFilteredOPs = listFilteredOPs.filter(

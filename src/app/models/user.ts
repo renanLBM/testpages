@@ -2,6 +2,7 @@ export interface User {
   id?: number,
   nome: string,
   nivel: number,
+  regiao?: string,
   login?: string,
   senha?: string,
 }

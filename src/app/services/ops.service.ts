@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OPs } from '../models/ops';
 import { environment } from 'src/environments/environment';
+import { UserService } from './user.service';
 
 const API = environment.API_ENV;
 
@@ -10,11 +11,14 @@ const API = environment.API_ENV;
   providedIn: 'root',
 })
 export class OpsService {
-
-  constructor(private _httpClient: HttpClient) { }
+  constructor(private _user: UserService, private _httpClient: HttpClient) {}
 
   getAllOPs(): Observable<OPs> {
-    // return this._httpClient.get<OPs>(`${API}/listops`);
+    let loggedUser = this._user.getSession();
+    let regiao = loggedUser.regiao;
+    if(regiao && loggedUser.nivel != 99){
+      return this._httpClient.get<OPs>(`${API}/api/getfaccao/${regiao}`);
+    }
     return this._httpClient.get<OPs>(`${API}/api/getfaccao`);
   }
 
@@ -23,10 +27,12 @@ export class OpsService {
   }
 
   getOpByStatus(status: string, origem?: string): Observable<OPs> {
-    if(!origem){
+    if (!origem) {
       return this._httpClient.get<OPs>(`${API}/api/getopbystatus/${status}`);
-    }else{
-      return this._httpClient.get<OPs>(`${API}/api/getopbyorigem/${status}/${origem}`);
+    } else {
+      return this._httpClient.get<OPs>(
+        `${API}/api/getopbyorigem/${status}/${origem}`
+      );
     }
   }
 }

@@ -41,7 +41,7 @@ export class PcpComponent implements OnInit {
   selectedFilters = {
     origem: this.selectedOrigem,
     colecao: this.selectedColecao,
-    apontamentoFilter: ''
+    apontamentoFilter: '',
   };
 
   tipoListOriginal: string[] = [];
@@ -120,6 +120,8 @@ export class PcpComponent implements OnInit {
   }
 
   summarize(filterSelected?: number): void {
+
+    // resetar as variáveis
     this.tipoList = [];
     this.OpList = [];
     this.OpTipoList = [];
@@ -144,23 +146,24 @@ export class PcpComponent implements OnInit {
 
     let listFilteredOPs = this.listStatus;
 
-    // 1 = dois filtros selecionados
-    // 2 = somente origem
-    // 3 = somente colecao
-    if (filterSelected == 1) {
-      listFilteredOPs = this.listStatus.filter(
-        (x) =>
-          x.DS_CLASS == this.selectedOrigem &&
-          x.DS_CICLO == this.selectedColecao
-      );
-    } else if (filterSelected == 2) {
-      listFilteredOPs = this.listStatus.filter(
-        (x) => x.DS_CLASS == this.selectedOrigem
-      );
-    } else if (filterSelected == 3) {
-      listFilteredOPs = this.listStatus.filter(
-        (x) => x.DS_CICLO == this.selectedColecao
-      );
+    switch (filterSelected) {
+      case 1: // dois filtros selecionados
+        listFilteredOPs = this.listStatus.filter(
+          (x) =>
+            x.DS_CLASS == this.selectedOrigem &&
+            x.DS_CICLO == this.selectedColecao
+        );
+        break;
+      case 2: // somente origem
+        listFilteredOPs = this.listStatus.filter(
+          (x) => x.DS_CLASS == this.selectedOrigem
+        );
+        break;
+      case 3: // somente colecao
+        listFilteredOPs = this.listStatus.filter(
+          (x) => x.DS_CICLO == this.selectedColecao
+        );
+        break;
     }
 
     listFilteredOPs.forEach((x) => {
@@ -415,20 +418,20 @@ export class PcpComponent implements OnInit {
     this.selectedFilters = {
       origem: this.selectedOrigem,
       colecao: this.selectedColecao,
-      apontamentoFilter: filtro
+      apontamentoFilter: filtro,
     };
 
     // set the filter service to pass to others components
     this._opsFilteredService.setFilter(this.selectedFilters);
 
-    this._router.navigate(['pcp/ops-descricao/Total/99999'])
+    this._router.navigate(['pcp/ops-descricao/Total/99999']);
   }
 
   filtrosDropdown(): void {
     this.selectedFilters = {
       origem: this.selectedOrigem,
       colecao: this.selectedColecao,
-      apontamentoFilter: ''
+      apontamentoFilter: '',
     };
 
     // set the filter service to pass to others components

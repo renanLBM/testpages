@@ -2,14 +2,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnInit,
+  OnInit
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   NbDialogService,
   NbMenuService,
   NbWindowControlButtonsConfig,
-  NbWindowService,
+  NbWindowService
 } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -19,6 +19,7 @@ import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
+import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { CarosselComponent } from 'src/app/shared/components/carossel/carossel.component';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
@@ -71,17 +72,20 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   constructor(
     private _setTitle: SetTitleServiceService,
-    public _loadingService: LoadingService,
+    private _opsFilteredService: OpsFilteredService,
     private _opsService: OpsService,
     private _auditorService: AuditorService,
     private _route: ActivatedRoute,
     private NbDdialogService: NbDialogService,
     private windowService: NbWindowService,
     private changeDetectorRef: ChangeDetectorRef,
-    private nbMenuService: NbMenuService
+    private nbMenuService: NbMenuService,
+    public _loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
+    // pega o filtro setado na página anterior (escolha da facção)
+    let filtroColecao = this._opsFilteredService.getFilter().colecao;
     // pegar a semana atual
     let currentdate: Date = new Date();
     let oneJan: Date = new Date(currentdate.getFullYear(), 0, 1);
@@ -104,8 +108,11 @@ export class DescricaoFaccaoComponent implements OnInit {
 
         let id = this._route.snapshot.paramMap.get('id')!;
         this._opsService.getOpById(id).subscribe({
-          next: (x) => {
-            x.sort((a, b) => {
+          next: (op) => {
+            if(!!filtroColecao) {
+              op = op.filter((x) => x.DS_CICLO == filtroColecao);
+            }
+            op.sort((a, b) => {
               let dataRetornoA = `${a.PREV_RETORNO.substring(
                 6,
                 10
@@ -137,7 +144,7 @@ export class DescricaoFaccaoComponent implements OnInit {
             let maiorMotivo;
             let maiorApontamento;
 
-            x.map((i) => {
+            op.map((i) => {
               i.DT_ENTRADA = `${i.DT_ENTRADA.substring(
                 6,
                 10
