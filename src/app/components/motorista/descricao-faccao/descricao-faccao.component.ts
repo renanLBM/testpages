@@ -141,7 +141,7 @@ export class DescricaoFaccaoComponent implements OnInit {
                   ciclo: op.NR_CICLO,
                   op: op.NR_OP,
                   ref: op.CD_REFERENCIA,
-                  previsao: op.PREV_RETORNO,
+                  previsao: op.PREV_RETORNO.substring(0,10),
                   Situacao: maiorApontamento.situacao,
                   checked: foiColetado,
                   descricao: op.DS_GRUPO,
