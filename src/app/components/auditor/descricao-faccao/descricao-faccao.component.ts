@@ -34,6 +34,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
 export class DescricaoFaccaoComponent implements OnInit {
   counter: number = 0;
   defaultImage = '../../../../assets/not-found.png';
+  imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
   loadingError: boolean = false;
   emptyList: boolean = false;
   filtroAtivo: boolean = false;
@@ -61,8 +62,6 @@ export class DescricaoFaccaoComponent implements OnInit {
   apontamentoList!: Apontamentos;
   apontamento!: Apontamento;
   imgList: string[] = [];
-
-  imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
 
   items = [
     { title: 'Atraso' },

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuditorGuard } from './guard/auditor.guard';
 import { LoginGuard } from './guard/login.guard';
+import { MotoristaGuard } from './guard/motorista.guard';
 import { PcpGuard } from './guard/pcp.guard';
 import { LoginComponent } from './shared/components/login/login.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
@@ -29,6 +30,14 @@ const routes: Routes = [
     loadChildren: () =>
       import('../app/components/auditor/auditor.module').then(
         (m) => m.AuditorModule
+      ),
+  },
+  {
+    path: 'motorista',
+    canLoad: [MotoristaGuard],
+    loadChildren: () =>
+      import('../app/components/motorista/motorista.module').then(
+        (m) => m.MotoristaModule
       ),
   },
   {

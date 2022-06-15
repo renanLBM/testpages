@@ -11,7 +11,7 @@ const API = environment.API_ENV;
   providedIn: 'root',
 })
 export class AuditorService {
-  retorno: number = 0;
+
   constructor(private _httpClient: HttpClient) {}
 
   getMotivos(): Observable<Motivos> {

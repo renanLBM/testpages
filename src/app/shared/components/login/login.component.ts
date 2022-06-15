@@ -29,6 +29,8 @@ export class LoginComponent implements OnInit {
         let nivel = JSON.parse(x.body).nivel;
         if (nivel == 1) {
           this._router.navigate(['auditor']);
+        } else if (nivel == 3) {
+          this._router.navigate(['motorista']);
         } else {
           this._router.navigate(['pcp']);
         }

@@ -169,7 +169,6 @@ export class PcpDescOpsComponent implements OnInit {
             (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
           )[0];
         }
-        console.log('apontamento', apontamento);
 
         let hj = new Date();
 

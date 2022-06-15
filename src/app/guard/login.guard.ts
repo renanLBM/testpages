@@ -28,6 +28,8 @@ export class LoginGuard implements CanActivate {
         this._route.navigate(['auditor']);
       } else if (nivel == 2 || nivel == 99) {
         this._route.navigate(['pcp']);
+      } else if (nivel == 3 || nivel == 99) {
+        this._route.navigate(['motorista']);
       }
       return false;
     }

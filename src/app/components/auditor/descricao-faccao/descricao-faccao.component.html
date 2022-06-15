@@ -86,11 +86,11 @@
                   <!-- <span [ngClass]="[item.status_color]" class="c-status">{{ item.status }}</span> -->
                   <p style="font-size: 15px;"><b>Previsão de retorno:</b> {{ item.previsao }}</p>
                   <div class="nv-prev" *ngIf="item.checked">
-                    <p [ngClass]="item.motivo_atraso" class="nv-prev-text atraso"><b>Nova previsão:</b> {{ item.novaprevisao }}
+                    <p [ngClass]="item.motivo_atraso!" class="nv-prev-text atraso"><b>Nova previsão:</b> {{ item.novaprevisao }}
                     </p>
                     <p *ngIf="item.motivo_atraso == 'Adiantamento'" [ngClass]="item.motivo_atraso" class="nv-prev-text atraso">
                       {{ item.motivo_atraso }}</p>
-                    <p *ngIf="item.motivo_atraso != 'Adiantamento'" [ngClass]="item.motivo_atraso" class="nv-prev-text atraso">
+                    <p *ngIf="item.motivo_atraso != 'Adiantamento'" [ngClass]="item.motivo_atraso!" class="nv-prev-text atraso">
                       <b>Motivo atraso:</b> {{ item.motivo_atraso }}
                     </p>
                   </div>

@@ -17,7 +17,7 @@ import {
   NbSidebarModule,
   NbSpinnerModule,
   NbToggleModule,
-  NbWindowModule
+  NbWindowModule,
 } from '@nebular/theme';
 import { DataTablesModule } from 'angular-datatables';
 import { NgxUsefulSwiperModule } from 'ngx-useful-swiper';
@@ -27,7 +27,6 @@ import { DialogTableOpComponent } from './components/dialog-table-op/dialog-tabl
 import { DialogTableComponent } from './components/dialog-table/dialog-table.component';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { HeaderComponent } from './components/header/header.component';
-import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 
@@ -41,7 +40,6 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
     HeaderComponent,
     LoginComponent,
     NotFoundComponent,
-    HomeComponent,
   ],
   imports: [
     RouterModule,
@@ -75,6 +73,6 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
     HeaderComponent,
     LoginComponent,
     NotFoundComponent,
-  ]
+  ],
 })
 export class SharedComponentsModule {}

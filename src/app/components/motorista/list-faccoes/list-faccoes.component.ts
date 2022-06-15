@@ -1,66 +1,66 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Faccao, Faccoes } from 'src/app/models/faccao';
+import { Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
+import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
-import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 @Component({
-  selector: 'fc-list-faccao',
-  templateUrl: './list-faccao.component.html',
-  styleUrls: ['./list-faccao.component.scss'],
+  selector: 'fc-list-faccoes',
+  templateUrl: './list-faccoes.component.html',
+  styleUrls: ['./list-faccoes.component.scss'],
 })
-export class ListFaccaoComponent implements OnInit {
-  selectedColecao: string = '';
-  menuColecao: string[] = [];
-  selectedFilters = {
-    origem: '',
-    colecao: this.selectedColecao,
-    apontamentoFilter: '',
-  };
-
+export class ListFaccoesComponent implements OnInit {
+  color: string[] = ['info', 'warning', 'primary', 'success'];
   emptyList: boolean = false;
   filtroAtivo: boolean = false;
   show_desc: boolean = true;
 
-  color: string[] = ['info', 'warning', 'primary', 'success'];
+  AllOpsList: OPs = [];
+  listCodOPsDisponiveis: string[] = [];
+  listOPsDisponiveis: OPs = [];
 
   localList: any[] = [];
-  AllOpsList: OPs = [];
   faccaoList: Faccoes = [];
-  faccaoList$: BehaviorSubject<Faccao[]> = new BehaviorSubject(this.faccaoList);
+  faccaoList$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.faccaoList);
 
   constructor(
+    public _loadingService: LoadingService,
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
-    private _opsFilteredService: OpsFilteredService,
-    public _loadingService: LoadingService
+    private _auditorService: AuditorService
   ) {}
 
   ngOnInit(): void {
-    this.selectedFilters = {
-      origem: '',
-      colecao: '',
-      apontamentoFilter: '',
-    };
-
-    this._opsFilteredService.setFilter(this.selectedFilters);
-
     this._setTitle.setTitle('Carregando...');
-    this._opsService.getAllOPs().subscribe({
-      next: (list) => {
-        this.AllOpsList = list;
-        this.setfaccaolist(list);
 
-        this.faccaoList.forEach((x) => {
-          this.menuColecao.push(x.colecao!);
-          this.menuColecao = [...new Set(this.menuColecao)];
+    // pega todos os códigos das ops marcadas como disponível
+    this._auditorService.getApontamento().subscribe({
+      next: (apontamentos) => {
+        let disponiveis = apontamentos.filter(
+          (apontamento) => apontamento.Situacao == 'Disponível para coleta'
+        );
+        this.listCodOPsDisponiveis = disponiveis.flatMap(
+          (op) => op.cod + '-' + op.CD_LOCAL
+        );
+
+        // listagem de todas as facções que possuem ops com status de apontamento "Disponível para coleta"
+        this._opsService.getAllOPs().subscribe({
+          next: (ops) => {
+            this.listOPsDisponiveis = ops.filter((op) => {
+              return this.listCodOPsDisponiveis.includes(
+                op.cod + '-' + op.CD_LOCAL
+              );
+            });
+
+            this.setfaccaolist(this.listOPsDisponiveis);
+
+            this._setTitle.setTitle('Motorista');
+          },
+          error: (err: Error) => console.error(err),
         });
-
-        this.faccaoList$.next(this.faccaoList);
-        this._setTitle.setTitle('Auditor');
       },
       error: (err: Error) => console.error(err),
     });
@@ -113,7 +113,10 @@ export class ListFaccaoComponent implements OnInit {
       );
     });
 
-    this.faccaoList.sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0));
+    this.faccaoList.sort((a, b) =>
+      a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0
+    );
+    this.emptyList = !this.faccaoList.length;
     this.faccaoList$.next(this.faccaoList);
   }
 
@@ -136,28 +139,5 @@ export class ListFaccaoComponent implements OnInit {
     this.filtroAtivo = false;
     item.value = '';
     this.faccaoList$.next(this.faccaoList);
-  }
-
-  filtrosDropdown(): void {
-    this.selectedFilters = {
-      origem: '',
-      colecao: this.selectedColecao,
-      apontamentoFilter: '',
-    };
-
-    // set the filter service to pass to others components
-    this._opsFilteredService.setFilter(this.selectedFilters);
-
-    let filteredOps = this.AllOpsList;
-
-    if (!!this.selectedColecao) {
-      filteredOps = this.AllOpsList.filter((x) => {
-        return x.DS_CICLO == this.selectedColecao;
-      });
-
-      this.setfaccaolist(filteredOps);
-      return;
-    }
-    this.setfaccaolist(filteredOps);
   }
 }

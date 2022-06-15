@@ -1,19 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
-import { RouterModule } from '@angular/router';
 import {
   NbButtonModule,
   NbCardModule,
-  NbContextMenuModule,
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
   NbLayoutModule,
-  NbSelectModule,
-  NbSpinnerModule, NbTagModule,
-  NbTooltipModule
+  NbSpinnerModule
 } from '@nebular/theme';
 import {
   LazyLoadImageModule,
@@ -21,32 +16,27 @@ import {
   ScrollHooks
 } from 'ng-lazyload-image';
 import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
-import { AuditorRoutingModule } from './auditor-routing.module';
 import { DescricaoFaccaoComponent } from './descricao-faccao/descricao-faccao.component';
-import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
+import { ListFaccoesComponent } from './list-faccoes/list-faccoes.component';
+import { MotoristaRoutingModule } from './motorista-routing.module';
+
 
 @NgModule({
-  declarations: [ListFaccaoComponent, DescricaoFaccaoComponent],
+  declarations: [ListFaccoesComponent, DescricaoFaccaoComponent],
   imports: [
-    RouterModule,
     CommonModule,
     FormsModule,
-    AuditorRoutingModule,
+    MotoristaRoutingModule,
     SharedComponentsModule,
     LazyLoadImageModule,
-    MatSelectModule,
     NbButtonModule,
     NbCardModule,
-    NbContextMenuModule,
+    NbFormFieldModule,
     NbIconModule,
     NbInputModule,
-    NbFormFieldModule,
     NbLayoutModule,
-    NbSelectModule,
     NbSpinnerModule,
-    NbTagModule,
-    NbTooltipModule,
   ],
   providers: [{ provide: LAZYLOAD_IMAGE_HOOKS, useClass: ScrollHooks }],
 })
-export class AuditorModule {}
+export class MotoristaModule {}

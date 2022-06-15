@@ -37,6 +37,11 @@ export class AppComponent implements AfterContentChecked {
       link: './auditor',
       icon: 'file-text-outline',
     },
+    {
+      title: 'Motorista',
+      link: './motorista',
+      icon: 'car-outline',
+    },
   ];
 
   isLoggedIn!: boolean;

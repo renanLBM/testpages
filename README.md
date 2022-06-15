@@ -25,3 +25,15 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+
+## Controle de versionamento
+
+[BitBucket](https://GarciaRenan@bitbucket.org/GarciaRenan/faccao-control.git)
+
+## Deploy
+
+Run  `firebase deploy` to deploy the aplication to [firebase](https://console.firebase.google.com/project/faccaocontrol/overview?hl=pt-br) - [help to deploy](https://www.c-sharpcorner.com/article/how-to-deploy-and-host-an-angular-application-on-firebase/)
+
+## Back-End made in Flask
+
