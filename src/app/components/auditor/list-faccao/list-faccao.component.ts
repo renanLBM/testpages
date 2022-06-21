@@ -150,9 +150,9 @@ export class ListFaccaoComponent implements OnInit {
 
     let filteredOps = this.AllOpsList;
 
-    if (!!this.selectedColecao) {
+    if (this.selectedColecao.length > 0) {
       filteredOps = this.AllOpsList.filter((x) => {
-        return x.DS_CICLO == this.selectedColecao;
+        return this.selectedColecao.includes(x.DS_CICLO);
       });
 
       this.setfaccaolist(filteredOps);

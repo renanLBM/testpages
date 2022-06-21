@@ -15,22 +15,22 @@ export class AppComponent implements AfterContentChecked {
     {
       title: 'PCP',
       icon: 'keypad-outline',
-      link: './pcp',
+      // link: './pcp',
       // expanded: true,
-      // children: [
-      //   {
-      //     title: 'Total',
-      //     link: './pcp/descricao/Total'
-      //   },
-      //   {
-      //     title: 'Em andamento',
-      //     link: './pcp/descricao/Em andamento'
-      //   },
-      //   {
-      //     title: 'Em atraso',
-      //     link: './pcp/descricao/Em atraso'
-      //   },
-      // ],
+      children: [
+        {
+          title: 'Gerencial',
+          link: './pcp'
+        },
+        // {
+        //   title: 'Em andamento',
+        //   link: './pcp/descricao/Em andamento'
+        // },
+        // {
+        //   title: 'Em atraso',
+        //   link: './pcp/descricao/Em atraso'
+        // },
+      ],
     },
     {
       title: 'Auditor',

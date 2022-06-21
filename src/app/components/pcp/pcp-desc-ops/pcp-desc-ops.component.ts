@@ -289,14 +289,14 @@ export class PcpDescOpsComponent implements OnInit {
       );
     }
 
-    if (!!origem && !!colecao) {
+    if (origem.length > 0 && colecao.length > 0) {
       listFilteredOPs = listFilteredOPs.filter(
-        (x) => x.DS_CLASS == origem && x.DS_CICLO == colecao
+        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.DS_CICLO)
       );
     } else if (!!origem && !colecao) {
-      listFilteredOPs = listFilteredOPs.filter((x) => x.DS_CLASS == origem);
+      listFilteredOPs = listFilteredOPs.filter((x) => origem.includes(x.DS_CLASS));
     } else if (!origem && !!colecao) {
-      listFilteredOPs = listFilteredOPs.filter((x) => x.DS_CICLO == colecao);
+      listFilteredOPs = listFilteredOPs.filter((x) => colecao.includes(x.DS_CICLO));
     }
     return listFilteredOPs;
   }

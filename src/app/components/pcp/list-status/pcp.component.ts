@@ -120,7 +120,6 @@ export class PcpComponent implements OnInit {
   }
 
   summarize(filterSelected?: number): void {
-
     // resetar as variáveis
     this.tipoList = [];
     this.OpList = [];
@@ -150,18 +149,18 @@ export class PcpComponent implements OnInit {
       case 1: // dois filtros selecionados
         listFilteredOPs = this.listStatus.filter(
           (x) =>
-            x.DS_CLASS == this.selectedOrigem &&
-            x.DS_CICLO == this.selectedColecao
+            this.selectedOrigem.includes(x.DS_CLASS) &&
+            this.selectedColecao.includes(x.DS_CICLO)
         );
         break;
       case 2: // somente origem
         listFilteredOPs = this.listStatus.filter(
-          (x) => x.DS_CLASS == this.selectedOrigem
+          (x) => this.selectedOrigem.includes(x.DS_CLASS)
         );
         break;
       case 3: // somente colecao
-        listFilteredOPs = this.listStatus.filter(
-          (x) => x.DS_CICLO == this.selectedColecao
+        listFilteredOPs = this.listStatus.filter((x) =>
+          this.selectedColecao.includes(x.DS_CICLO)
         );
         break;
     }
@@ -434,21 +433,24 @@ export class PcpComponent implements OnInit {
       apontamentoFilter: '',
     };
 
+    let hasOrigem = this.selectedOrigem.length > 0;
+    let hasColecao = this.selectedColecao.length > 0;
+
     // set the filter service to pass to others components
     this._opsFilteredService.setFilter(this.selectedFilters);
 
     // 1 = dois filtros selecionados
-    if (!!this.selectedColecao && !!this.selectedOrigem) {
+    if (hasColecao && hasOrigem) {
       this.summarize(1);
       return;
     }
     // 2 = somente origem
-    if (!!this.selectedOrigem) {
+    if (hasOrigem) {
       this.summarize(2);
       return;
     }
     // 3 = somente colecao
-    if (!!this.selectedColecao) {
+    if (hasColecao) {
       this.summarize(3);
       return;
     }

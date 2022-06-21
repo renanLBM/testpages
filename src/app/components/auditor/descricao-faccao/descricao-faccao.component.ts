@@ -108,8 +108,8 @@ export class DescricaoFaccaoComponent implements OnInit {
         let id = this._route.snapshot.paramMap.get('id')!;
         this._opsService.getOpById(id).subscribe({
           next: (op) => {
-            if(!!filtroColecao) {
-              op = op.filter((x) => x.DS_CICLO == filtroColecao);
+            if(filtroColecao > 0) {
+              op = op.filter((x) => filtroColecao.include(x.DS_CICLO));
             }
             op.sort((a, b) => {
               let dataRetornoA = `${a.PREV_RETORNO.substring(
