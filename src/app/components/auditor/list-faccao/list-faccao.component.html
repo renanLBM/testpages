@@ -15,7 +15,7 @@
           <mat-form-field appearance="fill">
             <mat-label>Coleção</mat-label>
             <mat-select panelClass="filtro-menu" [(ngModel)]="selectedColecao" name="colecaoForm">
-              <mat-option (click)="filtrosDropdown()">
+              <mat-option value="" (click)="filtrosDropdown()">
                 Limpar filtro
               </mat-option>
               <mat-option (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">
