@@ -1,10 +1,10 @@
 {
   "name": "faccao-control",
-  "version": "0.2.2",
+  "version": "0.2.21",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --output-hashing",
+    "build": "ng build --output-hashing=all",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

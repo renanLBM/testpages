@@ -405,19 +405,21 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     let {origem, colecao} = this.selectedFilters;
     let listFilteredOPs = OPList;
 
-    if (!!origem && !!colecao) {
+
+    let hasOrigem = origem.length > 0;
+    let hasColecao = colecao.length > 0;
+
+    if (hasOrigem && hasColecao) {
       listFilteredOPs = OPList.filter(
-        (x) =>
-          x.DS_CLASS == origem &&
-          x.DS_CICLO == colecao
+        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.DS_CICLO)
       );
-    } else if (!!origem && !colecao) {
+    } else if (hasOrigem && !hasColecao) {
       listFilteredOPs = OPList.filter(
-        (x) => x.DS_CLASS == origem
+        (x) => origem.includes(x.DS_CLASS)
       );
-    } else if (!origem && !!colecao) {
+    } else if (!hasOrigem && hasColecao) {
       listFilteredOPs = OPList.filter(
-        (x) => x.DS_CICLO == colecao
+        (x) => colecao.includes(x.DS_CICLO)
       );
     }
     return listFilteredOPs;
