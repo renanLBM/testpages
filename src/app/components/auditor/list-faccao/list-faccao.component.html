@@ -11,30 +11,30 @@
 
     <ng-template #allOPs>
       <div class="filter-wrapper">
-        <div class="filtro-dropdown">
-          <mat-form-field appearance="fill">
-            <mat-label>Coleção</mat-label>
-            <mat-select panelClass="filtro-menu" [(ngModel)]="selectedColecao" name="colecaoForm">
-              <mat-option value="" (click)="filtrosDropdown()">
-                Limpar filtro
-              </mat-option>
-              <mat-option (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">
-                {{colecao}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+        <h6 class="filter-title">Filtros</h6>
+        <div class="filter-menu-wrapper">
+          <div class="filtro-dropdown">
+            <nb-select multiple placeholder="Coleção" [(ngModel)]="selectedColecao" status="primary">
+              <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
+              <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}
+              </nb-option>
+            </nb-select>
+          </div>
+          <div class="filtro-dropdown">
+            <nb-form-field>
+              <input type="text" id="filtro" #filtro nbInput (keyup)="filtroFaccao($event)"
+                placeholder="Filtrar facção">
+              <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">
+                <nb-icon icon="close-square-outline" aria-label="pesquisar">
+                </nb-icon>
+              </button>
+              <button nbSuffix nbButton ghost (click)="filtroFaccao($event)">
+                <nb-icon icon="search-outline" aria-label="pesquisar">
+                </nb-icon>
+              </button>
+            </nb-form-field>
+          </div>
         </div>
-        <nb-form-field>
-          <input type="text" id="filtro" #filtro nbInput (keyup)="filtroFaccao($event)" placeholder="Filtrar facção">
-          <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">
-            <nb-icon icon="close-square-outline" aria-label="pesquisar">
-            </nb-icon>
-          </button>
-          <button nbSuffix nbButton ghost (click)="filtroFaccao($event)">
-            <nb-icon icon="search-outline" aria-label="pesquisar">
-            </nb-icon>
-          </button>
-        </nb-form-field>
       </div>
     </ng-template>
 

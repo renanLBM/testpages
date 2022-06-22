@@ -35,7 +35,7 @@ interface TipoPorStatus {
 export class PcpComponent implements OnInit {
   selectedOrigem: string = '';
   menuOrigem: string[] = [];
-  selectedColecao: string = '';
+  selectedColecao: string[] = [];
   menuColecao: string[] = [];
   color: string[] = ['warning', 'info', 'success', 'danger', 'primary'];
   selectedFilters = {
@@ -101,7 +101,7 @@ export class PcpComponent implements OnInit {
           this.menuOrigem.push(x.DS_CLASS);
           this.menuOrigem = [...new Set(this.menuOrigem)];
 
-          this.menuColecao.push(x.DS_CICLO);
+          this.menuColecao.push(x.NR_CICLO + '-' + x.DS_CICLO);
           this.menuColecao = [...new Set(this.menuColecao)];
 
           this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
@@ -150,7 +150,7 @@ export class PcpComponent implements OnInit {
         listFilteredOPs = this.listStatus.filter(
           (x) =>
             this.selectedOrigem.includes(x.DS_CLASS) &&
-            this.selectedColecao.includes(x.DS_CICLO)
+            this.selectedFilters.colecao.includes(x.DS_CICLO)
         );
         break;
       case 2: // somente origem
@@ -160,7 +160,7 @@ export class PcpComponent implements OnInit {
         break;
       case 3: // somente colecao
         listFilteredOPs = this.listStatus.filter((x) =>
-          this.selectedColecao.includes(x.DS_CICLO)
+          this.selectedFilters.colecao.includes(x.DS_CICLO)
         );
         break;
     }
@@ -427,9 +427,13 @@ export class PcpComponent implements OnInit {
   }
 
   filtrosDropdown(): void {
+    let colecaoFilter = this.selectedColecao.map(
+      (item) => item.split('-')[1]
+    );
+
     this.selectedFilters = {
       origem: this.selectedOrigem,
-      colecao: this.selectedColecao,
+      colecao: colecaoFilter,
       apontamentoFilter: '',
     };
 

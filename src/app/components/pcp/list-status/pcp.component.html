@@ -7,13 +7,13 @@
         <div class="filtro-dropdown">
           <nb-select multiple placeholder="Origem" [(ngModel)]="selectedOrigem" status="primary">
             <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
-            <nb-option (click)="filtrosDropdown()" *ngFor="let origem of menuOrigem" [value]="origem">{{origem}}</nb-option>
+            <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let origem of menuOrigem" [value]="origem">{{origem}}</nb-option>
           </nb-select>
         </div>
         <div class="filtro-dropdown">
           <nb-select multiple placeholder="Coleção" [(ngModel)]="selectedColecao" status="primary">
             <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
-            <nb-option (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}</nb-option>
+            <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}</nb-option>
           </nb-select>
         </div>
       </div>

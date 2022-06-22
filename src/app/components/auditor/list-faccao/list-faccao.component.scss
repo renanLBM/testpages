@@ -1,33 +1,5 @@
 @import "../../../../themes.scss";
 
-::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
-  background-color: nb-theme(color-hero-button-custom);
-}
-
-::ng-deep .mat-form-field-ripple {
-  background-color: nb-theme(text-basic-color);
-}
-
-::ng-deep .mat-form-field-type-mat-select .mat-form-field-label,
-.mat-select-value {
-  color: nb-theme(text-basic-color) !important;
-}
-
-::ng-deep .mat-select-value {
-  color: nb-theme(text-basic-color) !important;
-  ;
-}
-
-::ng-deep .filtro-menu.mat-select-panel {
-  border: 0;
-  background-color: nb-theme(color-hero-button-custom2);
-}
-
-::ng-deep .mat-option {
-  color: nb-theme(text-basic-color) !important;
-}
-
-
 .card-wrapper {
   display: flex;
   justify-content: center;
@@ -35,10 +7,35 @@
 }
 
 .filter-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  margin: 0 25px 25px;
+  margin: 0 15px 15px;
+  padding: 10px;
+  border: 1px solid lightblue;
+  border-radius: 5px;
+
+  .filter-title {
+    font-weight: 600;
+    margin-top: -20px;
+    background-color: nb-theme(color-hero-button-custom);
+    width: max-content;
+    padding: 0 3px;
+  }
+
+  .filter-menu-wrapper {
+    margin-left: 2em;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    // justify-content: flex-end;
+    // margin-bottom: 15px !important;
+  }
+
+  .filtro-dropdown {
+    margin-right: 15px;
+    // margin-bottom: 10px;
+  }
+}
+::ng-deep nb-select {
+  width: 275px;
 }
 
 @media screen and (max-width: 475px) {

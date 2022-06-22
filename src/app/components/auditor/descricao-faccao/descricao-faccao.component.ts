@@ -2,14 +2,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   NbDialogService,
   NbMenuService,
   NbWindowControlButtonsConfig,
-  NbWindowService
+  NbWindowService,
 } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -84,7 +84,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   ngOnInit(): void {
     // pega o filtro setado na página anterior (escolha da facção)
-    let filtroColecao = this._opsFilteredService.getFilter().colecao;
+    let filtroColecao: string[] = this._opsFilteredService.getFilter().colecao;
     // pegar a semana atual
     let currentdate: Date = new Date();
     let oneJan: Date = new Date(currentdate.getFullYear(), 0, 1);
@@ -108,8 +108,10 @@ export class DescricaoFaccaoComponent implements OnInit {
         let id = this._route.snapshot.paramMap.get('id')!;
         this._opsService.getOpById(id).subscribe({
           next: (op) => {
-            if(filtroColecao > 0) {
-              op = op.filter((x) => filtroColecao.include(x.DS_CICLO));
+            if (filtroColecao.length > 0) {
+              op = op.filter((x) => {
+                return filtroColecao.includes(x.DS_CICLO)
+              });
             }
             op.sort((a, b) => {
               let dataRetornoA = `${a.PREV_RETORNO.substring(

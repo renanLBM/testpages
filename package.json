@@ -1,6 +1,6 @@
 {
   "name": "faccao-control",
-  "version": "0.2.22",
+  "version": "0.2.23",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -16,7 +16,6 @@
     "@angular/compiler": "~13.0.0",
     "@angular/core": "~13.0.0",
     "@angular/forms": "~13.0.0",
-    "@angular/material": "^13.3.1",
     "@angular/platform-browser": "~13.0.0",
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",

@@ -13,7 +13,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   styleUrls: ['./list-faccao.component.scss'],
 })
 export class ListFaccaoComponent implements OnInit {
-  selectedColecao: string = '';
+  selectedColecao: string[] = [];
   menuColecao: string[] = [];
   selectedFilters = {
     origem: '',
@@ -42,7 +42,7 @@ export class ListFaccaoComponent implements OnInit {
   ngOnInit(): void {
     this.selectedFilters = {
       origem: '',
-      colecao: '',
+      colecao: [],
       apontamentoFilter: '',
     };
 
@@ -55,9 +55,11 @@ export class ListFaccaoComponent implements OnInit {
         this.setfaccaolist(list);
 
         this.faccaoList.forEach((x) => {
-          this.menuColecao.push(x.colecao!);
+          this.menuColecao.push(x.ciclo + '-' + x.colecao!);
           this.menuColecao = [...new Set(this.menuColecao)];
         });
+
+        this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
 
         this.faccaoList$.next(this.faccaoList);
         this._setTitle.setTitle('Auditor');
@@ -106,6 +108,7 @@ export class ListFaccaoComponent implements OnInit {
             qnt_atraso: atraso,
             per_atraso: Math.floor(per_atraso * 100),
             qnt_pecas: 0,
+            ciclo: listaFaccoes.find((x) => x.DS_LOCAL == f)?.NR_CICLO + '',
             colecao: listaFaccoes.find((x) => x.DS_LOCAL == f)?.DS_CICLO,
             color: cor,
           },
@@ -139,9 +142,14 @@ export class ListFaccaoComponent implements OnInit {
   }
 
   filtrosDropdown(): void {
+
+    let colecaoFilter = this.selectedColecao.map(
+      (item) => item.split('-')[1]
+    );
+
     this.selectedFilters = {
       origem: '',
-      colecao: this.selectedColecao,
+      colecao: colecaoFilter,
       apontamentoFilter: '',
     };
 
@@ -152,7 +160,7 @@ export class ListFaccaoComponent implements OnInit {
 
     if (this.selectedColecao.length > 0) {
       filteredOps = this.AllOpsList.filter((x) => {
-        return this.selectedColecao.includes(x.DS_CICLO);
+        return colecaoFilter.includes(x.DS_CICLO);
       });
 
       this.setfaccaolist(filteredOps);

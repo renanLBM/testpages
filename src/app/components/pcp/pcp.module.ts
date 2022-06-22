@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
@@ -33,7 +32,6 @@ import { PCPRoutingModule } from './pcp-routing.module';
     FontAwesomeModule,
     PCPRoutingModule,
     SharedComponentsModule,
-    MatSelectModule,
     NbAlertModule,
     NbButtonModule,
     NbCardModule,

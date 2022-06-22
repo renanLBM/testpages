@@ -12,6 +12,7 @@ export interface Faccao {
   status?: string,
   tipo?: string,
   origem?: string,
+  ciclo?: string,
   colecao?: string,
   color?: string,
   ordem?: number

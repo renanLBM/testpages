@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import {
   NbButtonModule,
@@ -34,7 +33,6 @@ import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
     AuditorRoutingModule,
     SharedComponentsModule,
     LazyLoadImageModule,
-    MatSelectModule,
     NbButtonModule,
     NbCardModule,
     NbContextMenuModule,
