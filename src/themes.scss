@@ -8,9 +8,10 @@ $nb-themes: nb-register-theme(( // add your variables here like:
       color-hero-button-custom2: #222B45,
       color-tb-header-bg: #131324,
       color-tb-even-bg: #101024,
-      color-primary-900: #29157a,
+      color-primary-900: #091c7a,
       color-danger-new: #fa767b,
-      color-success-new: #00b887), dark, dark);
+      color-success-new: #00b887,
+      color-warning-new: #f3b73e), dark, dark);
 
 $nb-themes: nb-register-theme(( // add your variables here like:
       // color-bg: #4ca6ff,
@@ -18,7 +19,8 @@ $nb-themes: nb-register-theme(( // add your variables here like:
       color-hero-button-custom2: #f7f9fc,
       color-tb-header-bg: #9f9faf,
       color-tb-even-bg: #d9d9d9,
-      color-primary-900: #091c7a,
+      color-primary-900: #3e2494,
       color-danger-new: #db2c66,
       color-success-new: #087f23,
+      color-warning-new: #f3b73e,
     ), default, default);

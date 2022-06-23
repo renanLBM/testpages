@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AlteracoesComponent } from './alteracoes/alteracoes.component';
 import { DescricaoStatusComponent } from './descricao-status/descricao-status.component';
 import { PcpComponent } from './list-status/pcp.component';
 import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
@@ -24,6 +25,10 @@ const routes: Routes = [
   {
     path: 'ops-descricao/:status/:faccaoid/:origem',
     component: PcpDescOpsComponent,
+  },
+  {
+    path: 'alteracoes',
+    component: AlteracoesComponent,
   }
 ];
 

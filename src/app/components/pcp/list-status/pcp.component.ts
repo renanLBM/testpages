@@ -58,7 +58,9 @@ export class PcpComponent implements OnInit {
     em_fila: 0,
     em_producao: 0,
     parado: 0,
+    inspecao: 0,
     disponivel: 0,
+    transporte: 0,
   };
 
   statusTipo: TipoPorStatus[] = [
@@ -408,7 +410,9 @@ export class PcpComponent implements OnInit {
         em_fila: situacaoListObj['Em fila'] / qntOpsList || 0,
         em_producao: situacaoListObj['Em produção'] / qntOpsList || 0,
         parado: situacaoListObj['Parado'] / qntOpsList || 0,
+        inspecao: situacaoListObj['Em inspeção'] / qntOpsList || 0,
         disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
+        transporte: situacaoListObj['Em transporte'] / qntOpsList || 0,
       };
     });
   }

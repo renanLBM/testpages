@@ -17,6 +17,7 @@ export class CardComponent implements OnInit {
   @Input() show_desc: boolean = false;
   @Input() page_desc: string = '';
   @Input() text_desc: string = '';
+  @Input() headerColor: string = '';
   qnt_text_desc: string = '';
 
   @Input() c_accent: NbComponentStatus = 'basic';

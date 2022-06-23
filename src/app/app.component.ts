@@ -22,10 +22,10 @@ export class AppComponent implements AfterContentChecked {
           title: 'Gerencial',
           link: './pcp'
         },
-        // {
-        //   title: 'Em andamento',
-        //   link: './pcp/descricao/Em andamento'
-        // },
+        {
+          title: 'Alterações',
+          link: './pcp/alteracoes'
+        },
         // {
         //   title: 'Em atraso',
         //   link: './pcp/descricao/Em atraso'

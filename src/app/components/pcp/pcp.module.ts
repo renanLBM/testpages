@@ -13,17 +13,25 @@ import {
   NbLayoutModule,
   NbSelectModule,
   NbSpinnerModule,
-  NbTooltipModule
+  NbTooltipModule,
+  NbTreeGridModule,
 } from '@nebular/theme';
 import { DataTablesModule } from 'angular-datatables';
 import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
+import { AlteracoesComponent, FsIconComponent } from './alteracoes/alteracoes.component';
 import { DescricaoStatusComponent } from './descricao-status/descricao-status.component';
 import { PcpComponent } from './list-status/pcp.component';
 import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
 import { PCPRoutingModule } from './pcp-routing.module';
 
 @NgModule({
-  declarations: [PcpComponent, DescricaoStatusComponent, PcpDescOpsComponent],
+  declarations: [
+    PcpComponent,
+    DescricaoStatusComponent,
+    PcpDescOpsComponent,
+    AlteracoesComponent,
+    FsIconComponent
+  ],
   imports: [
     RouterModule,
     CommonModule,
@@ -41,6 +49,7 @@ import { PCPRoutingModule } from './pcp-routing.module';
     NbInputModule,
     NbSelectModule,
     NbSpinnerModule,
+    NbTreeGridModule,
     NbTooltipModule,
   ],
 })

@@ -1,5 +1,5 @@
 <nb-card [status]="c_status" class="card-wrapper" [nbSpinner]="loading" nbSpinnerStatus="primary">
-  <nb-card-header>{{ title }}</nb-card-header>
+  <nb-card-header [ngClass]="headerColor">{{ title }}</nb-card-header>
   <nb-card-body>
     <div class="c-body">
       <div [ngClass]="page_desc">

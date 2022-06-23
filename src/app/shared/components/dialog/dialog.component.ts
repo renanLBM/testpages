@@ -35,6 +35,7 @@ export class DialogComponent implements OnInit {
     'Em fila',
     'Em produção',
     'Parado',
+    'Em inspeção',
     'Disponível para coleta',
   ];
 

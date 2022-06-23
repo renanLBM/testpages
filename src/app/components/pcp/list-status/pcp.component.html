@@ -33,8 +33,12 @@
             | percent:'1.1-2' }}</nb-alert>
           <nb-alert status="warning" (click)="filterApontamento('Parado')">Parado: {{ apontamentoList.parado |
             percent:'1.1-2' }}</nb-alert>
+          <nb-alert class="inspecao" (click)="filterApontamento('Em inspeção')">Em inspeção: {{ apontamentoList.inspecao |
+            percent:'1.1-2' }}</nb-alert>
           <nb-alert status="success" (click)="filterApontamento('Disponível para coleta')">Coleta: {{
             apontamentoList.disponivel | percent:'1.1-2' }}</nb-alert>
+          <nb-alert class="transporte" (click)="filterApontamento('Em transporte')">Transporte: {{
+            apontamentoList.transporte | percent:'1.1-2' }}</nb-alert>
         </nb-card-body>
       </nb-card>
     </div>

@@ -3,7 +3,6 @@ import { BehaviorSubject } from 'rxjs';
 import { Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
-import { LoadingService } from 'src/app/services/loading.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
@@ -27,7 +26,6 @@ export class ListFaccoesComponent implements OnInit {
   faccaoList$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.faccaoList);
 
   constructor(
-    public _loadingService: LoadingService,
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
     private _auditorService: AuditorService
@@ -58,6 +56,7 @@ export class ListFaccoesComponent implements OnInit {
             this.setfaccaolist(this.listOPsDisponiveis);
 
             this._setTitle.setTitle('Motorista');
+            this.emptyList = false;
           },
           error: (err: Error) => console.error(err),
         });
@@ -70,6 +69,15 @@ export class ListFaccoesComponent implements OnInit {
     this.faccaoList = [];
     this.localList = listaFaccoes.flatMap((x) => x.DS_LOCAL);
 
+    let qnt_list: any[] = [];
+
+    listaFaccoes.forEach((x) => {
+      qnt_list.push({
+        local: x['DS_LOCAL'],
+        qnt: x['QT_OP'],
+      });
+    });
+
     let uniq = [...new Set(this.localList)].filter((item) => item !== '');
 
     let qnt = this.localList.reduce((prev, cur) => {
@@ -77,26 +85,37 @@ export class ListFaccoesComponent implements OnInit {
       return prev;
     }, {});
 
+    let qntTotalPecasTipo = qnt_list.reduce(
+      (
+        prev: { [x: string]: any },
+        cur: { local: string | number; qnt: string }
+      ) => {
+        prev[cur.local] = (prev[cur.local] || 0) + parseInt(cur.qnt);
+        return prev;
+      },
+      {}
+    );
+
+    this.localList.forEach((t) => {
+      if (!qntTotalPecasTipo[t]) {
+        qntTotalPecasTipo[t] = 0;
+      }
+    });
+
+    let pecasArray = Object.keys(qntTotalPecasTipo).map((key) => [
+      key,
+      qntTotalPecasTipo[key],
+    ]);
+
     let id = 0;
     let atraso = 0;
-    let per_atraso = 0;
+    let qnt_pecas = 0;
     let cor = '';
 
     uniq.map((f: string, index: number) => {
       id = listaFaccoes.find((x) => x.DS_LOCAL == f)?.CD_LOCAL!;
-      atraso = listaFaccoes.filter(
-        (op) => op.Status == 'Em atraso' && op.DS_LOCAL == f
-      ).length;
-      per_atraso = atraso / qnt[f];
 
-      if (per_atraso >= 0.5) {
-        cor = 'danger';
-      } else if (per_atraso >= 0.01) {
-        cor = 'warning';
-      } else {
-        cor = 'info';
-      }
-
+      qnt_pecas = +pecasArray.find((x) => x[0] == f)![1] || 0;
       this.faccaoList.push(
         ...[
           {
@@ -104,14 +123,17 @@ export class ListFaccoesComponent implements OnInit {
             name: f,
             qnt: qnt[f],
             qnt_atraso: atraso,
-            per_atraso: Math.floor(per_atraso * 100),
-            qnt_pecas: 0,
+            qnt_pecas: qnt_pecas,
             colecao: listaFaccoes.find((x) => x.DS_LOCAL == f)?.DS_CICLO,
             color: cor,
           },
         ]
       );
     });
+
+    this.faccaoList.sort((a, b) =>
+      a.qnt_pecas < b.qnt_pecas ? 1 : b.qnt_pecas < a.qnt_pecas ? -1 : 0
+    );
 
     this.faccaoList.sort((a, b) =>
       a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0
