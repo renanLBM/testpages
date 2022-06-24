@@ -32,6 +32,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   apontamentoList!: Apontamentos;
   apontamento!: Apontamento;
+  novoApontamento!: Apontamento;
 
   latitude: number = 0;
   longitude: number = 0;
@@ -59,7 +60,6 @@ export class DescricaoFaccaoComponent implements OnInit {
   ngOnInit(): void {
     this._setTitle.setTitle('Carregando...');
     let id = this._route.snapshot.paramMap.get('id')!;
-
     this.user = this._userService.getSession().nome;
 
     if (navigator.geolocation) {
@@ -78,13 +78,14 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
 
     this._auditorService.getApontamento().subscribe((apontamentos) => {
-      let disponiveis = apontamentos.filter(
-        (apontamento) => apontamento.Situacao == 'Disponível para coleta'
+      let apontamentosDisponiveis = apontamentos.filter(
+        (apontamento) =>
+          apontamento.Situacao == 'Disponível para coleta' ||
+          apontamento.Situacao == 'Em transporte'
       );
-      this.listCodOPsDisponiveis = disponiveis.flatMap(
+      this.listCodOPsDisponiveis = apontamentosDisponiveis.flatMap(
         (op) => op.cod + '-' + op.CD_LOCAL
       );
-
       this._motoristaService.getColeta().subscribe({
         next: (coletados) => {
           this._opsService.getOpById(id).subscribe({
@@ -124,7 +125,9 @@ export class DescricaoFaccaoComponent implements OnInit {
               let foiColetado: boolean = false;
 
               ops.map((op) => {
-                foiColetado = !!coletados.filter((coleta) => coleta.CD_REFERENCIA == op.CD_REFERENCIA)[0];
+                foiColetado = !!coletados.filter(
+                  (coleta) => coleta.CD_REFERENCIA == op.CD_REFERENCIA
+                )[0];
                 maiorApontamento = this.filtraMaiorApontamento(
                   op.CD_REFERENCIA
                 );
@@ -141,7 +144,7 @@ export class DescricaoFaccaoComponent implements OnInit {
                   ciclo: op.NR_CICLO,
                   op: op.NR_OP,
                   ref: op.CD_REFERENCIA,
-                  previsao: op.PREV_RETORNO.substring(0,10),
+                  previsao: op.PREV_RETORNO.substring(0, 10),
                   Situacao: maiorApontamento.situacao,
                   checked: foiColetado,
                   descricao: op.DS_GRUPO,
@@ -252,8 +255,6 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   sendColetaBt(op: descOP): void {
-    this.user = this._userService.getSession().nome;
-
     this.novaColeta = {
       cod: '',
       CD_LOCAL: op.cd_local,
@@ -276,6 +277,7 @@ export class DescricaoFaccaoComponent implements OnInit {
           return;
         }
         this.coletado = true;
+        this.submitiApontamento(op);
         this.setCheckedColeta(op.ref, this.coletado);
       },
       error: (err) => {
@@ -300,8 +302,6 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   removeColetaBt(op: descOP): void {
     this.loading = true;
-
-    // this.removed = true;
 
     this.novaColeta = {
       cod: '',
@@ -330,5 +330,36 @@ export class DescricaoFaccaoComponent implements OnInit {
         alert(`ERROR(${err.code}) ${err.message}`);
       },
     });
+  }
+
+  submitiApontamento(op: descOP): void {
+    this.novoApontamento = {
+      cod: '',
+      CD_LOCAL: op.cd_local,
+      NR_CICLO: op.ciclo!,
+      NR_OP: op.op!,
+      CD_REFERENCIA: op.ref,
+      PREV_RETORNO: op.previsao,
+      QT_OP: op.qnt!,
+      Status: op.status!,
+      Situacao: 'Em transporte',
+      USUARIO: this.user,
+      DT_INSERIDO: new Date().toLocaleString('pt-Br'),
+      latitude: this.latitude,
+      longitude: this.longitude,
+    };
+
+    this.loading = true;
+    this._auditorService.setApontamento(this.novoApontamento).subscribe({
+      next: (ret) => {
+        console.log(ret);
+        this.loading = false;
+        return;
+      },
+      error: (err) => {
+        alert(`ERROR(${err.code}) ${err.message}`);
+      },
+    });
+    this.loading = false;
   }
 }

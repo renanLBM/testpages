@@ -1,5 +1,6 @@
 import { AfterContentChecked, Component } from '@angular/core';
 import { NbMenuItem, NbSidebarService } from '@nebular/theme';
+import { AppUpdateService } from './providers/app-update.service';
 import { UserService } from './services/user.service';
 import { SetTitleServiceService } from './shared/set-title-service.service';
 
@@ -22,10 +23,10 @@ export class AppComponent implements AfterContentChecked {
           title: 'Gerencial',
           link: './pcp'
         },
-        {
-          title: 'Alterações',
-          link: './pcp/alteracoes'
-        },
+        // {
+        //   title: 'Alterações',
+        //   link: './pcp/alteracoes'
+        // },
         // {
         //   title: 'Em atraso',
         //   link: './pcp/descricao/Em atraso'
@@ -50,7 +51,8 @@ export class AppComponent implements AfterContentChecked {
   constructor(
     private _sidebarService: NbSidebarService,
     private _setTitle: SetTitleServiceService,
-    private _userService: UserService
+    private _userService: UserService,
+    private _appUpdate: AppUpdateService,
   ) {}
 
   ngAfterContentChecked(): void {

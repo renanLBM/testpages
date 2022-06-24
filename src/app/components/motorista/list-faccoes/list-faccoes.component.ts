@@ -38,7 +38,7 @@ export class ListFaccoesComponent implements OnInit {
     this._auditorService.getApontamento().subscribe({
       next: (apontamentos) => {
         let disponiveis = apontamentos.filter(
-          (apontamento) => apontamento.Situacao == 'Disponível para coleta'
+          (apontamento) => apontamento.Situacao == 'Disponível para coleta' || 'Em transporte'
         );
         this.listCodOPsDisponiveis = disponiveis.flatMap(
           (op) => op.cod + '-' + op.CD_LOCAL

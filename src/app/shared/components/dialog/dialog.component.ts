@@ -230,14 +230,6 @@ export class DialogComponent implements OnInit {
 
   submitiApontamento(): void {
     let nApontamento = this.dialogForm.value;
-    // let dataInserida = new Date(nApontamento.dtControl);
-
-    // // the hours of dataInserida is equals to 00:00
-    // // needed to sum 23 hours in miliseconds to validation
-    // if (dataInserida.getTime() + 82800000 < new Date().getTime()) {
-    //   this.err = true;
-    //   return;
-    // }
 
     let novoApontamentoForm = this.situacaoList[nApontamento.situacaoControl];
 

@@ -21,6 +21,7 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginGuard } from './guard/login.guard';
+import { AppUpdateService } from './providers/app-update.service';
 import { InterceptorService } from './services/interceptor.service';
 import { SharedComponentsModule } from './shared/shared-components.module';
 
@@ -53,8 +54,9 @@ registerLocaleData(localePt, 'pt-BR');
     FontAwesomeModule,
   ],
   providers: [
-    { provide: LOCALE_ID, useValue: 'pt-BR' },
+    AppUpdateService,
     LoginGuard,
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },
   ],
   bootstrap: [AppComponent],
