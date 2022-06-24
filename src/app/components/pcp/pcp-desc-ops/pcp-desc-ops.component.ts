@@ -1,27 +1,24 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { Faccoes } from 'src/app/models/faccao';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
+import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
-
-import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
-import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
-import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 
 @Component({
   selector: 'fc-pcp-desc-ops',
   templateUrl: './pcp-desc-ops.component.html',
   styleUrls: ['./pcp-desc-ops.component.scss'],
 })
-export class PcpDescOpsComponent implements OnInit {
-  faFileExcel = faFileExcel;
+export class PcpDescOpsComponent implements OnInit, OnDestroy {
   dtOptions: any;
   dtTrigger: Subject<any> = new Subject<any>();
   selectedFilters = {
@@ -273,19 +270,19 @@ export class PcpDescOpsComponent implements OnInit {
     let listFilteredOPs = OPList;
 
     // filtra as ops de acordo com o status filtrado
-    if (!!apontamentoFilter && apontamentoFilter != "Não informado") {
+    if (!!apontamentoFilter && apontamentoFilter != 'Não informado') {
       let apCodList = this.apontamentoList.flatMap(
         (ap) => ap.cod + ap.CD_LOCAL
       );
       listFilteredOPs = listFilteredOPs.filter((x) =>
         apCodList.includes(x.cod! + x.CD_LOCAL)
       );
-    }else if (apontamentoFilter == "Não informado") {
+    } else if (apontamentoFilter == 'Não informado') {
       let apCodList = this.apontamentoList.flatMap(
         (ap) => ap.cod + ap.CD_LOCAL
       );
-      listFilteredOPs = listFilteredOPs.filter((x) =>
-        !apCodList.includes(x.cod! + x.CD_LOCAL)
+      listFilteredOPs = listFilteredOPs.filter(
+        (x) => !apCodList.includes(x.cod! + x.CD_LOCAL)
       );
     }
 
@@ -299,9 +296,13 @@ export class PcpDescOpsComponent implements OnInit {
         (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.DS_CICLO)
       );
     } else if (hasOrigem && !hasColecao) {
-      listFilteredOPs = listFilteredOPs.filter((x) => origem.includes(x.DS_CLASS));
+      listFilteredOPs = listFilteredOPs.filter((x) =>
+        origem.includes(x.DS_CLASS)
+      );
     } else if (!hasOrigem && hasColecao) {
-      listFilteredOPs = listFilteredOPs.filter((x) => colecao.includes(x.DS_CICLO));
+      listFilteredOPs = listFilteredOPs.filter((x) =>
+        colecao.includes(x.DS_CICLO)
+      );
     }
     return listFilteredOPs;
   }
@@ -309,7 +310,7 @@ export class PcpDescOpsComponent implements OnInit {
   // filtra somente os apontamentos com o status filtrado
   filterApontamento(ap: Apontamentos): Apontamentos {
     let { apontamentoFilter } = this.selectedFilters;
-    if (!!apontamentoFilter && apontamentoFilter != "Não informado") {
+    if (!!apontamentoFilter && apontamentoFilter != 'Não informado') {
       return ap.filter((a) => a.Situacao! == apontamentoFilter);
     }
     return ap;
@@ -317,5 +318,9 @@ export class PcpDescOpsComponent implements OnInit {
 
   voltar() {
     this._location.back();
+  }
+
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
   }
 }

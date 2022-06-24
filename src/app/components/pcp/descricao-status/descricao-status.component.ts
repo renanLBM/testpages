@@ -402,9 +402,8 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   }
 
   filterOPs(OPList: OPs) {
-    let {origem, colecao} = this.selectedFilters;
+    let { origem, colecao } = this.selectedFilters;
     let listFilteredOPs = OPList;
-
 
     let hasOrigem = origem.length > 0;
     let hasColecao = colecao.length > 0;
@@ -414,13 +413,9 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
         (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.DS_CICLO)
       );
     } else if (hasOrigem && !hasColecao) {
-      listFilteredOPs = OPList.filter(
-        (x) => origem.includes(x.DS_CLASS)
-      );
+      listFilteredOPs = OPList.filter((x) => origem.includes(x.DS_CLASS));
     } else if (!hasOrigem && hasColecao) {
-      listFilteredOPs = OPList.filter(
-        (x) => colecao.includes(x.DS_CICLO)
-      );
+      listFilteredOPs = OPList.filter((x) => colecao.includes(x.DS_CICLO));
     }
     return listFilteredOPs;
   }
@@ -429,12 +424,11 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     return faccao.id;
   }
 
-  ngOnDestroy(): void {
-    // Do not forget to unsubscribe the event
-    this.dtTrigger.unsubscribe();
-  }
-
   voltar() {
     this._location.back();
+  }
+
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
   }
 }

@@ -19,7 +19,7 @@
         </nb-card>
       </div>
     </div>
-    <div class="tableFixHead">
+    <div class="tableFixHead" *ngIf="faccaoList.length > 0">
       <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
         <thead>
           <tr>
