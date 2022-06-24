@@ -38,7 +38,9 @@ export class ListFaccoesComponent implements OnInit {
     this._auditorService.getApontamento().subscribe({
       next: (apontamentos) => {
         let disponiveis = apontamentos.filter(
-          (apontamento) => apontamento.Situacao == 'Disponível para coleta' || 'Em transporte'
+          (apontamento) =>
+            apontamento.Situacao == 'Disponível para coleta' ||
+            apontamento.Situacao == 'Em transporte'
         );
         this.listCodOPsDisponiveis = disponiveis.flatMap(
           (op) => op.cod + '-' + op.CD_LOCAL
@@ -151,7 +153,9 @@ export class ListFaccoesComponent implements OnInit {
     } else {
       this.filtroAtivo = true;
       this.faccaoList$.next(
-        this.faccaoList.filter((_) => _.name.includes(filterValue.toUpperCase()))
+        this.faccaoList.filter((_) =>
+          _.name.includes(filterValue.toUpperCase())
+        )
       );
       this.faccaoList$.subscribe((x) => (this.emptyList = !x.length));
     }
