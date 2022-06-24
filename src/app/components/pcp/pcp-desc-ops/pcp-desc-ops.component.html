@@ -19,15 +19,15 @@
         </nb-card>
       </div>
     </div>
-    <div class="tableFixHead" *ngIf="faccaoList.length > 0">
+    <div class="tableFixHead">
       <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
         <thead>
           <tr>
             <th>Cód</th>
+            <th>Cód. Local</th>
+            <th>Local</th>
             <th>Tipo</th>
             <th>Coordenado</th>
-            <th *ngIf="tituloLocal == 'Total'">Cód. Local</th>
-            <th *ngIf="tituloLocal == 'Total'">Local</th>
             <th>Peças</th>
             <th>Previsão Retorno</th>
             <th>Dias na Facção</th>
@@ -36,9 +36,11 @@
             <th>Nova Previsão</th>
           </tr>
         </thead>
-        <tbody *ngIf="!emptyList">
+        <tbody>
           <tr *ngFor="let item of listOPs$ | async">
             <td>{{ item.NR_CICLO + '-' + item.NR_OP + '-' + item.CD_REFERENCIA }}</td>
+            <td>{{ item.CD_LOCAL }}</td>
+            <td>{{ item.DS_LOCAL }}</td>
             <td>{{ item.DS_TIPO + '-' + item.CATEGORIA }}</td>
             <td class="img-hover">
               <a>
@@ -47,8 +49,6 @@
                     onerror="this.onerror=null;this.src='../../../../assets/not-found.png'" /></span>
                 {{ item.DS_COORDENADO }}</a>
             </td>
-            <td *ngIf="tituloLocal == 'Total'">{{ item.CD_LOCAL }}</td>
-            <td *ngIf="tituloLocal == 'Total'">{{ item.DS_LOCAL }}</td>
             <td>{{ item.QT_OP | number: '1.0' }}</td>
             <td ngClass="{{item.css_class}}">
               {{ item.PREV_RETORNO | date: "yyyy-MM-dd" }}

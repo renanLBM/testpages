@@ -1,24 +1,24 @@
 import { Location } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { Faccoes } from 'src/app/models/faccao';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
-import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
+import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
+import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 
 @Component({
   selector: 'fc-pcp-desc-ops',
   templateUrl: './pcp-desc-ops.component.html',
   styleUrls: ['./pcp-desc-ops.component.scss'],
 })
-export class PcpDescOpsComponent implements OnInit, OnDestroy {
+export class PcpDescOpsComponent implements OnInit {
   dtOptions: any;
   dtTrigger: Subject<any> = new Subject<any>();
   selectedFilters = {
@@ -67,9 +67,9 @@ export class PcpDescOpsComponent implements OnInit, OnDestroy {
         this.dtOptions = {
           language: LanguagePtBr.ptBr_datatable,
           pagingType: 'full_numbers',
-          pageLength: 25,
+          pageLength: 15,
           responsive: true,
-          autoWidth: true,
+          processing: true,
           order: [[5, 'asc']],
           dom: 'Bfrtip',
           buttons: [
@@ -125,144 +125,73 @@ export class PcpDescOpsComponent implements OnInit, OnDestroy {
   }
 
   getOPS(thisOPs: OPs) {
+    this.faccaoList = thisOPs;
+    this.tituloLocal = this.tituloStatus;
     if (this.origemStatus) {
-      thisOPs = thisOPs.filter((x) => x.DS_TIPO == this.origemStatus);
+      this.faccaoList = this.faccaoList.filter((x) => x.DS_TIPO == this.origemStatus);
     }
-    if (this.facIdStatus == '99999') {
-      this.faccaoList = thisOPs;
-      this.tituloLocal = this.tituloStatus;
-
-      this.faccaoList.map((x) => {
-        x.DS_LOCAL = x.DS_LOCAL.replace('COSTURA ', '')
-          .replace('CONSERTO ', '')
-          .replace('ESTAMPARIA ', '')
-          .replace('TERCEIROS ', '');
-
-        x.DT_ENTRADA = `${x.DT_ENTRADA.substring(
-          6,
-          10
-        )}-${x.DT_ENTRADA.substring(3, 5)}-${x.DT_ENTRADA.substring(
-          0,
-          2
-        )}  04:00:00`;
-        x.PREV_RETORNO = `${x.PREV_RETORNO.substring(
-          6,
-          10
-        )}-${x.PREV_RETORNO.substring(3, 5)}-${x.PREV_RETORNO.substring(
-          0,
-          2
-        )} 04:00:00`;
-
-        let atraso!: Motivo;
-        if (this.motivoList.toString() != 'error') {
-          atraso = this.motivoList.filter(
-            (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
-          )[0];
-        }
-
-        let apontamento!: Apontamento;
-        if (this.apontamentoList.toString() != 'error') {
-          apontamento = this.apontamentoList.filter(
-            (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
-          )[0];
-        }
-
-        let hj = new Date();
-
-        let dataEntrada = new Date(x.DT_ENTRADA);
-        let dtPrev = new Date(x.PREV_RETORNO);
-
-        x.css_class = 'andamento';
-        if (dtPrev < hj) {
-          x.css_class = 'atraso';
-        }
-
-        if (!x.DS_COORDENADO) {
-          x.DS_COORDENADO = x.DS_GRUPO;
-        }
-        x['dias_faccao'] = Math.floor(
-          (hj.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
-        );
-
-        //  verifica se teve atraso para essa OP
-        if (atraso) {
-          x['motivo_atraso'] = atraso.MOTIVO;
-          x['nova_previsao'] = atraso.NOVA_PREVISAO;
-        } else {
-          x['motivo_atraso'] = '-';
-          x['nova_previsao'] = '-';
-        }
-
-        //  verifica se teve apontamento para essa OP
-        if (apontamento) {
-          x['apontamento'] = apontamento.Situacao;
-        } else {
-          x['apontamento'] = '-';
-        }
-      });
-    } else if (thisOPs) {
-      this.faccaoList = thisOPs.filter(
+    if (this.facIdStatus != '99999') {
+      this.faccaoList = this.faccaoList.filter(
         (x) => x.CD_LOCAL == parseInt(this.facIdStatus)
       );
       this.tituloLocal = this.faccaoList[0].DS_LOCAL;
-
-      this.faccaoList.map((x) => {
-        x.DT_ENTRADA = `${x.DT_ENTRADA.substring(
-          6,
-          10
-        )}-${x.DT_ENTRADA.substring(3, 5)}-${x.DT_ENTRADA.substring(
-          0,
-          2
-        )}  04:00:00`;
-        x.PREV_RETORNO = `${x.PREV_RETORNO.substring(
-          6,
-          10
-        )}-${x.PREV_RETORNO.substring(3, 5)}-${x.PREV_RETORNO.substring(
-          0,
-          2
-        )} 04:00:00`;
-
-        let atraso!: Motivo;
-        if (this.motivoList.toString() != 'error') {
-          atraso = this.motivoList.filter(
-            (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
-          )[0];
-        }
-
-        let apontamento!: Apontamento;
-        if (this.apontamentoList.toString() != 'error') {
-          apontamento = this.apontamentoList.filter(
-            (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
-          )[0];
-        }
-
-        let hj = new Date();
-
-        let dataEntrada = new Date(x.DT_ENTRADA);
-        let dtPrev = new Date(x.PREV_RETORNO);
-
-        x.css_class = dtPrev < hj ? 'atraso' : 'andamento';
-
-        if (!x.DS_COORDENADO) {
-          x.DS_COORDENADO = x.DS_GRUPO;
-        }
-        x['dias_faccao'] = Math.floor(
-          (hj.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
-        );
-
-        //  verifica se teve atraso para essa OP
-        if (atraso) {
-          x['motivo_atraso'] = atraso.MOTIVO;
-          x['nova_previsao'] = atraso.NOVA_PREVISAO;
-        } else {
-          x['motivo_atraso'] = '-';
-          x['nova_previsao'] = '-';
-        }
-
-        //  verifica se teve apontamento para essa OP
-        x['apontamento'] = apontamento ? apontamento.Situacao : '-';
-      });
     }
+    this.faccaoList.map((x) => {
+      if(!x.PREV_RETORNO){
+        x.PREV_RETORNO = '01/01/2001 00:00:00';
+      }
+      x.DT_ENTRADA = `${x.DT_ENTRADA.substring(6, 10)}-${x.DT_ENTRADA.substring(
+        3,
+        5
+      )}-${x.DT_ENTRADA.substring(0, 2)}  04:00:00`;
+      x.PREV_RETORNO = `${x.PREV_RETORNO.substring(
+        6,
+        10
+      )}-${x.PREV_RETORNO.substring(3, 5)}-${x.PREV_RETORNO.substring(
+        0,
+        2
+      )} 04:00:00`;
+
+      let atraso!: Motivo;
+      if (this.motivoList.toString() != 'error') {
+        atraso = this.motivoList.filter(
+          (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
+        )[0];
+      }
+
+      let apontamento!: Apontamento;
+      if (this.apontamentoList.toString() != 'error') {
+        apontamento = this.apontamentoList.filter(
+          (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
+        )[0];
+      }
+
+      let hj = new Date();
+
+      let dataEntrada = new Date(x.DT_ENTRADA);
+      let dtPrev = new Date(x.PREV_RETORNO);
+
+      x.css_class = dtPrev < hj ? 'atraso' : 'andamento';
+
+      if (!x.DS_COORDENADO) {
+        x.DS_COORDENADO = x.DS_GRUPO;
+      }
+      x['dias_faccao'] = Math.floor(
+        (hj.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
+      );
+
+      //  verifica se teve atraso para essa OP
+      if (atraso) {
+        x['motivo_atraso'] = atraso.MOTIVO;
+        x['nova_previsao'] = atraso.NOVA_PREVISAO;
+      } else {
+        x['motivo_atraso'] = '-';
+        x['nova_previsao'] = '-';
+      }
+
+      //  verifica se teve apontamento para essa OP
+      x['apontamento'] = apontamento ? apontamento.Situacao : '-';
+    });
   }
 
   filterOPs(OPList: OPs) {
@@ -318,9 +247,5 @@ export class PcpDescOpsComponent implements OnInit, OnDestroy {
 
   voltar() {
     this._location.back();
-  }
-
-  ngOnDestroy(): void {
-    this.dtTrigger.unsubscribe();
   }
 }
