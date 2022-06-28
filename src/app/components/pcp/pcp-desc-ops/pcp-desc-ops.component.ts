@@ -218,8 +218,6 @@ export class PcpDescOpsComponent implements OnInit {
     let hasOrigem = origem.length > 0;
     let hasColecao = colecao.length > 0;
 
-    console.log(hasOrigem && hasColecao);
-
     if (hasOrigem && hasColecao) {
       listFilteredOPs = listFilteredOPs.filter(
         (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.DS_CICLO)

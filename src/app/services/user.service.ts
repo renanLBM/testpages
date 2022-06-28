@@ -4,10 +4,19 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user';
-import * as CryptoJS from 'crypto-js';
+import { TokenService } from './token.service';
+import jwt_decode from 'jwt-decode';
 
 const API = environment.API_ENV;
 const KEY = environment.ENCRIPT_KEY;
+
+const header = {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'X-Access-Token': 'application/json',
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,18 +28,40 @@ export class UserService {
   private nivel = 0;
   private logged = new BehaviorSubject<boolean>(false);
 
-  constructor(private _httpClient: HttpClient) {}
+  constructor(
+    private _httpClient: HttpClient,
+    private _tokenService: TokenService
+  ) {
+    if (this._tokenService.hasToken()) {
+      this.decodeJWT();
+    }
+  }
+
+  private decodeJWT() {
+    const token = this._tokenService.getToken();
+    const userJWT: {user: User, ext: number} = jwt_decode(token);
+
+    this.usuarioSubject.next(userJWT.user);
+    this.setUser(userJWT.user);
+  }
+
+  setToken(token: string) {
+    this._tokenService.setToken(token);
+    this.decodeJWT();
+  }
 
   login(login: string, senha: string): Observable<HttpResponse<any>> {
     return this._httpClient
       .post(
         `${API}/api/login`,
         { login: login, senha: senha },
-        { observe: 'response' }
+        { observe: 'response', responseType: 'text' }
       )
       .pipe(
-        tap((res: any) => {
-          this.setUser(res.body);
+        tap((res) => {
+          const resBody: {'message': string, 'token': string} = JSON.parse(res.body!);
+          const authToken = resBody.token;
+          this.setToken(authToken);
           this.logged.next(true);
         })
       );
@@ -40,17 +71,14 @@ export class UserService {
     return this.usuarioSubject.asObservable();
   }
 
-  setUser(userB: string): void {
-    if (userB) {
-      let userF: User = JSON.parse(userB);
-      this.usuarioSubject.next(userF);
-      this.nivel = userF.nivel;
+  setUser(user: User): void {
+    if (user) {
+      this.nivel = user.nivel;
       this.setSession();
     }
   }
 
   setSession(): void {
-
     this.getUser().subscribe((user) => {
       sessionStorage.setItem('user', JSON.stringify(user));
     });
@@ -86,6 +114,7 @@ export class UserService {
       nome: '',
     });
     this.logged.next(false);
+    this._tokenService.deleteToken();
     sessionStorage.clear();
   }
 }

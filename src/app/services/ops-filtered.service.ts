@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class OpsFilteredService {
 
+
   setFilter(filtro: any): void {
     sessionStorage.setItem('filters', JSON.stringify(filtro));
   }

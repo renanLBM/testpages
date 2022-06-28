@@ -31,6 +31,7 @@ import { LoginComponent } from './components/login/login.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { DialogDefaultComponent } from './components/dialog-default/dialog-default.component';
 import { DialogDefaultBodyComponent } from './components/dialog-default-body/dialog-default-body.component';
+import { AuthenticationComponent } from './components/authentication/authentication.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { DialogDefaultBodyComponent } from './components/dialog-default-body/dia
     NotFoundComponent,
     DialogDefaultComponent,
     DialogDefaultBodyComponent,
+    AuthenticationComponent,
   ],
   imports: [
     RouterModule,

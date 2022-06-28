@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { CanLoad, Route, Router, UrlSegment, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
+import { Pages } from '../models/enumPages';
 import { UserService } from '../services/user.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MotoristaGuard implements CanLoad {
   constructor(private _userService: UserService, private _route: Router) {}
@@ -16,7 +17,8 @@ export class MotoristaGuard implements CanLoad {
     | UrlTree
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree> {
-    if (this._userService.getNivel() != 3 && this._userService.getNivel() != 99) {
+    let nivelLogin = this._userService.getNivel();
+    if (nivelLogin != Pages['motorista'] && nivelLogin != Pages['pcp']) {
       this._route.navigate(['login']);
       return false;
     }

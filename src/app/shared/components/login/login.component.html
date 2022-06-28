@@ -1,46 +1,22 @@
 <nb-layout>
   <nb-layout-column>
     <div class="back">
-      <!-- <button nbButton [routerLink]="['/pcp']">pcp</button>
-      <button nbButton [routerLink]="['/auditor']">auditor</button> -->
       <div class="container login-container">
         <form class="form mt-4" (ngSubmit)="login()" #loginForm="ngForm">
           <div class="form-group">
-            <h4 class="login-title"><b>Acessar</b></h4>
-            <input
-              nbInput
-              class="form-control login-input"
-              placeholder="Nome do usuário"
-              [(ngModel)]="usuario"
-              name="usuario"
-              #campoUsuario="ngModel"
-              required
-            />
+            <div class="img_logo"></div>
+            <input nbInput class="form-control login-input" placeholder="Nome do usuário" [(ngModel)]="usuario"
+              name="usuario" #campoUsuario="ngModel" required />
+            <input nbInput type="password" class="form-control login-input" placeholder="Senha" [(ngModel)]="senha" name="senha"
+              #campoSenha="ngModel" required />
+
+            <div class="bt-container bt-login">
+              <button nbButton hero status="primary" type="submit" class="btn btn-primary btn-block" [disabled]="loginForm.invalid">
+                Acessar
+              </button>
+            </div>
           </div>
 
-          <div class="form-group login-input">
-            <input
-              nbInput
-              type="password"
-              class="form-control"
-              placeholder="Senha"
-              [(ngModel)]="senha"
-              name="senha"
-              #campoSenha="ngModel"
-              required
-            />
-          </div>
-
-          <div class="bt-container bt-login">
-            <button
-              nbButton
-              type="submit"
-              class="btn btn-primary btn-block"
-              [disabled]="loginForm.invalid"
-            >
-              Acessar
-            </button>
-          </div>
         </form>
         <hr />
       </div>

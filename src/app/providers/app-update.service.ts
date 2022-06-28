@@ -21,6 +21,8 @@ export class AppUpdateService {
     const message = 'Click em OK para atualizar';
 
     this.dialogService.open(DialogDefaultBodyComponent, {
+      closeOnBackdropClick: false,
+      hasBackdrop: true,
       context: {
         title: header,
         bodyText: message,

@@ -74,8 +74,6 @@ export class HeaderComponent implements OnInit {
   sair() {
     this.showIcon = false;
     this._userService.logout();
-    let n = this._userService.getNivel() || 0;
-    this.adm = n == 99;
     this._router.navigateByUrl('');
   }
 }
