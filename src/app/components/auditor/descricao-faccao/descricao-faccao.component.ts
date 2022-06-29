@@ -16,7 +16,7 @@ import { filter, map } from 'rxjs/operators';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { descOP } from 'src/app/models/descOP';
 import { Motivo, Motivos } from 'src/app/models/motivo';
-import { OPs } from 'src/app/models/ops';
+import { OP, OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
@@ -107,13 +107,13 @@ export class DescricaoFaccaoComponent implements OnInit {
 
         let id = this._route.snapshot.paramMap.get('id')!;
         this._opsService.getOpById(id).subscribe({
-          next: (op) => {
+          next: (ops: OPs) => {
             if (filtroColecao.length > 0) {
-              op = op.filter((x) => {
+              ops = ops.filter((x) => {
                 return filtroColecao.includes(x.DS_CICLO)
               });
             }
-            op.sort((a, b) => {
+            ops.sort((a, b) => {
               let dataRetornoA = `${a.PREV_RETORNO.substring(
                 6,
                 10
@@ -145,18 +145,18 @@ export class DescricaoFaccaoComponent implements OnInit {
             let maiorMotivo;
             let maiorApontamento;
 
-            op.map((i) => {
-              i.DT_ENTRADA = `${i.DT_ENTRADA.substring(
+            ops.map((op: OP) => {
+              op.DT_ENTRADA = `${op.DT_ENTRADA.substring(
                 6,
                 10
-              )}-${i.DT_ENTRADA.substring(3, 5)}-${i.DT_ENTRADA.substring(
+              )}-${op.DT_ENTRADA.substring(3, 5)}-${op.DT_ENTRADA.substring(
                 0,
                 2
               )} 04:00:00`;
-              i.PREV_RETORNO = `${i.PREV_RETORNO.substring(
+              op.PREV_RETORNO = `${op.PREV_RETORNO.substring(
                 6,
                 10
-              )}-${i.PREV_RETORNO.substring(3, 5)}-${i.PREV_RETORNO.substring(
+              )}-${op.PREV_RETORNO.substring(3, 5)}-${op.PREV_RETORNO.substring(
                 0,
                 2
               )} 04:00:00`;
@@ -164,23 +164,23 @@ export class DescricaoFaccaoComponent implements OnInit {
               let newImage = new Image();
               newImage.src =
                 this.imgUrl +
-                i.CD_REFERENCIA.toString() +
+                op.CD_REFERENCIA.toString() +
                 '/' +
-                i.CD_REFERENCIA.toString() +
+                op.CD_REFERENCIA.toString() +
                 '-1.jpg';
 
               newImage.onerror = () => {
                 this.imgList = this.imgList.filter(
-                  (im) => !im.includes(i.CD_REFERENCIA.toString())
+                  (im) => !im.includes(op.CD_REFERENCIA.toString())
                 );
               };
 
               for (let j = 1; j <= 13; j++) {
                 imgListAll.push(
                   this.imgUrl +
-                    i.CD_REFERENCIA.toString() +
+                    op.CD_REFERENCIA.toString() +
                     '/' +
-                    i.CD_REFERENCIA.toString() +
+                    op.CD_REFERENCIA.toString() +
                     '-' +
                     j +
                     '.jpg'
@@ -188,10 +188,10 @@ export class DescricaoFaccaoComponent implements OnInit {
                 this.imgList = [...new Set(imgListAll)];
               }
 
-              maiorMotivo = this.filtraMaiorMotivo(i.CD_REFERENCIA);
-              maiorApontamento = this.filtraMaiorApontamento(i.CD_REFERENCIA);
+              maiorMotivo = this.filtraMaiorMotivo(op.CD_REFERENCIA);
+              maiorApontamento = this.filtraMaiorApontamento(op.CD_REFERENCIA);
 
-              let prevdate = new Date(i.PREV_RETORNO);
+              let prevdate = new Date(op.PREV_RETORNO);
               let prev = prevdate
                 ? prevdate.toLocaleString('pt-br').substring(0, 10)
                 : '01/01/2001';
@@ -214,43 +214,43 @@ export class DescricaoFaccaoComponent implements OnInit {
 
               this.descOP.push({
                 semana: prevSemana,
-                cd_local: i.CD_LOCAL,
-                local: i.DS_LOCAL,
+                cd_local: op.CD_LOCAL,
+                local: op.DS_LOCAL,
                 cod:
-                  i.NR_CICLO.toString() +
+                  op.NR_CICLO.toString() +
                   '-' +
-                  i.NR_OP.toString() +
+                  op.NR_OP.toString() +
                   '-' +
-                  i.CD_REFERENCIA.toString(),
-                ciclo: i.NR_CICLO,
-                op: i.NR_OP,
-                ref: i.CD_REFERENCIA,
+                  op.CD_REFERENCIA.toString(),
+                ciclo: op.NR_CICLO,
+                op: op.NR_OP,
+                ref: op.CD_REFERENCIA,
                 previsao: prev,
                 Situacao: maiorApontamento.situacao,
                 novaprevisao: maiorMotivo.dt_atraso,
                 motivo_atraso: maiorMotivo.ds_atraso,
                 checked: maiorMotivo.i_checked,
-                descricao: i.DS_GRUPO,
-                drop: i.DS_DROP,
+                descricao: op.DS_GRUPO,
+                drop: op.DS_DROP,
                 img:
                   this.imgUrl +
-                  i.CD_REFERENCIA.toString() +
+                  op.CD_REFERENCIA.toString() +
                   '/' +
-                  i.CD_REFERENCIA.toString() +
+                  op.CD_REFERENCIA.toString() +
                   '-1.jpg',
-                status: i.Status,
-                status_color: i.Status.toLowerCase().replace(' ', '-'),
-                qnt: i.QT_OP,
+                status: op.Status,
+                status_color: op.Status.toLowerCase().replace(' ', '-'),
+                qnt: op.QT_OP,
               });
-              this.descOP.map((op) => {
-                if (op.status == 'Em andamento') {
-                  op.accent = 'success';
-                } else if (op.status == 'Pendente') {
-                  op.accent = 'warning';
-                } else if (op.status == 'Em atraso') {
-                  op.accent = 'danger';
+              this.descOP.map((desc) => {
+                if (desc.status == 'Em andamento') {
+                  desc.accent = 'success';
+                } else if (desc.status == 'Pendente') {
+                  desc.accent = 'warning';
+                } else if (desc.status == 'Em atraso') {
+                  desc.accent = 'danger';
                 } else {
-                  op.accent = 'basic';
+                  desc.accent = 'basic';
                 }
               });
             });

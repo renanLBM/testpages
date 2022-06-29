@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { User } from '../models/user';
 import { TokenService } from './token.service';
 import jwt_decode from 'jwt-decode';
+import { Router } from '@angular/router';
 
 const API = environment.API_ENV;
 const KEY = environment.ENCRIPT_KEY;
@@ -30,6 +31,7 @@ export class UserService {
 
   constructor(
     private _httpClient: HttpClient,
+    private _router: Router,
     private _tokenService: TokenService
   ) {
     if (this._tokenService.hasToken()) {
@@ -39,7 +41,7 @@ export class UserService {
 
   private decodeJWT() {
     const token = this._tokenService.getToken();
-    const userJWT: {user: User, ext: number} = jwt_decode(token);
+    const userJWT: { user: User; ext: number } = jwt_decode(token);
 
     this.usuarioSubject.next(userJWT.user);
     this.setUser(userJWT.user);
@@ -59,7 +61,9 @@ export class UserService {
       )
       .pipe(
         tap((res) => {
-          const resBody: {'message': string, 'token': string} = JSON.parse(res.body!);
+          const resBody: { message: string; token: string } = JSON.parse(
+            res.body!
+          );
           const authToken = resBody.token;
           this.setToken(authToken);
           this.logged.next(true);
@@ -115,6 +119,8 @@ export class UserService {
     });
     this.logged.next(false);
     this._tokenService.deleteToken();
+    localStorage.clear();
     sessionStorage.clear();
+    this._router.navigate(['login']);
   }
 }

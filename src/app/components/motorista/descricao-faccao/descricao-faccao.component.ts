@@ -9,6 +9,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { Coleta } from 'src/app/models/coleta';
 import { descOP } from 'src/app/models/descOP';
+import { OP, OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { MotoristaService } from 'src/app/services/motorista.service';
@@ -89,8 +90,8 @@ export class DescricaoFaccaoComponent implements OnInit {
       this._motoristaService.getColeta().subscribe({
         next: (coletados) => {
           this._opsService.getOpById(id).subscribe({
-            next: (ops) => {
-              ops = ops.filter((op) =>
+            next: (ops: OPs) => {
+              ops = ops.filter((op: OP) =>
                 this.listCodOPsDisponiveis.includes(op.cod + '-' + op.CD_LOCAL)
               );
               ops.sort((a, b) => {
