@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Apontamentos } from '../models/apontamento';
 import { Coleta, Coletas } from '../models/coleta';
 import { TokenService } from './token.service';
 
@@ -12,6 +13,13 @@ const API = environment.API_ENV;
 })
 export class MotoristaService {
   constructor(private _httpClient: HttpClient, private _tokenService: TokenService) {}
+
+  listDisponivel(): Observable<Apontamentos> {
+    const headers = this.getToken();
+    return this._httpClient.get<Apontamentos>(`${API}/api/motorista`, {
+      headers,
+    });
+  }
 
   getColeta(): Observable<Coletas> {
     const headers = this.getToken();

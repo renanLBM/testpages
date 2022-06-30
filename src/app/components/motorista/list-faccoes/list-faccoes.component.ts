@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
+import { MotoristaService } from 'src/app/services/motorista.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
@@ -28,21 +29,17 @@ export class ListFaccoesComponent implements OnInit {
   constructor(
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
-    private _auditorService: AuditorService
+    private _auditorService: AuditorService,
+    private _motoristaService: MotoristaService
   ) {}
 
   ngOnInit(): void {
     this._setTitle.setTitle('Carregando...');
 
     // pega todos os códigos das ops marcadas como disponível
-    this._auditorService.getApontamento().subscribe({
+    this._motoristaService.listDisponivel().subscribe({
       next: (apontamentos) => {
-        let disponiveis = apontamentos.filter(
-          (apontamento) =>
-            apontamento.Situacao == 'Disponível para coleta' ||
-            apontamento.Situacao == 'Em transporte'
-        );
-        this.listCodOPsDisponiveis = disponiveis.flatMap(
+        this.listCodOPsDisponiveis = apontamentos.flatMap(
           (op) => op.cod + '-' + op.CD_LOCAL
         );
 
