@@ -72,7 +72,7 @@
       </div>
     </div>
 
-    <div *ngIf="!emptyList; else listaVazia">
+    <div *ngIf="emptyList; else listaVazia">
       <div class="card-wrapper">
         <nb-card [accent]="item.accent || 'basic'" *ngFor="let item of descOP$ | async; trackBy: trackByOP">
           <nb-card-body>
@@ -86,9 +86,6 @@
                     <h4>Ref: {{ item.ref }}</h4>
                   </div>
                   <div class="bt-edit">
-                    <!-- <div class="bt-edit" (click)="open(item, 'Atraso')"> -->
-                    <!-- <nb-icon nbTooltip="Alterar previsão" nbTooltipPlacement="bottom" icon="more-vertical-outline">
-                    </nb-icon> -->
                     <nb-icon icon="more-vertical-outline" [nbContextMenu]="items" (click)="openMenu(item)"
                       nbContextMenuTag="auditor-list" nbContextMenuTrigger="click">
                     </nb-icon>
@@ -124,7 +121,7 @@
     </div>
 
     <ng-template #listaVazia>
-      <h4 class="error-notfound">Nenhum item encontrado..</h4>
+      <h4 class="error-notfound">Nenhum item encontrado...</h4>
     </ng-template>
 
 

@@ -14,7 +14,7 @@ import {
 import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
-import { descOP } from 'src/app/models/descOP';
+import { descOP, descOPs } from 'src/app/models/descOP';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OP, OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
@@ -396,10 +396,8 @@ export class DescricaoFaccaoComponent implements OnInit {
         );
       }
       this.descOP$.subscribe((x) => {
-        this.emptyList = !x.length;
-        let dia = new Date(x[0].previsao).getDay();
-        // this.dataIni = dia.getDay()
-        // this.dataFim =
+        this.emptyList = !!x.length;
+        this.countOPs(x);
       });
     }
   }
@@ -422,6 +420,10 @@ export class DescricaoFaccaoComponent implements OnInit {
         );
       }
     }
+    this.descOP$.subscribe((x) => {
+      this.emptyList = !!x.length;
+      this.countOPs(x);
+    });
   }
 
   limpaFiltro(item: HTMLInputElement): void {
@@ -462,15 +464,8 @@ export class DescricaoFaccaoComponent implements OnInit {
         // pega primeiro e último dia da semana para mostrar na toolbar
         this.getFirstAndLastWeekDay(x[0].previsao);
 
-        this.emptyList = !x.length;
-        this.qntOPs = x.length;
-        let opsFiltered: any[] = [];
-        x.forEach((_) => {
-          opsFiltered.push(_['qnt']);
-        });
-        this.qntPecas = opsFiltered.reduce((prev, cur) => {
-          return parseInt(prev) + parseInt(cur);
-        }, 0);
+        this.emptyList = !!x.length;
+        this.countOPs(x);
       });
 
       (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
@@ -539,6 +534,17 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.filtraMaiorMotivo(this.tempOP.ref);
       this.changeDetectorRef.detectChanges();
     });
+  }
+
+  countOPs(listOP: descOPs) {
+    this.qntOPs = listOP.length;
+    let opsFiltered: any[] = [];
+    listOP.forEach((_) => {
+      opsFiltered.push(_['qnt']);
+    });
+    this.qntPecas = opsFiltered.reduce((prev, cur) => {
+      return parseInt(prev) + parseInt(cur);
+    }, 0);
   }
 
   getFirstAndLastWeekDay(datePred: string) {
