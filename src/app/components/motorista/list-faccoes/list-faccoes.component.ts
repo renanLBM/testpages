@@ -40,21 +40,17 @@ export class ListFaccoesComponent implements OnInit {
         this.listCodOPsDisponiveis = apontamentos.flatMap(
           (op) => op.cod + '-' + op.CD_LOCAL.toString()
         );
-        console.log(apontamentos);
-        console.log(this.listCodOPsDisponiveis);
 
         // listagem de todas as facções que possuem ops com status de apontamento "Disponível para coleta"
         this._opsService.getAllOPs().subscribe({
           next: (ops) => {
 
             this.listOPsDisponiveis = ops.filter((op) => {
-              console.log(op.cod + '-' + op.CD_LOCAL.toString());
               return this.listCodOPsDisponiveis.includes(
                 op.cod + '-' + op.CD_LOCAL.toString()
               );
             });
 
-            console.log(this.listOPsDisponiveis);
             this.setfaccaolist(this.listOPsDisponiveis);
 
             this._setTitle.setTitle('Motorista');

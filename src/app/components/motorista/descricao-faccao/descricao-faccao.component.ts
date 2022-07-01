@@ -353,7 +353,6 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.loading = true;
     this._auditorService.setApontamento(this.novoApontamento).subscribe({
       next: (ret) => {
-        console.log(ret);
         this.loading = false;
         return;
       },
