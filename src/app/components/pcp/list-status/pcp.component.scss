@@ -29,7 +29,7 @@ nb-layout-column {
   .filter-title {
     font-weight: 600;
     margin-top: -20px;
-    background: linear-gradient(0deg, nb-theme(background-basic-color-2) 0%, nb-theme(background-basic-color-2) 55%, rgba(255,255,255,0) 55%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(0deg, nb-theme(background-basic-color-2) 0%, nb-theme(background-basic-color-2) 55%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0) 100%);
     width: max-content;
     padding: 0 5px;
     user-select: none;
@@ -49,20 +49,24 @@ nb-layout-column {
   }
 
 }
+
 ::ng-deep nb-select {
   width: 275px;
 }
 
 .apontamento-wrapper {
   text-align: center;
+
   nb-card-header {
     margin: 0;
     padding: 3px;
+
     h4 {
       color: nb-theme(text-basic-color);
       font-weight: 500;
     }
   }
+
   nb-alert {
     height: 25px;
     font-size: 13px;
@@ -74,9 +78,11 @@ nb-layout-column {
     color: nb-theme(text-alternate-color);
     user-select: none;
   }
+
   .inspecao {
     background: nb-theme(color-warning-new);
   }
+
   .transporte {
     background: nb-theme(color-success-700);
   }
@@ -156,6 +162,12 @@ nb-layout-column {
   margin: 0 25px 25px;
 }
 
+@media screen and (max-width: 1000px) {
+  nb-alert {
+    margin-top: 5px !important;
+  }
+}
+
 @media screen and (max-width: 475px) {
   .filter-wrapper {
     margin: 0 0 10px;
@@ -182,8 +194,9 @@ nb-layout-column {
     align-items: inherit;
     flex-direction: column;
 
-    nb-alert{
-      margin: 2px;
+    nb-alert {
+      margin-top: 0 !important;
+      margin: 2px !important;
     }
   }
 

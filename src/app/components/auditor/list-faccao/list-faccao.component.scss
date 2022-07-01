@@ -27,15 +27,13 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    // justify-content: flex-end;
-    // margin-bottom: 15px !important;
   }
 
   .filtro-dropdown {
     margin-right: 15px;
-    // margin-bottom: 10px;
   }
 }
+
 ::ng-deep nb-select {
   width: 275px;
 }

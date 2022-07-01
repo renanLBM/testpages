@@ -4,6 +4,38 @@ nb-layout-column {
   padding: 0 !important;
 }
 
+.filtro-wrapper {
+  margin: 30px 15px 15px;
+  padding: 10px;
+  border: 1px solid lightblue;
+  border-radius: 5px;
+  background-color: nb-theme(background-basic-color-2);
+
+  .filter-title {
+    font-weight: 600;
+    margin-top: -20px;
+    background: linear-gradient(0deg, nb-theme(background-basic-color-2) 0%, nb-theme(background-basic-color-2) 55%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0) 100%);
+    width: max-content;
+    padding: 0 5px;
+    user-select: none;
+  }
+
+  .filtro-menu-wrapper {
+    margin-left: 2em;
+    display: flex;
+    align-items: center;
+  }
+
+  .filtro-dropdown {
+    margin-right: 15px;
+  }
+
+}
+
+::ng-deep nb-select {
+  width: 275px;
+}
+
 .toolbar-wrapper {
   display: flex;
   flex-wrap: wrap;
@@ -109,26 +141,55 @@ nb-tag {
   .nv-prev {
     padding-bottom: 1em;
 
+    nb-alert {
+      height: 25px;
+      font-size: 13px;
+      padding: 2px 10px;
+      display: inline-block;
+      margin: 0;
+      margin-top: 5px;
+      color: nb-theme(text-alternate-color);
+      background: nb-theme(color-danger-default);
+      user-select: none;
+    }
+
     .nv-prev-text {
       margin: 0;
       line-height: 1;
-      color: nb-theme(color-danger-new);
+      color: nb-theme(color-danger-default);
+
+      b {
+        color: nb-theme(text-basic-color) !important;
+      }
     }
-    // .atraso, .Paradp {
-    //   color: nb-theme(color-danger-new);
-    // }
 
     .c-status{
       font-weight: 600;
     }
-    .Adiantamento, .coleta {
+
+    .adiantamento-text {
       color: nb-theme(color-success-new);
     }
+    .Adiantamento {
+      background: nb-theme(color-success-new);
+    }
     .fila {
-      color: nb-theme(color-warning-500);
+      background: nb-theme(color-primary-400);
     }
     .produção {
-      color: nb-theme(text-basic-color);
+      background: nb-theme(color-info-500);
+    }
+    .Parado {
+      background: nb-theme(color-warning-500);
+    }
+    .inspeção {
+      background: nb-theme(color-warning-new);
+    }
+    .coleta {
+      background: nb-theme(color-success-500);
+    }
+    .transporte {
+      background: nb-theme(color-success-700);
     }
 
   }
@@ -208,6 +269,19 @@ nb-tag {
 }
 
 @media (min-width:375px) and (max-width: 475px) {
+  .filter-wrapper {
+    margin: 0 0 10px;
+  }
+
+  .filtro-menu-wrapper {
+    margin: 0 0 15px !important;
+    flex-direction: column;
+  }
+
+  .filtro-dropdown {
+    margin: 0 0 10px !important;
+  }
+
   .titulo {
     font-size: 25px;
   }

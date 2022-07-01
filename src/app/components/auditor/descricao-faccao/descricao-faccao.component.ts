@@ -32,6 +32,10 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoFaccaoComponent implements OnInit {
+
+  selectedApontamento: string[] = [];
+  menuApontamento: string[] = [];
+
   counter: number = 0;
   defaultImage = '../../../../assets/not-found.png';
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
@@ -101,6 +105,15 @@ export class DescricaoFaccaoComponent implements OnInit {
     this._setTitle.setTitle('Carregando...');
     // pega todos os dados da tabela de alterações
     this._auditorService.getApontamento().subscribe((apontamentos) => {
+
+      this.menuApontamento.push('Não informado');
+      apontamentos.forEach((x) => {
+        this.menuApontamento.push(x.Situacao!);
+        this.menuApontamento = [...new Set(this.menuApontamento)];
+      });
+
+      this.menuApontamento.sort((a,b) => a > b ? 1 : b > a ? -1 : 0);
+
       this.apontamentoList = apontamentos;
       this._auditorService.getMotivos().subscribe((motivo) => {
         this.motivoList = motivo;
@@ -226,7 +239,7 @@ export class DescricaoFaccaoComponent implements OnInit {
                 op: op.NR_OP,
                 ref: op.CD_REFERENCIA,
                 previsao: prev,
-                Situacao: maiorApontamento.situacao,
+                Situacao: maiorApontamento.situacao || 'Não informado',
                 novaprevisao: maiorMotivo.dt_atraso,
                 motivo_atraso: maiorMotivo.ds_atraso,
                 checked: maiorMotivo.i_checked,
@@ -354,8 +367,9 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   filtroOP(event: Event): void {
-    document.getElementById('filtro')?.focus();
+    document.getElementById('filtro-op')?.focus();
     const filterValue = (event.target as HTMLInputElement).value;
+    this.selectedApontamento = [];
     if (filterValue == '') {
       this.filtroAtivo = false;
       this.descOP$.next(this.descOP);
@@ -390,6 +404,26 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
   }
 
+  filtrosDropdown() {
+    this.filtroAtivo = false;
+    (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
+    if (this.semanaSelecionada != 'Todas') {
+      this.descOP$.next(this.descOP.filter((_) => _.semana == parseInt(this.semanaSelecionada)));
+      if(this.selectedApontamento.length != 0) {
+        this.descOP$.next(
+          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!) && _.semana == parseInt(this.semanaSelecionada))
+        );
+      }
+    } else {
+      this.descOP$.next(this.descOP);
+      if(this.selectedApontamento.length != 0) {
+        this.descOP$.next(
+          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!))
+        );
+      }
+    }
+  }
+
   limpaFiltro(item: HTMLInputElement): void {
     this.filtroAtivo = false;
     item.value = '';
@@ -402,18 +436,31 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   filtraSemana(event: number, reset?: boolean) {
+    this.qntOPs = 0;
+    this.qntPecas = 0;
     if (reset) {
       this.semanaSelecionada = '';
     }
     if (event == 0) {
       this.semanaSelecionada = 'Todas';
-      (document.getElementById('filtro') as HTMLInputElement)!.value = '';
+      (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
       this.descOP$.next(this.descOP);
+      if(this.selectedApontamento.length != 0) {
+        this.descOP$.next(
+          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!))
+        );
+      }
     } else {
+      this.semanaSelecionada = event.toString();
       this.descOP$.next(this.descOP.filter((_) => _.semana == event));
+      if(this.selectedApontamento.length != 0) {
+        this.descOP$.next(
+          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!) && _.semana == parseInt(this.semanaSelecionada))
+        );
+      }
       this.descOP$.subscribe((x) => {
         // pega primeiro e último dia da semana para mostrar na toolbar
-        this.getFirsAndLastWeekDay(x[0].previsao);
+        this.getFirstAndLastWeekDay(x[0].previsao);
 
         this.emptyList = !x.length;
         this.qntOPs = x.length;
@@ -426,9 +473,8 @@ export class DescricaoFaccaoComponent implements OnInit {
         }, 0);
       });
 
-      (document.getElementById('filtro') as HTMLInputElement)!.value = '';
+      (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
       this.filtroAtivo = false;
-      this.semanaSelecionada = event.toString();
     }
   }
 
@@ -495,7 +541,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     });
   }
 
-  getFirsAndLastWeekDay(datePred: string) {
+  getFirstAndLastWeekDay(datePred: string) {
     // pegar o primeiro e último dia da semana
     let dia = datePred.substring(0, 2);
     let mes = datePred.substring(3, 5);

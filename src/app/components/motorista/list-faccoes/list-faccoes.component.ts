@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
-import { AuditorService } from 'src/app/services/auditor.service';
 import { MotoristaService } from 'src/app/services/motorista.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
@@ -29,7 +28,6 @@ export class ListFaccoesComponent implements OnInit {
   constructor(
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
-    private _auditorService: AuditorService,
     private _motoristaService: MotoristaService
   ) {}
 
@@ -40,18 +38,23 @@ export class ListFaccoesComponent implements OnInit {
     this._motoristaService.listDisponivel().subscribe({
       next: (apontamentos) => {
         this.listCodOPsDisponiveis = apontamentos.flatMap(
-          (op) => op.cod + '-' + op.CD_LOCAL
+          (op) => op.cod + '-' + op.CD_LOCAL.toString()
         );
+        console.log(apontamentos);
+        console.log(this.listCodOPsDisponiveis);
 
         // listagem de todas as facções que possuem ops com status de apontamento "Disponível para coleta"
         this._opsService.getAllOPs().subscribe({
           next: (ops) => {
+
             this.listOPsDisponiveis = ops.filter((op) => {
+              console.log(op.cod + '-' + op.CD_LOCAL.toString());
               return this.listCodOPsDisponiveis.includes(
-                op.cod + '-' + op.CD_LOCAL
+                op.cod + '-' + op.CD_LOCAL.toString()
               );
             });
 
+            console.log(this.listOPsDisponiveis);
             this.setfaccaolist(this.listOPsDisponiveis);
 
             this._setTitle.setTitle('Motorista');

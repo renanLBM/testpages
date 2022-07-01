@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import {
+  NbAlertModule,
   NbButtonModule,
   NbCardModule,
   NbContextMenuModule,
@@ -33,6 +34,7 @@ import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
     AuditorRoutingModule,
     SharedComponentsModule,
     LazyLoadImageModule,
+    NbAlertModule,
     NbButtonModule,
     NbCardModule,
     NbContextMenuModule,
