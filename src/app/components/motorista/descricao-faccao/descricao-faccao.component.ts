@@ -44,6 +44,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   qntOPs: number = 0;
   qntPecas: number = 0;
   listCodOPsDisponiveis: string[] = [];
+  descOPLoad = new BehaviorSubject<boolean>(true);
   descOP: descOP[] = [];
   descOP$: BehaviorSubject<descOP[]> = new BehaviorSubject(this.descOP);
 
@@ -189,6 +190,7 @@ export class DescricaoFaccaoComponent implements OnInit {
               }, 0);
 
               this.descOP$.next(this.descOP);
+              this.descOPLoad.next(!this.descOP.length);
             },
             error: (e) => {
               console.error(e);

@@ -47,7 +47,7 @@
     </div>
 
     <!-- placeholder while loading -->
-    <div *ngIf="_loadingService.isLoading | async">
+    <div *ngIf="descOPLoad | async">
       <div class="card-wrapper">
         <nb-card [nbSpinner]="true" nbSpinnerStatus="primary">
           <nb-card-body>

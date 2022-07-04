@@ -72,7 +72,7 @@
       </div>
     </div>
 
-    <div *ngIf="emptyList; else listaVazia">
+    <div *ngIf="!isEmptyList; else listaVazia">
       <div class="card-wrapper">
         <nb-card [accent]="item.accent || 'basic'" *ngFor="let item of descOP$ | async; trackBy: trackByOP">
           <nb-card-body>
@@ -126,7 +126,7 @@
 
 
     <!-- placeholder while loading -->
-    <div *ngIf="_loadingService.isLoading | async">
+    <div *ngIf="descOPLoad | async">
       <div class="card-wrapper">
         <nb-card [nbSpinner]="true" nbSpinnerStatus="primary">
           <nb-card-body>

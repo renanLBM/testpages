@@ -40,7 +40,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   defaultImage = '../../../../assets/not-found.png';
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
   loadingError: boolean = false;
-  emptyList: boolean = false;
+  isEmptyList: boolean = false;
   filtroAtivo: boolean = false;
 
   qntOPs: number = 0;
@@ -58,6 +58,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   listOPs!: OPs;
   tempOP!: descOP;
+  descOPLoad = new BehaviorSubject<boolean>(true);
   descOP: descOP[] = [];
   descOP$: BehaviorSubject<descOP[]> = new BehaviorSubject(this.descOP);
 
@@ -303,6 +304,7 @@ export class DescricaoFaccaoComponent implements OnInit {
               .replace('TERCEIROS', '');
             this._setTitle.setTitle(title);
             this.descOP$.next(this.descOP);
+            this.descOPLoad.next(!this.descOP.length);
             // filtra somente a semana atual
             this.filtraSemana(parseInt(this.semanaSelecionada));
           },
@@ -396,7 +398,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         );
       }
       this.descOP$.subscribe((x) => {
-        this.emptyList = !!x.length;
+        this.isEmptyList = !x.length;
         this.countOPs(x);
       });
     }
@@ -421,7 +423,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       }
     }
     this.descOP$.subscribe((x) => {
-      this.emptyList = !!x.length;
+      this.isEmptyList = !x.length;
       this.countOPs(x);
     });
   }
@@ -464,7 +466,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         // pega primeiro e último dia da semana para mostrar na toolbar
         this.getFirstAndLastWeekDay(x[0].previsao);
 
-        this.emptyList = !!x.length;
+        this.isEmptyList = !x.length;
         this.countOPs(x);
       });
 

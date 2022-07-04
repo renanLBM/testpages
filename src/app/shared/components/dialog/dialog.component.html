@@ -10,7 +10,7 @@
   <nb-card-body>
     <form [formGroup]="dialogForm">
       <div class="body-wrapper" *ngIf="!apontamento, else apontamentoBody">
-        <input style="text-align: center;" nbInput formControlName="dtControl" id="dateInput"
+        <input autocomplete="off" style="text-align: center;" nbInput formControlName="dtControl" id="dateInput"
           [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev">
         <nb-datepicker #datepicker [min]="min"></nb-datepicker>
         <br>
