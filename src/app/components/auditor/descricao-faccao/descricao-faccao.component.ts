@@ -201,8 +201,8 @@ export class DescricaoFaccaoComponent implements OnInit {
                 this.imgList = [...new Set(imgListAll)];
               }
 
-              maiorMotivo = this.filtraMaiorMotivo(op.CD_REFERENCIA);
-              maiorApontamento = this.filtraMaiorApontamento(op.CD_REFERENCIA);
+              maiorMotivo = this.filtraMaiorMotivo(op.cod!);
+              maiorApontamento = this.filtraMaiorApontamento(op.cod!);
 
               let prevdate = new Date(op.PREV_RETORNO);
               let prev = prevdate
@@ -324,11 +324,11 @@ export class DescricaoFaccaoComponent implements OnInit {
     return op.cod;
   }
 
-  filtraMaiorMotivo(ref: number) {
+  filtraMaiorMotivo(cod: string) {
     if (this.motivoList) {
       let erro = this.motivoList.toString() == 'error';
       if (!erro) {
-        let motivos = this.motivoList.filter((m) => m.CD_REFERENCIA == ref);
+        let motivos = this.motivoList.filter((m) => m.cod == cod);
         if (motivos.length > 0) {
           this.motivo = motivos.reduce((p, c) => {
             return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
@@ -344,12 +344,12 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
     return { ds_atraso: '', dt_atraso: '', i_checked: false };
   }
-  filtraMaiorApontamento(ref: number) {
+  filtraMaiorApontamento(cod: string) {
     if (this.apontamentoList) {
       let erro = this.apontamentoList.toString() == 'error';
       if (!erro) {
         let apontamentos = this.apontamentoList.filter(
-          (m) => m.CD_REFERENCIA == ref
+          (m) => m.cod == cod
         );
         if (apontamentos.length > 0) {
           this.apontamento = apontamentos.reduce((p, c) => {
@@ -531,7 +531,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         this.tempOP.checked = false;
       }
 
-      this.filtraMaiorMotivo(this.tempOP.ref);
+      this.filtraMaiorMotivo(this.tempOP.cod);
       this.changeDetectorRef.detectChanges();
     });
   }
