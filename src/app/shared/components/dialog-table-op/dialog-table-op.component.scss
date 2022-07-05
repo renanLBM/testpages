@@ -1,0 +1,27 @@
+@import "../../../../themes.scss";
+
+nb-card-header {
+  padding-bottom: 0;
+}
+
+table {
+  width: 100%;
+  text-align: center;
+  border: 1px solid nb-theme(color-tb-even-bg);
+
+  thead {
+    background-color: nb-theme(color-tb-header-bg);
+    height: 32px;
+  }
+  th {
+    padding: 5px;
+  }
+  td {
+    font-size: 14px;
+    padding: 3px;
+    border: 1px solid nb-theme(color-tb-even-bg);
+  }
+  .even {
+    background-color: nb-theme(color-tb-even-bg);
+  }
+}

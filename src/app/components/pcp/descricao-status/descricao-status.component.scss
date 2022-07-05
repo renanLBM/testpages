@@ -1,0 +1,69 @@
+@import "../../../../themes.scss";
+
+
+.back-button {
+  height: fit-content;
+  margin-bottom: 7px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bt-voltar:hover {
+  background-color: #b3b3b3;
+}
+
+.card-wrapper{
+  margin-top: 30px;
+}
+
+.titulo {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-align: center;
+}
+
+
+table {
+  width: 100%;
+  text-align: center;
+  border: 1px solid nb-theme(color-tb-even-bg);
+
+  thead {
+    background-color: nb-theme(color-tb-header-bg);
+    height: 32px;
+  }
+
+  td {
+    height: 28px;
+  }
+  .Geral{
+    font-weight: 600;
+  }
+
+  .even {
+    background-color: nb-theme(color-tb-even-bg);
+  }
+
+  .link-name {
+    cursor: pointer;
+    text-decoration: none;
+    color: nb-theme(text-basic-color);
+  }
+
+  .link-desc {
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+}
+
+.atraso {
+  font-weight: 600;
+  color: nb-theme(color-danger-600);
+}
+
+@media screen and (max-width: 475px) {
+  .titulo {
+    font-size: 25px;
+  }
+
+}

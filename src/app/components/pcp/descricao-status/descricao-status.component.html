@@ -1,0 +1,52 @@
+<nb-layout>
+  <nb-layout-column>
+    <div class="back-button">
+      <div class="bt-voltar-wrapper">
+        <button nbButton outline status="primary" size="small" class="bt-voltar" (click)="voltar()">
+          Voltar
+        </button>
+      </div>
+    </div>
+    <div>
+      <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+        <thead>
+          <tr>
+            <th>Facção</th>
+            <th>Qnt. OP's</th>
+            <th>Total Peças</th>
+            <th *ngIf="tituloStatus == 'Total'">OP's em atraso</th>
+            <th *ngIf="tituloStatus == 'Total'">Peças em Atraso</th>
+            <th>Alterações</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="!emptyList">
+          <tr *ngFor="let item of faccao$ | async; trackBy: trackByFaccao">
+            <td [ngClass]="item.name" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id!]"><a class="link-name">{{ item.name }}</a></td>
+            <td *ngIf="!haveOrigem"><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id!]">{{ item.qnt | number: '1.0' }}</a></td>
+            <td *ngIf="haveOrigem"><a class="link-desc" [routerLink]="['/pcp/ops-descricao/' + tituloStatus + '/' + item.id! + '/' + item.tipo]">{{ item.qnt | number: '1.0' }}</a></td>
+            <td>{{ item.qnt_pecas | number: '1.0' }}</td>
+            <td *ngIf="tituloStatus == 'Total'" class="atraso">{{ item.qnt_atraso | number: '1.0' }}</td>
+            <td *ngIf="tituloStatus == 'Total'" class="atraso">{{ item.pecas_atraso | number: '1.0' }}</td>
+            <td *ngIf="item.alteracoes! >= 1"><a class="link-desc" (click)="openAtraso(item.id!, item.name)">{{ item.alteracoes | number: '1.0'
+                }}</a></td>
+            <td *ngIf="item.alteracoes! < 1">{{ item.alteracoes }}</td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="emptyList">
+          <tr>
+            <td colspan="3" class="no-data-available">No data!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="listFaccoes.length == 0">
+      <div class="card-wrapper">
+        <nb-card [nbSpinner]="true" nbSpinnerSize="giant" nbSpinnerStatus="primary">
+          <nb-card-body>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+  </nb-layout-column>
+</nb-layout>

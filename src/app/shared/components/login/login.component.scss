@@ -1,0 +1,27 @@
+@import "../../../../themes.scss";
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .img_logo {
+    background: rgba($color: #000000, $alpha: 0.0) nb-theme(logo-img) no-repeat;
+    // background-image: nb-theme(logo-img);
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    height: 45px;
+    width: 205px;
+    margin-bottom: 15px;
+  }
+}
+
+.login-input {
+  margin: 5px;
+}
+
+.bt-login {
+  margin: 10px
+}

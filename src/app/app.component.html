@@ -1,0 +1,14 @@
+<nb-layout>
+  <nb-layout-header fixed>
+    <fc-header (toggleSidebar)="toggle"></fc-header>
+  </nb-layout-header>
+  <nb-sidebar fixed state="collapsed" autoCollapse>
+    <nb-card>
+      <nb-menu (click)="toggle()" [items]="items">
+      </nb-menu>
+    </nb-card>
+  </nb-sidebar>
+  <nb-layout-column>
+      <router-outlet></router-outlet>
+  </nb-layout-column>
+</nb-layout>

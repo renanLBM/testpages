@@ -1,0 +1,161 @@
+<nb-layout>
+  <nb-layout-column>
+    <!-- error message -->
+    <div *ngIf="loadingError; else filter" style="text-align: center;">
+      <h3>Erro ao carregar os dados!</h3>
+      <h3>Tente novamente mais tarde.</h3>
+    </div>
+
+    <!-- filter component -->
+    <ng-template #filter>
+      <div class="filtro-wrapper">
+        <h6 class="filter-title">Filtros</h6>
+        <div class="filtro-menu-wrapper">
+          <div class="filtro-dropdown">
+            <nb-select multiple placeholder="Apontamento" [(ngModel)]="selectedApontamento" status="primary">
+              <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
+              <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()"
+                *ngFor="let apontamento of menuApontamento" [value]="apontamento">{{apontamento}}</nb-option>
+            </nb-select>
+          </div>
+          <div class="filtro-dropdown">
+            <nb-form-field>
+              <input type="text" id="filtro-op" #filtro nbInput (keyup)="filtroOP($event)"
+                placeholder="Filtrar Ciclo, OP ou Ref">
+              <button *ngIf="filtroAtivo" nbPrefix nbButton ghost (click)="limpaFiltro(filtro)">
+                <nb-icon icon="close-square-outline" aria-label="pesquisar">
+                </nb-icon>
+              </button>
+              <button nbSuffix nbButton ghost (click)="filtroOP($event)">
+                <nb-icon icon="search-outline" aria-label="pesquisar">
+                </nb-icon>
+              </button>
+            </nb-form-field>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- toolbar -->
+    <div class="toolbar-wrapper">
+      <div class="tag-wrapper">
+        <span>Semana selecionada: <b>{{semanaSelecionada}}</b> <span *ngIf="semanaSelecionada != 'Todas'"> (de {{
+            dataIni | date: 'dd/MM/yyyy' }} a {{ dataFim | date: 'dd/MM/yyyy' }})</span></span>
+        <nb-tag-list style="margin: 5px;">
+          <nb-tag status="basic" appearance="outline" text=" Todas " (click)="filtraSemana(0, true)"></nb-tag>
+          <nb-tag status="danger" appearance="outline" *ngFor="let item of semanaListAtraso" text="Sem. {{item}}"
+            (click)="filtraSemana(item, true)"></nb-tag>
+          <nb-tag *ngIf="semanaAtualNumber == closestSemana" status="primary" appearance="filled"
+            text="Sem. {{semanaAtualNumber}}" (click)="filtraSemana(semanaAtualNumber, true)"></nb-tag>
+          <nb-tag status="success" appearance="outline" *ngFor="let item of semanaListFuturo" text="Sem. {{item}}"
+            (click)="filtraSemana(item, true)"></nb-tag>
+        </nb-tag-list>
+      </div>
+
+      <div class="toolbar-info">
+        <div class="toolbar-value">
+          <div>
+            Qtd. OP's:
+          </div>
+          <div class="h6">
+            {{qntOPs}}
+          </div>
+        </div>
+        <div class="toolbar-value">
+          <div>
+            Qtd. Peças:
+          </div>
+          <div class="h6">
+            {{qntPecas}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!isEmptyList; else listaVazia">
+      <div class="card-wrapper">
+        <nb-card [accent]="item.accent || 'basic'" *ngFor="let item of descOP$ | async; trackBy: trackByOP">
+          <nb-card-body>
+            <div class="c-body-wrapper">
+              <div (click)="openWindow(item.ref.toString())" class="c-img">
+                <img [lazyLoad]="item.img!" [defaultImage]="defaultImage" alt="op-img">
+              </div>
+              <div class="c-desc">
+                <div class="c-header">
+                  <div class="titulo">
+                    <h4>Ref: {{ item.ref }}</h4>
+                  </div>
+                  <div class="bt-edit">
+                    <nb-icon icon="more-vertical-outline" [nbContextMenu]="items" (click)="openMenu(item)"
+                      nbContextMenuTag="auditor-list" nbContextMenuTrigger="click">
+                    </nb-icon>
+                  </div>
+                </div>
+                <div class="c-body">
+                  <!-- <span [ngClass]="[item.status_color]" class="c-status">{{ item.status }}</span> -->
+                  <p style="font-size: 15px;"><b>Previsão de retorno:</b> {{ item.previsao }}</p>
+                  <div class="nv-prev" *ngIf="item.checked">
+                    <p class="nv-prev-text atraso"><b>Nova previsão:</b> {{ item.novaprevisao }}
+                    </p>
+                    <p *ngIf="item.motivo_atraso == 'Adiantamento'" class="nv-prev-text adiantamento-text">
+                      {{ item.motivo_atraso }}</p>
+                    <p *ngIf="item.motivo_atraso != 'Adiantamento'" class="nv-prev-text atraso">
+                      <b>Motivo atraso:</b> {{ item.motivo_atraso }}
+                    </p>
+                  </div>
+                  <p><b>Ciclo:</b> {{ item.ciclo }} / <b>OP:</b> {{ item.op }}</p>
+                  <!-- <p style="line-height: 0;"></p> -->
+                  <p class="desc-text"><b>Descrição:</b> {{ item.descricao }}</p>
+                  <p class="desc-text"><b>Coleção:</b> {{ item.drop }}</p>
+                  <p class="c-qnt"><b>Peças:</b> {{ item.qnt }}</p>
+                  <div class="nv-prev">
+                    <nb-alert [ngClass]="item.Situacao!" class="nv-alert">{{
+                      item.Situacao || 'Não informado' }}</nb-alert>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+
+    <ng-template #listaVazia>
+      <h4 class="error-notfound">Nenhum item encontrado...</h4>
+    </ng-template>
+
+
+    <!-- placeholder while loading -->
+    <div *ngIf="descOPLoad | async">
+      <div class="card-wrapper">
+        <nb-card [nbSpinner]="true" nbSpinnerStatus="primary">
+          <nb-card-body>
+            <div class="c-body-wrapper">
+              <div class="c-img">
+                <img src="../../../../assets/not-found.png" alt="op-img">
+              </div>
+              <div class="c-desc">
+                <div class="c-header">
+                  <div>
+                    <h4>Ref:</h4>
+                  </div>
+                  <div class="bt-edit">
+                    <nb-icon icon="more-vertical-outline"></nb-icon>
+                  </div>
+                </div>
+                <div class="c-body">
+                  <span>...</span>
+                  <p><b>Previsão:</b></p>
+                  <p><b>Ciclo: </b> / <b>OP: </b></p>
+                  <p><b>Descrição:</b></p>
+                  <p><b>Drop:</b></p>
+                  <p class="c-qnt"><b>Peças:</b></p>
+                </div>
+              </div>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+  </nb-layout-column>
+</nb-layout>

@@ -1,0 +1,55 @@
+@import "../../../../themes.scss";
+
+.card-wrapper {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filter-wrapper {
+  margin: 0 15px 15px;
+  padding: 10px;
+  border: 1px solid lightblue;
+  border-radius: 5px;
+  background-color: nb-theme(background-basic-color-2);
+
+  .filter-title {
+    font-weight: 600;
+    margin-top: -20px;
+    background: linear-gradient(0deg, nb-theme(background-basic-color-2) 0%, nb-theme(background-basic-color-2) 55%, rgba(255,255,255,0) 55%, rgba(255,255,255,0) 100%);
+    width: max-content;
+    padding: 0 5px;
+    user-select: none;
+  }
+
+  .filter-menu-wrapper {
+    margin-left: 2em;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filtro-dropdown {
+    margin-right: 15px;
+  }
+}
+
+::ng-deep nb-select {
+  width: 275px;
+}
+
+@media screen and (max-width: 475px) {
+  .filter-wrapper {
+    margin: 10px 0;
+  }
+
+  .filter-menu-wrapper {
+    margin: 0 !important;
+    justify-content: center;
+
+  }
+
+  .filtro-dropdown {
+    margin: 0 0 10px !important;
+  }
+}

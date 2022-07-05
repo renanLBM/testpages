@@ -1,0 +1,25 @@
+<nb-layout>
+  <nb-layout-column>
+    <div class="back">
+      <div class="container login-container">
+        <form class="form mt-4" (ngSubmit)="login()" #loginForm="ngForm">
+          <div class="form-group">
+            <div class="img_logo"></div>
+            <input nbInput class="form-control login-input" placeholder="Nome do usuário" [(ngModel)]="usuario"
+              name="usuario" #campoUsuario="ngModel" required />
+            <input nbInput type="password" class="form-control login-input" placeholder="Senha" [(ngModel)]="senha" name="senha"
+              #campoSenha="ngModel" required />
+
+            <div class="bt-container bt-login">
+              <button nbButton hero status="primary" type="submit" class="btn btn-primary btn-block" [disabled]="loginForm.invalid">
+                Acessar
+              </button>
+            </div>
+          </div>
+
+        </form>
+        <hr />
+      </div>
+    </div>
+  </nb-layout-column>
+</nb-layout>

@@ -1,0 +1,92 @@
+@import "../../../../themes.scss";
+
+nb-card {
+  cursor: pointer;
+  width: 350px;
+  margin: 10px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+}
+
+
+nb-card-header {
+  text-align: center;
+  user-select: none;
+}
+
+.header-color {
+  color: nb-theme(color-basic-100);
+  background-color: #3e2494 !important;
+}
+
+nb-card-body {
+  text-align: center;
+  padding: 0;
+}
+
+nb-card-footer {
+  text-align: center;
+  font-weight: 600;
+}
+
+nb-card-footer:hover {
+  background-color: rgba(112, 128, 144, 0.5);
+}
+
+.c-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  .total-op {
+    width: 50%;
+
+    p {
+      margin: 30px 0 10px;
+      padding: 0;
+      font-size: 36px;
+      font-weight: 600;
+    }
+
+    margin: 10px 0;
+    border-right: 1px solid rgb(151, 151, 151);
+  }
+
+  .total-op-false {
+    width: 50%;
+
+    p {
+      margin: 30px 0 10px;
+      padding: 0;
+      font-size: 36px;
+      font-weight: 600;
+    }
+
+    margin: 10px 0;
+  }
+}
+
+.desc-op {
+  width: 50%;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  span {
+    font-size: 14px;
+  }
+
+  p {
+    color: red;
+    font-weight: 600;
+    line-height: 0;
+  }
+}
+
+@media screen and (max-width: 475px) {
+  nb-card {
+    width: 300px;
+  }
+}
