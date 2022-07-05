@@ -1,0 +1,16 @@
+<nb-card [status]="c_status" class="card-wrapper" [nbSpinner]="loading" nbSpinnerStatus="primary">
+  <nb-card-header [ngClass]="headerColor">{{ title }}</nb-card-header>
+  <nb-card-body>
+    <div class="c-body">
+      <div [ngClass]="page_desc">
+        <p>{{ qnt_ops | number: '1.0' }}</p>
+        <span><b>Total de OP's</b></span>
+      </div>
+      <div *ngIf="show_desc" class="desc-op">
+        <span><b>{{ qnt_text_desc }}</b></span>
+        <span>{{ text_desc }}</span>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer>Acessar</nb-card-footer>
+</nb-card>

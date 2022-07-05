@@ -1,0 +1,35 @@
+<nb-card>
+  <nb-card-header>
+    <h3>Alterações</h3>
+    <h4>{{ status }} - {{ name }}</h4>
+  </nb-card-header>
+  <nb-card-body>
+    <table class="row-border hover">
+      <thead>
+        <tr>
+          <th>Cód</th>
+          <!-- <th>Qnt. Peças</th> -->
+          <th>Nova Previsão</th>
+          <th>Motivo</th>
+          <th>Usuário</th>
+          <th>Dt Inserido</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="!emptyList">
+        <tr *ngFor="let item of motivoList$ | async">
+          <td>{{ item.NR_CICLO + '-' + item.NR_OP + '-' + item.CD_REFERENCIA }}</td>
+          <!-- <td>{{ item.QT_OP }}</td> -->
+          <td>{{ item.NOVA_PREVISAO }}</td>
+          <td>{{ item.MOTIVO }}</td>
+          <td>{{ item.USUARIO }}</td>
+          <td>{{ item.DT_INSERIDO }}</td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="emptyList">
+        <tr>
+          <td colspan="3" class="no-data-available">No data!</td>
+        </tr>
+      </tbody>
+    </table>
+  </nb-card-body>
+</nb-card>

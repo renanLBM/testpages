@@ -1,0 +1,33 @@
+<nb-card>
+  <nb-card-header>
+    <h3>Alterações</h3>
+    <h4>{{ status }} - {{ name }}</h4>
+  </nb-card-header>
+  <nb-card-body>
+    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+      <thead>
+        <tr>
+          <th>Cód</th>
+          <th>Marca</th>
+          <th>Drop</th>
+          <th>Grupo</th>
+          <th>Qnt. Peças</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="!emptyList">
+        <tr *ngFor="let item of opsList$ | async">
+          <td>{{ item.NR_CICLO + '-' + item.NR_OP + '-' + item.CD_REFERENCIA }}</td>
+          <td>{{ item.DS_MARCA }}</td>
+          <td>{{ item.DS_DROP }}</td>
+          <td>{{ item.DS_GRUPO }}</td>
+          <td>{{ item.QT_OP }}</td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="emptyList">
+        <tr>
+          <td colspan="3" class="no-data-available">No data!</td>
+        </tr>
+      </tbody>
+    </table>
+  </nb-card-body>
+</nb-card>

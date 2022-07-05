@@ -1,0 +1,20 @@
+@import "../../../../themes.scss";
+
+.cards-wrapper {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filter-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin: 0 25px 25px;
+}
+
+@media screen and (max-width: 475px) {
+  .filter-wrapper {
+    margin-bottom: 10px;
+  }
+}
