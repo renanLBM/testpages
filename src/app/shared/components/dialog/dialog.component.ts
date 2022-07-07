@@ -235,6 +235,8 @@ export class DialogComponent implements OnInit {
 
     this.user = this._userService.getSession().nome;
 
+    console.log(this.prevOP);
+
     this.novoApontamento = {
       cod: '',
       CD_LOCAL: this.prevOP.cd_local,

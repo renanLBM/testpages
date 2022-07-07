@@ -29,11 +29,31 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## Controle de versionamento
 
-[BitBucket](https://GarciaRenan@bitbucket.org/GarciaRenan/faccao-control.git)
+Versionamento feito de acordo com o padrãoo [SemVer](https://semver.org/);
+
+### Front-End
+  Link para o [BitBucket](https://GarciaRenan@bitbucket.org/GarciaRenan/faccao-control.git);
+  
+    - branch Dev_test:
+      - Stage deploy para testes
+      - Ao fazer o commit para esse branch o [Netlify](https://app.netlify.com/sites/controleops-lbm/deploys) atualiza automaticamente
+      Link para o site de testes: [controleops-lbm](https://controleops-lbm.netlify.app)
+      
+    - branch Main:
+      - Branch principal onde deve ser mantido todo o código que está rodando no ambiente de desenvolvimento;
+
+### Back-End
+  Feito em [Flask](https://flask.palletsprojects.com/en/2.1.x/quickstart/)
+  Link para o [BitBucket](https://bitbucket.org/GarciaRenan/api_gerenciarops/src/master/);
+
 
 ## Deploy
 
-Run  `firebase deploy` to deploy the aplication to [firebase](https://console.firebase.google.com/project/faccaocontrol/overview?hl=pt-br) - [help to deploy](https://www.c-sharpcorner.com/article/how-to-deploy-and-host-an-angular-application-on-firebase/)
+### Front-End
+  Run  `firebase deploy` to deploy the aplication to [Firebase](https://console.firebase.google.com/project/faccaocontrol/overview?hl=pt-br)
+  > [help to deploy Firebase](https://www.c-sharpcorner.com/article/how-to-deploy-and-host-an-angular-application-on-firebase/)
 
-## Back-End made in Flask
+### Back-End
+  Run ```git push heroku master``` to deploy the aplication to [Heroku](https://dashboard.heroku.com/login)
+  > [help to deploy Heroku](https://devcenter.heroku.com/articles/git)
 

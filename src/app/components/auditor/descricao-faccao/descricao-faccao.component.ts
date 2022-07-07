@@ -32,7 +32,6 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoFaccaoComponent implements OnInit {
-
   selectedApontamento: string[] = [];
   menuApontamento: string[] = [];
 
@@ -88,6 +87,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    let id = this._route.snapshot.paramMap.get('id')!;
     // pega o filtro setado na página anterior (escolha da facção)
     let filtroColecao: string[] = this._opsFilteredService.getFilter().colecao;
     // pegar a semana atual
@@ -106,25 +106,24 @@ export class DescricaoFaccaoComponent implements OnInit {
     this._setTitle.setTitle('Carregando...');
     // pega todos os dados da tabela de alterações
     this._auditorService.getApontamento().subscribe((apontamentos) => {
-
+      apontamentos = apontamentos.filter(x => x.CD_LOCAL+'' == id);
       this.menuApontamento.push('Não informado');
       apontamentos.forEach((x) => {
         this.menuApontamento.push(x.Situacao!);
         this.menuApontamento = [...new Set(this.menuApontamento)];
       });
 
-      this.menuApontamento.sort((a,b) => a > b ? 1 : b > a ? -1 : 0);
+      this.menuApontamento.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
 
       this.apontamentoList = apontamentos;
       this._auditorService.getMotivos().subscribe((motivo) => {
         this.motivoList = motivo;
 
-        let id = this._route.snapshot.paramMap.get('id')!;
         this._opsService.getOpById(id).subscribe({
           next: (ops: OPs) => {
             if (filtroColecao.length > 0) {
               ops = ops.filter((x) => {
-                return filtroColecao.includes(x.DS_CICLO)
+                return filtroColecao.includes(x.DS_CICLO);
               });
             }
             ops.sort((a, b) => {
@@ -202,8 +201,8 @@ export class DescricaoFaccaoComponent implements OnInit {
                 this.imgList = [...new Set(imgListAll)];
               }
 
-              maiorMotivo = this.filtraMaiorMotivo(op.cod!);
-              maiorApontamento = this.filtraMaiorApontamento(op.cod!);
+              maiorMotivo = this.filtraMaiorMotivo(op.cod!+'-'+op.CD_LOCAL);
+              maiorApontamento = this.filtraMaiorApontamento(op.cod!+'-'+op.CD_LOCAL);
 
               let prevdate = new Date(op.PREV_RETORNO);
               let prev = prevdate
@@ -330,7 +329,9 @@ export class DescricaoFaccaoComponent implements OnInit {
     if (this.motivoList) {
       let erro = this.motivoList.toString() == 'error';
       if (!erro) {
-        let motivos = this.motivoList.filter((m) => m.cod == cod);
+        let motivos = this.motivoList.filter(
+          (m) => m.cod + '-' + m.CD_LOCAL == cod
+        );
         if (motivos.length > 0) {
           this.motivo = motivos.reduce((p, c) => {
             return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
@@ -351,7 +352,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       let erro = this.apontamentoList.toString() == 'error';
       if (!erro) {
         let apontamentos = this.apontamentoList.filter(
-          (m) => m.cod == cod
+          (m) => m.cod + '-' + m.CD_LOCAL == cod
         );
         if (apontamentos.length > 0) {
           this.apontamento = apontamentos.reduce((p, c) => {
@@ -408,17 +409,25 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.filtroAtivo = false;
     (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
     if (this.semanaSelecionada != 'Todas') {
-      this.descOP$.next(this.descOP.filter((_) => _.semana == parseInt(this.semanaSelecionada)));
-      if(this.selectedApontamento.length != 0) {
+      this.descOP$.next(
+        this.descOP.filter((_) => _.semana == parseInt(this.semanaSelecionada))
+      );
+      if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!) && _.semana == parseInt(this.semanaSelecionada))
+          this.descOP.filter(
+            (_) =>
+              this.selectedApontamento.includes(_.Situacao!) &&
+              _.semana == parseInt(this.semanaSelecionada)
+          )
         );
       }
     } else {
       this.descOP$.next(this.descOP);
-      if(this.selectedApontamento.length != 0) {
+      if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!))
+          this.descOP.filter((_) =>
+            this.selectedApontamento.includes(_.Situacao!)
+          )
         );
       }
     }
@@ -449,17 +458,23 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.semanaSelecionada = 'Todas';
       (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
       this.descOP$.next(this.descOP);
-      if(this.selectedApontamento.length != 0) {
+      if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!))
+          this.descOP.filter((_) =>
+            this.selectedApontamento.includes(_.Situacao!)
+          )
         );
       }
     } else {
       this.semanaSelecionada = event.toString();
       this.descOP$.next(this.descOP.filter((_) => _.semana == event));
-      if(this.selectedApontamento.length != 0) {
+      if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!) && _.semana == parseInt(this.semanaSelecionada))
+          this.descOP.filter(
+            (_) =>
+              this.selectedApontamento.includes(_.Situacao!) &&
+              _.semana == parseInt(this.semanaSelecionada)
+          )
         );
       }
       this.descOP$.subscribe((x) => {

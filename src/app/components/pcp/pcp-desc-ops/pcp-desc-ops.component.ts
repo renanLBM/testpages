@@ -128,7 +128,9 @@ export class PcpDescOpsComponent implements OnInit {
     this.faccaoList = thisOPs;
     this.tituloLocal = this.tituloStatus;
     if (this.origemStatus) {
-      this.faccaoList = this.faccaoList.filter((x) => x.DS_TIPO == this.origemStatus);
+      this.faccaoList = this.faccaoList.filter(
+        (x) => x.DS_TIPO == this.origemStatus
+      );
     }
     if (this.facIdStatus != '99999') {
       this.faccaoList = this.faccaoList.filter(
@@ -137,7 +139,7 @@ export class PcpDescOpsComponent implements OnInit {
       this.tituloLocal = this.faccaoList[0].DS_LOCAL;
     }
     this.faccaoList.map((x) => {
-      if(!x.PREV_RETORNO){
+      if (!x.PREV_RETORNO) {
         x.PREV_RETORNO = '01/01/2001 00:00:00';
       }
       x.DT_ENTRADA = `${x.DT_ENTRADA.substring(6, 10)}-${x.DT_ENTRADA.substring(
@@ -155,14 +157,14 @@ export class PcpDescOpsComponent implements OnInit {
       let atraso!: Motivo;
       if (this.motivoList.toString() != 'error') {
         atraso = this.motivoList.filter(
-          (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
+          (_) => _.cod + '-' + _.CD_LOCAL == x.cod! + '-' + x.CD_LOCAL
         )[0];
       }
 
       let apontamento!: Apontamento;
       if (this.apontamentoList.toString() != 'error') {
         apontamento = this.apontamentoList.filter(
-          (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
+          (_) => _.cod + '-' + _.CD_LOCAL == x.cod! + '-' + x.CD_LOCAL
         )[0];
       }
 
@@ -201,17 +203,17 @@ export class PcpDescOpsComponent implements OnInit {
     // filtra as ops de acordo com o status filtrado
     if (!!apontamentoFilter && apontamentoFilter != 'Não informado') {
       let apCodList = this.apontamentoList.flatMap(
-        (ap) => ap.cod + ap.CD_LOCAL
+        (ap) => ap.cod + '-' + ap.CD_LOCAL
       );
       listFilteredOPs = listFilteredOPs.filter((x) =>
-        apCodList.includes(x.cod! + x.CD_LOCAL)
+        apCodList.includes(x.cod! + '-' + x.CD_LOCAL)
       );
     } else if (apontamentoFilter == 'Não informado') {
       let apCodList = this.apontamentoList.flatMap(
-        (ap) => ap.cod + ap.CD_LOCAL
+        (ap) => ap.cod + '-' + ap.CD_LOCAL
       );
       listFilteredOPs = listFilteredOPs.filter(
-        (x) => !apCodList.includes(x.cod! + x.CD_LOCAL)
+        (x) => !apCodList.includes(x.cod! + '-' + x.CD_LOCAL)
       );
     }
 
