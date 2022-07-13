@@ -9,7 +9,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import {
+  NbButtonModule,
   NbCardModule,
+  NbIconModule,
   NbLayoutModule,
   NbMenuModule,
   NbRouteTabsetModule,
@@ -36,7 +38,9 @@ registerLocaleData(localePt, 'pt-BR');
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
+    NbButtonModule,
     NbCardModule,
+    NbIconModule,
     NbLayoutModule,
     NbMenuModule.forRoot(),
     NbRouteTabsetModule,

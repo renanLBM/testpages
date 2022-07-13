@@ -10,22 +10,27 @@
   <nb-card-body>
     <form [formGroup]="dialogForm">
       <div class="body-wrapper" *ngIf="!apontamento, else apontamentoBody">
-        <input inputmode="none" autocomplete="off" style="text-align: center;" nbInput formControlName="dtControl" id="dateInput"
-          [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev">
+        <input inputmode="none" autocomplete="off" style="text-align: center;" nbInput formControlName="dtControl"
+          id="dateInput" [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev">
         <nb-datepicker #datepicker [min]="min"></nb-datepicker>
         <br>
         <nb-select placeholder="Motivo da alteração" formControlName="motivoControl" *ngIf="tipo == 'Atraso'">
           <nb-option value="">Selecionar</nb-option>
-          <nb-option *ngFor="let motivo of motivosAtraso; let i = index" [value]="i">{{ motivo }}</nb-option>
+          <nb-option *ngFor="let motivo of motivosAtraso | keyvalue; let i = index" [value]="i">{{ motivo.value }}
+          </nb-option>
         </nb-select>
       </div>
       <ng-template #apontamentoBody>
         <div class="body-wrapper">
-          <nb-select placeholder="Motivo da alteração" formControlName="situacaoControl" [(selected)]="selected">
+          <nb-select placeholder="Apontamento" formControlName="situacaoControl" [(selected)]="selected">
             <nb-option value="">Selecionar</nb-option>
-            <nb-option *ngFor="let situacao of situacaoList; let i = index" [value]="i">{{ situacao }}</nb-option>
+            <nb-option *ngFor="let situacao of situacaoList; let i = index" [value]="i">{{ '0' + (i+2) +'-'+ situacao }}</nb-option>
           </nb-select>
-          <!-- <input nbInput type="datetime-local"> -->
+          <div *ngIf="situacaoList[selected] == 'Parado'">
+            <nb-select placeholder="Apontamento" formControlName="motivoParadoControl">
+              <nb-option *ngFor="let motivo of paradoList | keyvalue; let i = index" [value]="i">{{ motivo.value }}</nb-option>
+            </nb-select>
+          </div>
         </div>
       </ng-template>
     </form>

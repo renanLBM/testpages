@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanLoad, Route, Router, UrlSegment, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Pages } from '../models/enumPages';
+import { Pages } from '../models/enums/enumPages';
 import { UserService } from '../services/user.service';
 
 @Injectable({

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Pages } from 'src/app/models/enumPages';
+import { Pages } from 'src/app/models/enums/enumPages';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from '../../set-title-service.service';
 
