@@ -26,7 +26,7 @@
             <nb-option value="">Selecionar</nb-option>
             <nb-option *ngFor="let situacao of situacaoList; let i = index" [value]="i">{{ '0' + (i+2) +'-'+ situacao }}</nb-option>
           </nb-select>
-          <div *ngIf="situacaoList[selected] == 'Parado'">
+          <div *ngIf="situacaoList[selected] == 'Parado'" class="motivo-parado">
             <nb-select placeholder="Apontamento" formControlName="motivoParadoControl">
               <nb-option *ngFor="let motivo of paradoList | keyvalue; let i = index" [value]="i">{{ motivo.value }}</nb-option>
             </nb-select>
