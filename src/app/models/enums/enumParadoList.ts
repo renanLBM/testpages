@@ -1,5 +1,5 @@
 export enum ParadoList {
-  'Falta de insumo',
-  'Modelagem',
-  'Despriorizado'
+  'Despriorizado',
+  'Remanejamento',
+  'Resolução de pendência',
 }

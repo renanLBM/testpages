@@ -4,7 +4,6 @@ export enum ApontamentoList {
   'Em fila',
   'Em produção',
   'Parado',
-  'Remanejamento',
   'Em inspeção',
   'Disponível para coleta',
   'Coletado'

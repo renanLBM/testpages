@@ -240,7 +240,7 @@ export class PcpDescOpsComponent implements OnInit {
   filterApontamento(ap: Apontamentos): Apontamentos {
     let { apontamentoFilter } = this.selectedFilters;
     if (!!apontamentoFilter && apontamentoFilter != 'Não informado') {
-      return ap.filter((a) => a.Situacao! == apontamentoFilter);
+      return ap.filter((a) => a.Situacao!.includes(apontamentoFilter));
     }
     return ap;
   }

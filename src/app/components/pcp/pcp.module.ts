@@ -20,7 +20,7 @@ import { DataTablesModule } from 'angular-datatables';
 import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
 import { AlteracoesComponent, FsIconComponent } from './alteracoes/alteracoes.component';
 import { DescricaoStatusComponent } from './descricao-status/descricao-status.component';
-import { PcpComponent } from './list-status/pcp.component';
+import { PcpComponent } from './pcp-home/pcp.component';
 import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
 import { PCPRoutingModule } from './pcp-routing.module';
 

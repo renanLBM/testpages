@@ -27,6 +27,8 @@
         <nb-card-body class="apontamento-alert-wrapper">
           <nb-alert status="danger" (click)="filterApontamento('Não informado')">Não informado: {{
             apontamentoList.nao_informado | percent:'1.1-2' }}</nb-alert>
+          <nb-alert status="danger" (click)="filterApontamento('Em transporte')">Em transporte: {{
+            apontamentoList.em_transporte | percent:'1.1-2' }}</nb-alert>
           <nb-alert status="primary" (click)="filterApontamento('Em fila')">Em fila: {{ apontamentoList.em_fila |
             percent:'1.1-2' }}</nb-alert>
           <nb-alert status="info" (click)="filterApontamento('Em produção')">Em produção: {{ apontamentoList.em_producao
@@ -35,10 +37,10 @@
             percent:'1.1-2' }}</nb-alert>
           <nb-alert class="inspecao" (click)="filterApontamento('Em inspeção')">Em inspeção: {{ apontamentoList.inspecao |
             percent:'1.1-2' }}</nb-alert>
-          <nb-alert status="success" (click)="filterApontamento('Disponível para coleta')">Coleta: {{
+          <nb-alert status="success" (click)="filterApontamento('Disponível para coleta')">Disponível: {{
             apontamentoList.disponivel | percent:'1.1-2' }}</nb-alert>
-          <nb-alert class="transporte" (click)="filterApontamento('Em transporte')">Transporte: {{
-            apontamentoList.transporte | percent:'1.1-2' }}</nb-alert>
+          <nb-alert class="transporte" (click)="filterApontamento('Coletado')">Coletado: {{
+            apontamentoList.coletado | percent:'1.1-2' }}</nb-alert>
         </nb-card-body>
       </nb-card>
     </div>

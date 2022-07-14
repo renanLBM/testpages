@@ -55,12 +55,13 @@ export class PcpComponent implements OnInit {
 
   apontamentoList = {
     nao_informado: 0,
+    em_transporte: 0,
     em_fila: 0,
     em_producao: 0,
     parado: 0,
     inspecao: 0,
     disponivel: 0,
-    transporte: 0,
+    coletado: 0,
   };
 
   statusTipo: TipoPorStatus[] = [
@@ -394,6 +395,7 @@ export class PcpComponent implements OnInit {
 
       let situacaoListObj: any | Object = situacaoList.reduce(
         (prev: { [x: string]: any }, cur: string | number) => {
+          cur = cur.toString().includes("Parado") ? cur = 'Parado' : cur;
           prev[cur] = (prev[cur] || 0) + 1;
           return prev;
         },
@@ -405,14 +407,19 @@ export class PcpComponent implements OnInit {
         totalSituacao += situacaoListObj[key];
       });
 
+      // To do:
+      // alterar de "Em transporte" para "Coletado"
+      //
+
       this.apontamentoList = {
         nao_informado: (qntOpsList - totalSituacao) / qntOpsList || 0,
+        em_transporte: situacaoListObj['Em Transporte'] / qntOpsList || 0,
         em_fila: situacaoListObj['Em fila'] / qntOpsList || 0,
         em_producao: situacaoListObj['Em produção'] / qntOpsList || 0,
         parado: situacaoListObj['Parado'] / qntOpsList || 0,
         inspecao: situacaoListObj['Em inspeção'] / qntOpsList || 0,
         disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
-        transporte: situacaoListObj['Em transporte'] / qntOpsList || 0,
+        coletado: situacaoListObj['Coletado'] / qntOpsList || 0,
       };
     });
   }

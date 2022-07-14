@@ -234,7 +234,8 @@ export class DialogComponent implements OnInit {
     let selectedMotivoParado: number = nApontamento.motivoParadoControl;
     let selectedMotivoParadoForm = Object.values(this.paradoList)[selectedMotivoParado];
 
-    novoApontamentoForm = novoApontamentoForm == "Parado" ? novoApontamentoForm + ' - ' + selectedMotivoParadoForm : novoApontamentoForm;
+    let motivoParado = selectedMotivoParadoForm ? ' - ' + selectedMotivoParadoForm : '';
+    novoApontamentoForm = novoApontamentoForm == "Parado" ? novoApontamentoForm + motivoParado : novoApontamentoForm;
 
     this.user = this._userService.getSession().nome;
 
