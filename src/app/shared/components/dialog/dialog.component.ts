@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { Apontamento } from 'src/app/models/apontamento';
 import { descOP } from 'src/app/models/descOP';
@@ -38,13 +38,14 @@ export class DialogComponent implements OnInit {
   @Input() situacao: string = '';
 
   selected!: number;
+  selectedParado: number = -1;
   apontamento: boolean = false;
 
-  dialogForm = new FormGroup({
-    motivoControl: new FormControl(),
-    dtControl: new FormControl(),
-    situacaoControl: new FormControl(),
-    motivoParadoControl: new FormControl(),
+  dialogForm = new UntypedFormGroup({
+    motivoControl: new UntypedFormControl(),
+    dtControl: new UntypedFormControl(),
+    situacaoControl: new UntypedFormControl(),
+    motivoParadoControl: new UntypedFormControl(),
   });
 
   removed: boolean = false;
@@ -66,7 +67,6 @@ export class DialogComponent implements OnInit {
     for (let [i, item] of situacaoEnum.entries()) {
       if(i > 1 && item != "Coletado") this.situacaoList.push(item as string);
     }
-
 
     this.loading = false;
 
@@ -227,15 +227,16 @@ export class DialogComponent implements OnInit {
   }
 
   submitApontamento(): void {
+    this.err = false;
     let nApontamento = this.dialogForm.value;
 
     let selectedApontament: number = nApontamento.situacaoControl;
-    let novoApontamentoForm = Object.values(this.situacaoList)[selectedApontament];
+    let novoApontamentoForm = this.situacaoList[selectedApontament];
     let selectedMotivoParado: number = nApontamento.motivoParadoControl;
-    let selectedMotivoParadoForm = Object.values(this.paradoList)[selectedMotivoParado];
+    let selectedMotivoParadoForm = this.paradoList[selectedMotivoParado];
 
     let motivoParado = selectedMotivoParadoForm ? ' - ' + selectedMotivoParadoForm : '';
-    novoApontamentoForm = novoApontamentoForm == "Parado" ? novoApontamentoForm + motivoParado : novoApontamentoForm;
+    novoApontamentoForm = novoApontamentoForm.match("Parado") ? novoApontamentoForm + motivoParado : novoApontamentoForm;
 
     this.user = this._userService.getSession().nome;
 
@@ -255,7 +256,12 @@ export class DialogComponent implements OnInit {
       longitude: this.longitude,
     };
 
-    if (novoApontamentoForm) {
+    if(novoApontamentoForm.match('Parado') && this.selectedParado < 0){
+      this.err = true;
+      this.loading = false;
+    }
+
+    if (novoApontamentoForm && !this.err) {
       this.loading = true;
       this._auditorService.setApontamento(this.novoApontamento).subscribe({
         next: (ret) => {

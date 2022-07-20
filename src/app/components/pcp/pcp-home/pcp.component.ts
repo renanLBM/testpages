@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Apontamentos } from 'src/app/models/apontamento';
+import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
 import { Faccoes } from 'src/app/models/faccao';
 import { OP, OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
@@ -62,6 +63,7 @@ export class PcpComponent implements OnInit {
     inspecao: 0,
     disponivel: 0,
     coletado: 0,
+    sacrificio: 0
   };
 
   statusTipo: TipoPorStatus[] = [
@@ -172,12 +174,12 @@ export class PcpComponent implements OnInit {
       this.tipoList.push({
         tipo: x['DS_TIPO'],
         status: x['Status'],
-        qnt: x['QT_OP'],
+        qnt: Number(x['QT_OP'].toLocaleString().replace(".","")),
       });
       this.tipoList.push({
         tipo: 'Total',
         status: x['Status'],
-        qnt: x['QT_OP'],
+        qnt: Number(x['QT_OP'].toLocaleString().replace(".","")),
       });
     });
 
@@ -210,10 +212,12 @@ export class PcpComponent implements OnInit {
       .filter((tl: { tipo: string }) => tl.tipo == 'Total')
       .reduce(
         (
-          prev: { [x: string]: any },
-          cur: { status: string | number; qnt: string }
+          prev: { [x: string]: number },
+          cur: { status: string; qnt: number }
         ) => {
-          prev[cur.status] = (prev[cur.status] || 0) + +cur.qnt;
+          let cur_qnt: number = +cur.qnt;
+          let prev_qnt: number = +prev[cur.status] || 0;
+          prev[cur.status] = prev_qnt + cur_qnt;
           return prev;
         },
         {}
@@ -229,9 +233,11 @@ export class PcpComponent implements OnInit {
       .reduce(
         (
           prev: { [x: string]: any },
-          cur: { tipo: string | number; qnt: string }
+          cur: { tipo: string | number; qnt: number }
         ) => {
-          prev[cur.tipo] = (prev[cur.tipo] || 0) + +cur.qnt;
+          let cur_qnt: number = +cur.qnt;
+          let prev_qnt: number = +prev[cur.tipo] || 0;
+          prev[cur.tipo] = prev_qnt + cur_qnt;
           return prev;
         },
         {}
@@ -245,7 +251,6 @@ export class PcpComponent implements OnInit {
         qnt_pecas: +qntPecasStatus[s] || 0,
         ordem: ordem,
       });
-      s;
     });
     this.OpList.push({
       name: 'Total',
@@ -407,19 +412,16 @@ export class PcpComponent implements OnInit {
         totalSituacao += situacaoListObj[key];
       });
 
-      // To do:
-      // alterar de "Em transporte" para "Coletado"
-      //
-
       this.apontamentoList = {
         nao_informado: (qntOpsList - totalSituacao) / qntOpsList || 0,
-        em_transporte: situacaoListObj['Em Transporte'] / qntOpsList || 0,
+        em_transporte: situacaoListObj['Em transporte'] / qntOpsList || 0,
         em_fila: situacaoListObj['Em fila'] / qntOpsList || 0,
         em_producao: situacaoListObj['Em produção'] / qntOpsList || 0,
         parado: situacaoListObj['Parado'] / qntOpsList || 0,
         inspecao: situacaoListObj['Em inspeção'] / qntOpsList || 0,
         disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
         coletado: situacaoListObj['Coletado'] / qntOpsList || 0,
+        sacrificio: situacaoListObj['Sacrifício'] / qntOpsList || 0,
       };
     });
   }

@@ -8,17 +8,18 @@
 
     <!-- filter component -->
     <ng-template #filter>
-      <div class="filtro-wrapper">
+      <div class="filter-wrapper">
         <h6 class="filter-title">Filtros</h6>
-        <div class="filtro-menu-wrapper">
-          <div class="filtro-dropdown">
-            <nb-select multiple placeholder="Apontamento" [(ngModel)]="selectedApontamento" status="primary">
+        <div class="filter-menu-wrapper">
+          <div class="filter-dropdown">
+            <nb-select multiple placeholder="Apontamento" [(ngModel)]="idSelectedApontamento" status="primary">
               <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
               <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()"
-                *ngFor="let apontamento of menuApontamento" [value]="apontamento">{{apontamento}}</nb-option>
+                *ngFor="let situacao of menuApontamento; let i = index" [value]="i">{{ situacao }}
+              </nb-option>
             </nb-select>
           </div>
-          <div class="filtro-dropdown">
+          <div class="filter-dropdown">
             <nb-form-field>
               <input type="text" id="filtro-op" #filtro nbInput (keyup)="filtroOP($event)"
                 placeholder="Filtrar Ciclo, OP ou Ref">
@@ -94,8 +95,7 @@
                 <div class="c-body">
                   <p style="font-size: 15px;"><b>Previsão de retorno:</b> {{ item.previsao }}</p>
                   <div class="nv-prev" *ngIf="item.checked">
-                    <p class="nv-prev-text atraso"><b>Nova previsão:</b> {{ item.novaprevisao }}
-                    </p>
+                    <p class="nv-prev-text atraso"><b>Nova previsão:</b> {{ item.novaprevisao }}</p>
                     <p *ngIf="item.motivo_atraso == 'Adiantamento'" class="nv-prev-text adiantamento-text">
                       {{ item.motivo_atraso }}</p>
                     <p *ngIf="item.motivo_atraso != 'Adiantamento'" class="nv-prev-text atraso">

@@ -43,6 +43,7 @@ export class PcpDescOpsComponent implements OnInit {
   faccao: Faccoes = [];
   listOPs$: BehaviorSubject<OPs> = new BehaviorSubject(this.faccaoList);
 
+  dtHoje = new Date();
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
 
   constructor(
@@ -142,17 +143,14 @@ export class PcpDescOpsComponent implements OnInit {
       if (!x.PREV_RETORNO) {
         x.PREV_RETORNO = '01/01/2001 00:00:00';
       }
-      x.DT_ENTRADA = `${x.DT_ENTRADA.substring(6, 10)}-${x.DT_ENTRADA.substring(
-        3,
-        5
-      )}-${x.DT_ENTRADA.substring(0, 2)}  04:00:00`;
-      x.PREV_RETORNO = `${x.PREV_RETORNO.substring(
-        6,
-        10
-      )}-${x.PREV_RETORNO.substring(3, 5)}-${x.PREV_RETORNO.substring(
-        0,
-        2
-      )} 04:00:00`;
+
+      let newDtEntrada = x.DT_ENTRADA.split(" ")[0].split("/");
+      let dataEntrada = new Date(+newDtEntrada[2], +newDtEntrada[1] -1, +newDtEntrada[0]);
+      let newDtPrev = x.PREV_RETORNO.split(" ")[0].split("/");
+      x.PREV_RETORNO = newDtPrev[2]+"-"+newDtPrev[1]+"-"+newDtPrev[0];
+      let dtPrev = new Date(+newDtPrev[2], +newDtPrev[1] -1, +newDtPrev[0]);
+
+      x.css_class = dtPrev < this.dtHoje ? 'atraso' : 'andamento';
 
       let atraso!: Motivo;
       if (this.motivoList.toString() != 'error') {
@@ -168,27 +166,25 @@ export class PcpDescOpsComponent implements OnInit {
         )[0];
       }
 
-      let hj = new Date();
-
-      let dataEntrada = new Date(x.DT_ENTRADA);
-      let dtPrev = new Date(x.PREV_RETORNO);
-
-      x.css_class = dtPrev < hj ? 'atraso' : 'andamento';
-
       if (!x.DS_COORDENADO) {
         x.DS_COORDENADO = x.DS_GRUPO;
       }
       x['dias_faccao'] = Math.floor(
-        (hj.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
+        (this.dtHoje.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
       );
+
+      x['motivo_atraso'] = '-';
+      x['nova_previsao'] = '-';
 
       //  verifica se teve atraso para essa OP
       if (atraso) {
-        x['motivo_atraso'] = atraso.MOTIVO;
-        x['nova_previsao'] = atraso.NOVA_PREVISAO;
-      } else {
-        x['motivo_atraso'] = '-';
-        x['nova_previsao'] = '-';
+        let newDtNovaPrev = atraso.NOVA_PREVISAO.split("/");
+        let dtNovaPrev = new Date(+newDtNovaPrev[2], +newDtNovaPrev[1] -1, +newDtNovaPrev[0]);
+
+        if (dtNovaPrev >= this.dtHoje) {
+          x['motivo_atraso'] = atraso.MOTIVO;
+          x['nova_previsao'] = atraso.NOVA_PREVISAO;
+        }
       }
 
       //  verifica se teve apontamento para essa OP

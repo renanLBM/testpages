@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   ENCRIPT_KEY: 'lbm_Secret_Key12',
-  API_ENV: 'http://172.16.10.159:8080/',
-  // API_ENV: 'http://172.16.11.171:8080/',
+  // API_ENV: 'http://172.16.10.159:8080/',
+  // API_ENV: 'http://172.16.10.98:8080/',
 
-  // API_ENV: 'http://192.168.0.8:8080/',
+  API_ENV: 'http://192.168.0.8:8080/',
 };

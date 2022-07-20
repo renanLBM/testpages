@@ -21,13 +21,6 @@ export class MotoristaService {
     });
   }
 
-  getColeta(): Observable<Coletas> {
-    const headers = this.getToken();
-    return this._httpClient.get<Coletas>(`${API}/api/getcoleta`, {
-      headers,
-    });
-  }
-
   setColeta(coleta: Coleta): Observable<number> {
     const headers = this.getToken();
     const body = JSON.stringify(coleta);

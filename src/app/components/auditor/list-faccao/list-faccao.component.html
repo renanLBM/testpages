@@ -16,7 +16,8 @@
           <div class="filtro-dropdown">
             <nb-select multiple placeholder="Coleção" [(ngModel)]="selectedColecao" status="primary">
               <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
-              <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}
+              <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()"
+                *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}
               </nb-option>
             </nb-select>
           </div>
@@ -39,14 +40,16 @@
     </ng-template>
 
     <div *ngIf="!emptyList; else listaVazia">
-      <div class="card-wrapper">
-        <div *ngFor="let item of faccaoList$ | async">
-          <fc-card [show_desc]="show_desc" [title]="item.name" text_desc="OP's em atraso" [qnt_ops]="item.qnt"
-            [c_status]="item.color!" [qnt_atraso]="item.qnt_atraso!" [per_atraso]="item.per_atraso!"
-            [routerLink]="['/auditor/descricao/', item.id]">
-          </fc-card>
+      <cdk-virtual-scroll-viewport [itemSize]="5" class="list-viewport">
+        <div class="card-wrapper">
+          <div *cdkVirtualFor="let item of faccaoList$ | async">
+            <fc-card [show_desc]="show_desc" [title]="item.name" text_desc="OP's em atraso" [qnt_ops]="item.qnt"
+              [c_status]="item.color!" [qnt_atraso]="item.qnt_atraso!" [per_atraso]="item.per_atraso!"
+              [routerLink]="['/auditor/descricao/', item.id]">
+            </fc-card>
+          </div>
         </div>
-      </div>
+      </cdk-virtual-scroll-viewport>
     </div>
 
     <ng-template #listaVazia>

@@ -53,6 +53,8 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   faccao: Faccoes = [];
   faccao$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.faccao);
 
+  dtHoje = new Date();
+
   constructor(
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
@@ -105,14 +107,15 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
         this._opsService.getAllOPs().subscribe({
           next: (list) => {
             this.listFaccoes = this.filterOPs(list);
-            // this.listFaccoes = list;
 
             // transforma o cod em uma lista
-            this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
+            this.codigoList = this.listFaccoes.flatMap((x) => x.cod+'-'+x.CD_LOCAL);
 
-            this.motivoList = this.motivoList.filter((m) =>
-              this.codigoList.includes(m.cod)
-            );
+            this.motivoList = this.motivoList.filter((m) => {
+              let dtNovaPrev = m.NOVA_PREVISAO.split("/");
+              let new_dtNovaPrev = new Date(+dtNovaPrev[2], +dtNovaPrev[1] -1, +dtNovaPrev[0]);
+              return this.codigoList.includes(m.cod+'-'+m.CD_LOCAL) && new_dtNovaPrev >= this.dtHoje;
+            });
 
             // chama a funcção de somar os totais de ops e peças
             let {

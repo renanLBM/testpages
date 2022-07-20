@@ -1,10 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { catchError, EMPTY, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Apontamento, Apontamentos } from '../models/apontamento';
 import { Motivo, Motivos } from '../models/motivo';
 import { TokenService } from './token.service';
+import { UserService } from './user.service';
 
 const API = environment.API_ENV;
 
@@ -14,12 +15,35 @@ const API = environment.API_ENV;
 export class AuditorService {
   constructor(
     private _httpClient: HttpClient,
+    private _userService: UserService,
     private _tokenService: TokenService
   ) {}
 
-  getMotivos(): Observable<Motivos> {
+  getMotivos(id?: string): Observable<Motivos> {
     const headers = this.getToken();
-    return this._httpClient.get<Motivos>(`${API}/api/getmotivo`, { headers });
+    if (!id) {
+      return this._httpClient
+        .get<Motivos>(`${API}/api/getmotivo`, {
+          headers,
+        })
+        .pipe(
+          catchError((error: HttpErrorResponse) => {
+            if (error.status == 401) this.missingToken();
+            return EMPTY;
+          })
+        );
+    } else {
+      return this._httpClient
+        .get<Motivos>(`${API}/api/getmotivo/${id}`, {
+          headers,
+        })
+        .pipe(
+          catchError((error: HttpErrorResponse) => {
+            if (error.status == 401) this.missingToken();
+            return EMPTY;
+          })
+        );
+    }
   }
 
   setMotivo(motivo: Motivo): Observable<number> {
@@ -52,11 +76,31 @@ export class AuditorService {
       );
   }
 
-  getApontamento(): Observable<Apontamentos> {
+  getApontamento(id?: string): Observable<Apontamentos> {
     const headers = this.getToken();
-    return this._httpClient.get<Apontamentos>(`${API}/api/getapontamento`, {
-      headers,
-    });
+    if (!id) {
+      return this._httpClient
+        .get<Apontamentos>(`${API}/api/getapontamento`, {
+          headers,
+        })
+        .pipe(
+          catchError((error: HttpErrorResponse) => {
+            if (error.status == 401) this.missingToken();
+            return EMPTY;
+          })
+        );
+    } else {
+      return this._httpClient
+        .get<Apontamentos>(`${API}/api/getapontamento/${id}`, {
+          headers,
+        })
+        .pipe(
+          catchError((error: HttpErrorResponse) => {
+            if (error.status == 401) this.missingToken();
+            return EMPTY;
+          })
+        );
+    }
   }
 
   setApontamento(apontamento: Apontamento): Observable<number> {
@@ -78,5 +122,10 @@ export class AuditorService {
     const token = this._tokenService.getToken();
     let headerDict = new HttpHeaders().append('x-access-token', token);
     return headerDict;
+  }
+
+  missingToken() {
+    alert('Sessão expirada!');
+    this._userService.logout();
   }
 }

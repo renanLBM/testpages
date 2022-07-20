@@ -15,10 +15,6 @@ export class DialogDefaultComponent {
 
   constructor(protected dialogRef: NbDialogRef<DialogDefaultComponent>) {}
 
-  cancel() {
-    this.dialogRef.close();
-  }
-
   submit() {
     this.dialogRef.close(true);
   }

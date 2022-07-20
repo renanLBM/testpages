@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Faccao, Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
@@ -11,6 +11,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   selector: 'fc-list-faccao',
   templateUrl: './list-faccao.component.html',
   styleUrls: ['./list-faccao.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListFaccaoComponent implements OnInit {
   selectedColecao: string[] = [];

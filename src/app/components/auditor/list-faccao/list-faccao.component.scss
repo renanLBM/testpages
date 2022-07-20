@@ -38,6 +38,10 @@
   width: 275px;
 }
 
+.list-viewport {
+  height: 500px;
+}
+
 @media screen and (max-width: 475px) {
   .filter-wrapper {
     margin: 10px 0;
@@ -52,4 +56,29 @@
   .filtro-dropdown {
     margin: 0 0 10px !important;
   }
+
 }
+
+@media screen and (min-height: 900px) {
+  .list-viewport {
+    height: 800px;
+  }
+}
+
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #bdbdbd #ffffff;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 9px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #bdbdbd;
+    border-radius: 10px;
+  }
+

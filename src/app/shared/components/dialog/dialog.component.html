@@ -11,8 +11,8 @@
     <form [formGroup]="dialogForm">
       <div class="body-wrapper" *ngIf="!apontamento, else apontamentoBody">
         <input inputmode="none" autocomplete="off" style="text-align: center;" nbInput formControlName="dtControl"
-          id="dateInput" [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev">
-        <nb-datepicker #datepicker [min]="min"></nb-datepicker>
+          id="dateInput" [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev ">
+        <nb-datepicker #datepicker format="dd/MM/yyyy" [min]="min"></nb-datepicker>
         <br>
         <nb-select placeholder="Motivo da alteração" formControlName="motivoControl" *ngIf="tipo == 'Atraso'">
           <nb-option value="">Selecionar</nb-option>
@@ -24,10 +24,10 @@
         <div class="body-wrapper">
           <nb-select placeholder="Apontamento" formControlName="situacaoControl" [(selected)]="selected">
             <nb-option value="">Selecionar</nb-option>
-            <nb-option *ngFor="let situacao of situacaoList; let i = index" [value]="i">{{ '0' + (i+2) +'-'+ situacao }}</nb-option>
+            <nb-option *ngFor="let situacao of situacaoList; let i = index" [value]="i">{{ situacao }}</nb-option>
           </nb-select>
-          <div *ngIf="situacaoList[selected] == 'Parado'" class="motivo-parado">
-            <nb-select placeholder="Apontamento" formControlName="motivoParadoControl">
+          <div *ngIf="situacaoList[selected] == '04 - Parado'" class="motivo-parado">
+            <nb-select placeholder="Apontamento" formControlName="motivoParadoControl" [(selected)]="selectedParado">
               <nb-option *ngFor="let motivo of paradoList | keyvalue; let i = index" [value]="i">{{ motivo.value }}</nb-option>
             </nb-select>
           </div>
@@ -38,7 +38,7 @@
       <span style="color: red; font-size: 9px;">Data inserida incorreta ou campos em branco!</span>
     </div>
     <div *ngIf="!!prev && !apontamento" class="data-inserida-wrapper">
-      <span class="data-inserida">Última data inserida: {{prev}}
+      <span class="data-inserida">Última data inserida: {{ prev }}
         <div class="bt-remover">
           <nb-icon (click)="remove()" icon="close-square-outline"></nb-icon>
         </div>

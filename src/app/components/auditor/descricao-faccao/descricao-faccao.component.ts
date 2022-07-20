@@ -15,6 +15,7 @@ import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { descOP, descOPs } from 'src/app/models/descOP';
+import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OP, OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
@@ -33,6 +34,8 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
 })
 export class DescricaoFaccaoComponent implements OnInit {
   selectedApontamento: string[] = [];
+  idSelectedApontamento: number[] = [];
+  apontamentoEnum = ApontamentoList;
   menuApontamento: string[] = [];
 
   counter: number = 0;
@@ -105,18 +108,17 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     this._setTitle.setTitle('Carregando...');
     // pega todos os dados da tabela de alterações
-    this._auditorService.getApontamento().subscribe((apontamentos) => {
-      apontamentos = apontamentos.filter(x => x.CD_LOCAL+'' == id);
-      this.menuApontamento.push('Não informado');
-      apontamentos.forEach((x) => {
-        this.menuApontamento.push(x.Situacao!);
-        this.menuApontamento = [...new Set(this.menuApontamento)];
-      });
-
-      this.menuApontamento.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
+    this._auditorService.getApontamento(id).subscribe((apontamentos) => {
+      apontamentos = apontamentos.filter((x) => x.CD_LOCAL + '' == id);
+      let situacaoEnum = Object.values(ApontamentoList).filter(
+        (value) => typeof value === 'string'
+      );
+      for (let [i, item] of situacaoEnum.entries()) {
+        this.menuApontamento.push(item as string);
+      }
 
       this.apontamentoList = apontamentos;
-      this._auditorService.getMotivos().subscribe((motivo) => {
+      this._auditorService.getMotivos(id).subscribe((motivo) => {
         this.motivoList = motivo;
 
         this._opsService.getOpById(id).subscribe({
@@ -126,53 +128,27 @@ export class DescricaoFaccaoComponent implements OnInit {
                 return filtroColecao.includes(x.DS_CICLO);
               });
             }
+
             ops.sort((a, b) => {
-              let dataRetornoA = `${a.PREV_RETORNO.substring(
-                6,
-                10
-              )}-${a.PREV_RETORNO.substring(3, 5)}-${a.PREV_RETORNO.substring(
-                0,
-                2
-              )}`;
-              let dataRetornoB = `${b.PREV_RETORNO.substring(
-                6,
-                10
-              )}-${b.PREV_RETORNO.substring(3, 5)}-${b.PREV_RETORNO.substring(
-                0,
-                2
-              )}`;
+              let dtPrevRetornoA: string[] = a.PREV_RETORNO.split(' ')[0].split('/');
+              let dataRetornoA: Date = new Date(`${dtPrevRetornoA[2]}-${dtPrevRetornoA[1]}-${dtPrevRetornoA[0]} 04:00:00`);
+              let dtPrevRetornoB: string[] = b.PREV_RETORNO.split(' ')[0].split('/');
+              let dataRetornoB: Date = new Date(`${dtPrevRetornoB[2]}-${dtPrevRetornoB[1]}-${dtPrevRetornoB[0]} 04:00:00`);
 
-              let x = new Date(dataRetornoA);
-              let y = new Date(dataRetornoB);
+              let result = dataRetornoA > dataRetornoB ? 1 : dataRetornoB > dataRetornoA ? -1 : 0;
 
-              if (x > y) {
-                return 1;
-              } else if (y > x) {
-                return -1;
-              } else {
-                return 0;
-              }
+              return result;
             });
 
             let imgListAll: string[] = [];
             let maiorMotivo;
             let maiorApontamento;
 
-            ops.map((op: OP) => {
-              op.DT_ENTRADA = `${op.DT_ENTRADA.substring(
-                6,
-                10
-              )}-${op.DT_ENTRADA.substring(3, 5)}-${op.DT_ENTRADA.substring(
-                0,
-                2
-              )} 04:00:00`;
-              op.PREV_RETORNO = `${op.PREV_RETORNO.substring(
-                6,
-                10
-              )}-${op.PREV_RETORNO.substring(3, 5)}-${op.PREV_RETORNO.substring(
-                0,
-                2
-              )} 04:00:00`;
+            ops.forEach((op: OP) => {
+              let dtEntrada = op.DT_ENTRADA.split(' ')[0].split('/');
+              op.DT_ENTRADA = `${dtEntrada[2]}-${dtEntrada[1]}-${dtEntrada[0]} 04:00:00`;
+              let dtPrevRetorno = op.PREV_RETORNO.split(' ')[0].split('/');
+              op.PREV_RETORNO = `${dtPrevRetorno[2]}-${dtPrevRetorno[1]}-${dtPrevRetorno[0]} 04:00:00`;
 
               let newImage = new Image();
               newImage.src =
@@ -201,8 +177,10 @@ export class DescricaoFaccaoComponent implements OnInit {
                 this.imgList = [...new Set(imgListAll)];
               }
 
-              maiorMotivo = this.filtraMaiorMotivo(op.cod!+'-'+op.CD_LOCAL);
-              maiorApontamento = this.filtraMaiorApontamento(op.cod!+'-'+op.CD_LOCAL);
+              maiorMotivo = this.filtraMaiorMotivo(op.cod! + '-' + op.CD_LOCAL);
+              maiorApontamento = this.filtraMaiorApontamento(
+                op.cod! + '-' + op.CD_LOCAL
+              );
 
               let prevdate = new Date(op.PREV_RETORNO);
               let prev = prevdate
@@ -256,14 +234,18 @@ export class DescricaoFaccaoComponent implements OnInit {
                 qnt: op.QT_OP,
               });
               this.descOP.map((desc) => {
-                if (desc.status == 'Em andamento') {
-                  desc.accent = 'success';
-                } else if (desc.status == 'Pendente') {
-                  desc.accent = 'warning';
-                } else if (desc.status == 'Em atraso') {
-                  desc.accent = 'danger';
-                } else {
-                  desc.accent = 'basic';
+                switch (desc.status) {
+                  case 'Em andamento':
+                    desc.accent = 'success';
+                    break;
+                  case 'Pendente':
+                    desc.accent = 'warning';
+                    break;
+                  case 'Em atraso':
+                    desc.accent = 'danger';
+                    break;
+                  default:
+                    desc.accent = 'basic';
                 }
               });
             });
@@ -347,6 +329,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
     return { ds_atraso: '', dt_atraso: '', i_checked: false };
   }
+
   filtraMaiorApontamento(cod: string) {
     if (this.apontamentoList) {
       let erro = this.apontamentoList.toString() == 'error';
@@ -372,7 +355,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   filtroOP(event: Event): void {
     document.getElementById('filtro-op')?.focus();
     const filterValue = (event.target as HTMLInputElement).value;
-    this.selectedApontamento = [];
+    this.idSelectedApontamento = [];
     if (filterValue == '') {
       this.filtroAtivo = false;
       this.descOP$.next(this.descOP);
@@ -406,6 +389,10 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   filtrosDropdown() {
+    this.selectedApontamento = [];
+    this.idSelectedApontamento.forEach((x) => {
+      this.selectedApontamento.push(this.apontamentoEnum[x]);
+    });
     this.filtroAtivo = false;
     (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
     if (this.semanaSelecionada != 'Todas') {
