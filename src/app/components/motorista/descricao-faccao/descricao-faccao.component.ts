@@ -330,7 +330,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       PREV_RETORNO: op.previsao,
       QT_OP: op.qnt!,
       Status: op.status!,
-      Situacao: 'Coletado',
+      Situacao: '07 - Coletado',
       USUARIO: this.user,
       DT_INSERIDO: new Date().toLocaleString('pt-Br'),
       latitude: this.latitude,
