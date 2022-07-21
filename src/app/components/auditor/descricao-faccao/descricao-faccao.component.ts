@@ -16,12 +16,14 @@ import { filter, map } from 'rxjs/operators';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { descOP, descOPs } from 'src/app/models/descOP';
 import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
+import { Pages } from 'src/app/models/enums/enumPages';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OP, OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
+import { UserService } from 'src/app/services/user.service';
 import { CarosselComponent } from 'src/app/shared/components/carossel/carossel.component';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
@@ -70,7 +72,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   apontamento!: Apontamento;
   imgList: string[] = [];
 
-  items = [
+  itemsMenu = [
     { title: 'Atraso' },
     { title: 'Adiantamento' },
     { title: 'Apontamento de Produção' },
@@ -81,6 +83,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     private _opsFilteredService: OpsFilteredService,
     private _opsService: OpsService,
     private _auditorService: AuditorService,
+    private _userService: UserService,
     private _route: ActivatedRoute,
     private NbDdialogService: NbDialogService,
     private windowService: NbWindowService,
@@ -90,6 +93,14 @@ export class DescricaoFaccaoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    let userNivel = this._userService.getNivel();
+
+    if(Pages[userNivel] == "Fornecedor") {
+      this.itemsMenu = [
+        { title: 'Apontamento de Produção' },
+      ]
+    }
+
     let id = this._route.snapshot.paramMap.get('id')!;
     // pega o filtro setado na página anterior (escolha da facção)
     let filtroColecao: string[] = this._opsFilteredService.getFilter().colecao;
@@ -217,7 +228,7 @@ export class DescricaoFaccaoComponent implements OnInit {
                 op: op.NR_OP,
                 ref: op.CD_REFERENCIA,
                 previsao: prev,
-                Situacao: maiorApontamento.situacao || 'Não informado',
+                Situacao: maiorApontamento.situacao || '08 - Não informado',
                 novaprevisao: maiorMotivo.dt_atraso,
                 motivo_atraso: maiorMotivo.ds_atraso,
                 checked: maiorMotivo.i_checked,

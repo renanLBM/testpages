@@ -25,7 +25,12 @@ export class LoginGuard implements CanActivate {
     | Promise<boolean | UrlTree> {
     if (this._userService.isLogged()) {
       let nivel = this._userService.getNivel();
-      this._route.navigate([Pages[nivel]]);
+      let finalRoute = Pages[nivel];
+
+      if (nivel == 4) {
+        finalRoute = 'auditor';
+      }
+      this._route.navigate([finalRoute]);
       return false;
     }
     return true;

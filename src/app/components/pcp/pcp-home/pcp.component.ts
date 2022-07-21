@@ -63,7 +63,7 @@ export class PcpComponent implements OnInit {
     inspecao: 0,
     disponivel: 0,
     coletado: 0,
-    sacrificio: 0
+    nao_industrializado: 0
   };
 
   statusTipo: TipoPorStatus[] = [
@@ -421,7 +421,7 @@ export class PcpComponent implements OnInit {
         inspecao: situacaoListObj['Em inspeção'] / qntOpsList || 0,
         disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
         coletado: situacaoListObj['Coletado'] / qntOpsList || 0,
-        sacrificio: situacaoListObj['Sacrifício'] / qntOpsList || 0,
+        nao_industrializado: situacaoListObj['Não industrializado'] / qntOpsList || 0,
       };
     });
   }

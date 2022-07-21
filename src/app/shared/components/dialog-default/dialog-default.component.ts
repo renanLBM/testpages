@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
-import { DialogDefaultBodyComponent } from '../dialog-default-body/dialog-default-body.component';
 
 @Component({
   selector: 'fc-dialog-default',

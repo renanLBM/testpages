@@ -29,7 +29,12 @@ export class LoginComponent implements OnInit {
     this._userService.login(this.usuario, this.senha).subscribe({
       next: (user) => {
         this._userService.getUser().subscribe((userLoggin) => this.nivel = userLoggin.nivel);
-        this._router.navigate([Pages[this.nivel]]);
+        let finalRoute = Pages[this.nivel];
+
+        if (this.nivel == 4) {
+          finalRoute = 'Auditor';
+        }
+        this._router.navigate([finalRoute]);
       },
       error: (err) => {
         this._setTitle.setTitle('FacControl - Acessar');

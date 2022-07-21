@@ -12,6 +12,7 @@ import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
+import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
 
 @Component({
   selector: 'fc-pcp-desc-ops',
@@ -144,11 +145,15 @@ export class PcpDescOpsComponent implements OnInit {
         x.PREV_RETORNO = '01/01/2001 00:00:00';
       }
 
-      let newDtEntrada = x.DT_ENTRADA.split(" ")[0].split("/");
-      let dataEntrada = new Date(+newDtEntrada[2], +newDtEntrada[1] -1, +newDtEntrada[0]);
-      let newDtPrev = x.PREV_RETORNO.split(" ")[0].split("/");
-      x.PREV_RETORNO = newDtPrev[2]+"-"+newDtPrev[1]+"-"+newDtPrev[0];
-      let dtPrev = new Date(+newDtPrev[2], +newDtPrev[1] -1, +newDtPrev[0]);
+      let newDtEntrada = x.DT_ENTRADA.split(' ')[0].split('/');
+      let dataEntrada = new Date(
+        +newDtEntrada[2],
+        +newDtEntrada[1] - 1,
+        +newDtEntrada[0]
+      );
+      let newDtPrev = x.PREV_RETORNO.split(' ')[0].split('/');
+      x.PREV_RETORNO = newDtPrev[2] + '-' + newDtPrev[1] + '-' + newDtPrev[0];
+      let dtPrev = new Date(+newDtPrev[2], +newDtPrev[1] - 1, +newDtPrev[0]);
 
       x.css_class = dtPrev < this.dtHoje ? 'atraso' : 'andamento';
 
@@ -178,8 +183,12 @@ export class PcpDescOpsComponent implements OnInit {
 
       //  verifica se teve atraso para essa OP
       if (atraso) {
-        let newDtNovaPrev = atraso.NOVA_PREVISAO.split("/");
-        let dtNovaPrev = new Date(+newDtNovaPrev[2], +newDtNovaPrev[1] -1, +newDtNovaPrev[0]);
+        let newDtNovaPrev = atraso.NOVA_PREVISAO.split('/');
+        let dtNovaPrev = new Date(
+          +newDtNovaPrev[2],
+          +newDtNovaPrev[1] - 1,
+          +newDtNovaPrev[0]
+        );
 
         if (dtNovaPrev >= this.dtHoje) {
           x['motivo_atraso'] = atraso.MOTIVO;
@@ -188,7 +197,20 @@ export class PcpDescOpsComponent implements OnInit {
       }
 
       //  verifica se teve apontamento para essa OP
-      x['apontamento'] = apontamento ? apontamento.Situacao : '-';
+      let apontamentoShowed: string;
+      apontamentoShowed = apontamento ? apontamento.Situacao! : '-';
+      apontamentoShowed = apontamentoShowed.includes('Parado')
+        ? 'Parado'
+        : apontamentoShowed;
+      if (!apontamentoShowed.includes('-')) {
+        x['apontamento'] =
+          '0' +
+          ApontamentoList[apontamentoShowed as keyof typeof ApontamentoList] +
+          ' - ' +
+          apontamentoShowed;
+      } else {
+        x['apontamento'] = '-';
+      }
     });
   }
 
