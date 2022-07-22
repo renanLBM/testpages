@@ -52,7 +52,8 @@
               "node_modules/datatables.net-buttons/js/buttons.print.js"
             ],
             "serviceWorker": true,
-            "ngswConfigPath": "ngsw-config.json"
+            "ngswConfigPath": "ngsw-config.json",
+            "allowedCommonJsDependencies": ["eva-icons"]
           },
           "configurations": {
             "production": {

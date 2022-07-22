@@ -41,7 +41,7 @@
             apontamentoList.disponivel | percent:'1.1-2' }}</nb-alert>
           <nb-alert class="coletado" (click)="filterApontamento('Coletado')">Coletado: {{
             apontamentoList.coletado | percent:'1.1-2' }}</nb-alert>
-          <nb-alert status="danger" (click)="filterApontamento('Não industrializado')">Não industrializado {{
+          <nb-alert class="industrializado" (click)="filterApontamento('Não industrializado')">Não industrializado {{
             apontamentoList.nao_industrializado | percent:'1.1-2' }}</nb-alert>
         </nb-card-body>
       </nb-card>

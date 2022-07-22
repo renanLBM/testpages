@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { Pages } from 'src/app/models/enums/enumPages';
 import { Faccao, Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
+import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 @Component({
@@ -37,6 +39,7 @@ export class ListFaccaoComponent implements OnInit {
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
     private _opsFilteredService: OpsFilteredService,
+    private _userService: UserService,
     public _loadingService: LoadingService
   ) {}
 
@@ -46,6 +49,9 @@ export class ListFaccaoComponent implements OnInit {
       colecao: [],
       apontamentoFilter: '',
     };
+
+    let nivel = this._userService.getNivel() == 99 ? 1 : this._userService.getNivel();
+    let titulo = Pages[nivel].charAt(0).toUpperCase() + Pages[nivel].slice(1);
 
     this._opsFilteredService.setFilter(this.selectedFilters);
 
@@ -63,7 +69,7 @@ export class ListFaccaoComponent implements OnInit {
         this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
 
         this.faccaoList$.next(this.faccaoList);
-        this._setTitle.setTitle('Auditor');
+        this._setTitle.setTitle(titulo);
       },
       error: (err: Error) => console.error(err),
     });

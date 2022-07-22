@@ -228,7 +228,7 @@ export class DescricaoFaccaoComponent implements OnInit {
                 op: op.NR_OP,
                 ref: op.CD_REFERENCIA,
                 previsao: prev,
-                Situacao: maiorApontamento.situacao || '08 - Não informado',
+                Situacao: maiorApontamento.situacao || 'Não informado',
                 novaprevisao: maiorMotivo.dt_atraso,
                 motivo_atraso: maiorMotivo.ds_atraso,
                 checked: maiorMotivo.i_checked,

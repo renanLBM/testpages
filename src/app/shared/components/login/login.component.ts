@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
         let finalRoute = Pages[this.nivel];
 
         if (this.nivel == 4) {
-          finalRoute = 'Auditor';
+          finalRoute = 'auditor';
         }
         this._router.navigate([finalRoute]);
       },
