@@ -207,7 +207,7 @@ export class PcpDescOpsComponent implements OnInit {
           '0' +
           ApontamentoList[apontamentoShowed as keyof typeof ApontamentoList] +
           ' - ' +
-          apontamentoShowed;
+          apontamento.Situacao;
       } else {
         x['apontamento'] = '-';
       }
