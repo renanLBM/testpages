@@ -32,7 +32,6 @@ export class DescricaoFaccaoComponent implements OnInit {
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
 
   apontamentoList!: Apontamentos;
-  apontamento!: Apontamento;
   novoApontamento!: Apontamento;
 
   latitude: number = 0;
@@ -79,132 +78,120 @@ export class DescricaoFaccaoComponent implements OnInit {
       );
     }
 
-    this._auditorService.getApontamento().subscribe((apontamentos) => {
-      let apontamentosDisponiveis = apontamentos.filter(
-        (apontamento) =>
-          apontamento.Situacao == 'Disponível para coleta' ||
-          apontamento.Situacao == 'Em transporte'
-      );
-      this.listCodOPsDisponiveis = apontamentosDisponiveis.flatMap(
-        (op) => op.cod + '-' + op.CD_LOCAL
-      );
-      this._motoristaService.getColeta().subscribe({
-        next: (coletados) => {
-          this._opsService.getOpById(id).subscribe({
-            next: (ops: OPs) => {
-              ops = ops.filter((op: OP) =>
-                this.listCodOPsDisponiveis.includes(op.cod + '-' + op.CD_LOCAL)
-              );
-              ops.sort((a, b) => {
-                let dataRetornoA = `${a.PREV_RETORNO.substring(
-                  6,
-                  10
-                )}-${a.PREV_RETORNO.substring(3, 5)}-${a.PREV_RETORNO.substring(
-                  0,
-                  2
-                )}`;
-                let dataRetornoB = `${b.PREV_RETORNO.substring(
-                  6,
-                  10
-                )}-${b.PREV_RETORNO.substring(3, 5)}-${b.PREV_RETORNO.substring(
-                  0,
-                  2
-                )}`;
+    this._motoristaService.listDisponivel().subscribe({
+      next: (coletados) => {
+        this.apontamentoList = coletados.filter((x) => x.CD_LOCAL == +id);
+        this.listCodOPsDisponiveis = this.apontamentoList.flatMap((x) => x.cod + '-' + x.CD_LOCAL);
+        this._opsService.getOpById(id).subscribe({
+          next: (ops: OPs) => {
+            ops = ops.filter((op: OP) =>
+              this.listCodOPsDisponiveis.includes(op.cod + '-' + op.CD_LOCAL)
+            );
+            ops.sort((a, b) => {
+              let dataRetornoA = `${a.PREV_RETORNO.substring(
+                6,
+                10
+              )}-${a.PREV_RETORNO.substring(3, 5)}-${a.PREV_RETORNO.substring(
+                0,
+                2
+              )}`;
+              let dataRetornoB = `${b.PREV_RETORNO.substring(
+                6,
+                10
+              )}-${b.PREV_RETORNO.substring(3, 5)}-${b.PREV_RETORNO.substring(
+                0,
+                2
+              )}`;
 
-                let x = new Date(dataRetornoA);
-                let y = new Date(dataRetornoB);
+              let x = new Date(dataRetornoA);
+              let y = new Date(dataRetornoB);
 
-                if (x > y) {
-                  return 1;
-                } else if (y > x) {
-                  return -1;
+              if (x > y) {
+                return 1;
+              } else if (y > x) {
+                return -1;
+              } else {
+                return 0;
+              }
+            });
+
+            let maiorApontamento;
+            let foiColetado: boolean = false;
+
+            ops.map((op) => {
+              maiorApontamento = this.filtraMaiorApontamento(op.cod!);
+              foiColetado = maiorApontamento.situacao == 'Coletado';
+
+              this.descOP.push({
+                cd_local: op.CD_LOCAL,
+                local: op.DS_LOCAL,
+                cod:
+                  op.NR_CICLO.toString() +
+                  '-' +
+                  op.NR_OP.toString() +
+                  '-' +
+                  op.CD_REFERENCIA.toString(),
+                ciclo: op.NR_CICLO,
+                op: op.NR_OP,
+                ref: op.CD_REFERENCIA,
+                previsao: op.PREV_RETORNO.substring(0, 10),
+                Situacao: maiorApontamento.situacao,
+                checked: foiColetado,
+                descricao: op.DS_GRUPO,
+                drop: op.DS_DROP,
+                img:
+                  this.imgUrl +
+                  op.CD_REFERENCIA.toString() +
+                  '/' +
+                  op.CD_REFERENCIA.toString() +
+                  '-1.jpg',
+                status: op.Status,
+                status_color: op.Status.toLowerCase().replace(' ', '-'),
+                qnt: op.QT_OP,
+              });
+              this.descOP.map((desc) => {
+                if (desc.status == 'Em andamento') {
+                  desc.accent = 'success';
+                } else if (desc.status == 'Pendente') {
+                  desc.accent = 'warning';
+                } else if (desc.status == 'Em atraso') {
+                  desc.accent = 'danger';
                 } else {
-                  return 0;
+                  desc.accent = 'basic';
                 }
               });
+            });
 
-              let maiorApontamento;
-              let foiColetado: boolean = false;
+            let title = this.descOP[0].local
+              .replace('COSTURA', '')
+              .replace('CONSERTO', '')
+              .replace('ESTAMPARIA', '')
+              .replace('TERCEIROS', '');
+            this._setTitle.setTitle(title);
 
-              ops.map((op) => {
-                foiColetado = !!coletados.filter(
-                  (coleta) => coleta.CD_REFERENCIA == op.CD_REFERENCIA
-                )[0];
-                maiorApontamento = this.filtraMaiorApontamento(
-                  op.CD_REFERENCIA
-                );
+            this.qntOPs = this.descOP.length;
+            let quantidades: number[] = this.descOP.flatMap(
+              (op) => op.qnt || 0
+            );
+            this.qntPecas = quantidades.reduce((prev, cur) => {
+              return +prev + +cur;
+            }, 0);
 
-                this.descOP.push({
-                  cd_local: op.CD_LOCAL,
-                  local: op.DS_LOCAL,
-                  cod:
-                    op.NR_CICLO.toString() +
-                    '-' +
-                    op.NR_OP.toString() +
-                    '-' +
-                    op.CD_REFERENCIA.toString(),
-                  ciclo: op.NR_CICLO,
-                  op: op.NR_OP,
-                  ref: op.CD_REFERENCIA,
-                  previsao: op.PREV_RETORNO.substring(0, 10),
-                  Situacao: maiorApontamento.situacao,
-                  checked: foiColetado,
-                  descricao: op.DS_GRUPO,
-                  drop: op.DS_DROP,
-                  img:
-                    this.imgUrl +
-                    op.CD_REFERENCIA.toString() +
-                    '/' +
-                    op.CD_REFERENCIA.toString() +
-                    '-1.jpg',
-                  status: op.Status,
-                  status_color: op.Status.toLowerCase().replace(' ', '-'),
-                  qnt: op.QT_OP,
-                });
-                this.descOP.map((desc) => {
-                  if (desc.status == 'Em andamento') {
-                    desc.accent = 'success';
-                  } else if (desc.status == 'Pendente') {
-                    desc.accent = 'warning';
-                  } else if (desc.status == 'Em atraso') {
-                    desc.accent = 'danger';
-                  } else {
-                    desc.accent = 'basic';
-                  }
-                });
-              });
-
-              let title = this.descOP[0].local
-                .replace('COSTURA', '')
-                .replace('CONSERTO', '')
-                .replace('ESTAMPARIA', '')
-                .replace('TERCEIROS', '');
-              this._setTitle.setTitle(title);
-
-              this.qntOPs = this.descOP.length;
-              let quantidades: number[] = this.descOP.flatMap(
-                (op) => op.qnt || 0
-              );
-              this.qntPecas = quantidades.reduce((prev, cur) => {
-                return +prev + +cur;
-              }, 0);
-
-              this.descOP$.next(this.descOP);
-              this.descOPLoad.next(!this.descOP.length);
-            },
-            error: (e) => {
-              console.error(e);
-              this._setTitle.setTitle('Erro');
-              this.loadingError = true;
-            },
-          });
-        },
-        error: (e) => {
-          console.error(e);
-          this._setTitle.setTitle('Erro');
-          this.loadingError = true;
-        },
-      });
+            this.descOP$.next(this.descOP);
+            this.descOPLoad.next(!this.descOP.length);
+          },
+          error: (e) => {
+            console.error(e);
+            this._setTitle.setTitle('Erro');
+            this.loadingError = true;
+          },
+        });
+      },
+      error: (e) => {
+        console.error(e);
+        this._setTitle.setTitle('Erro');
+        this.loadingError = true;
+      },
     });
   }
 
@@ -212,19 +199,17 @@ export class DescricaoFaccaoComponent implements OnInit {
     return op.cod;
   }
 
-  filtraMaiorApontamento(ref: number) {
+  filtraMaiorApontamento(cod: string) {
     if (this.apontamentoList) {
       let erro = this.apontamentoList.toString() == 'error';
       if (!erro) {
-        let apontamentos = this.apontamentoList.filter(
-          (m) => m.CD_REFERENCIA == ref
-        );
+        let apontamentos = this.apontamentoList.filter((m) => m.cod == cod);
         if (apontamentos.length > 0) {
-          this.apontamento = apontamentos.reduce((p, c) => {
+          let apontamento = apontamentos.reduce((p, c) => {
             return p.ID_NOVA_SITUACAO! > c.ID_NOVA_SITUACAO! ? p : c;
           });
           return {
-            situacao: this.apontamento.Situacao,
+            situacao: apontamento.Situacao,
             dt_coleta: '',
           };
         }
@@ -281,7 +266,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         }
         this.coletado = true;
         this.submitiApontamento(op);
-        this.setCheckedColeta(op.ref, this.coletado);
+        this.setCheckedColeta(op.cod, this.coletado);
       },
       error: (err) => {
         alert(`ERROR(${err.code}) ${err.message}`);
@@ -293,9 +278,9 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.changeDetectorRef.detectChanges();
   }
 
-  setCheckedColeta(ref: number, coletado: boolean): void {
+  setCheckedColeta(cod: string, coletado: boolean): void {
     this.descOP.map((op) => {
-      if (+op.ref == ref) {
+      if (op.cod == cod) {
         op.checked = coletado;
       }
       return op;
@@ -327,7 +312,7 @@ export class DescricaoFaccaoComponent implements OnInit {
           return;
         }
         this.coletado = false;
-        this.setCheckedColeta(op.ref, this.coletado);
+        this.setCheckedColeta(op.cod, this.coletado);
       },
       error: (err) => {
         alert(`ERROR(${err.code}) ${err.message}`);
@@ -345,7 +330,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       PREV_RETORNO: op.previsao,
       QT_OP: op.qnt!,
       Status: op.status!,
-      Situacao: 'Em transporte',
+      Situacao: '07 - Coletado',
       USUARIO: this.user,
       DT_INSERIDO: new Date().toLocaleString('pt-Br'),
       latitude: this.latitude,

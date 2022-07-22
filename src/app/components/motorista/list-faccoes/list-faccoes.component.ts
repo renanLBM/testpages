@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
@@ -10,6 +10,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   selector: 'fc-list-faccoes',
   templateUrl: './list-faccoes.component.html',
   styleUrls: ['./list-faccoes.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListFaccoesComponent implements OnInit {
   color: string[] = ['info', 'warning', 'primary', 'success'];

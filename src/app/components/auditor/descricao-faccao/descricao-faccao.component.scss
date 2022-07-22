@@ -4,7 +4,7 @@ nb-layout-column {
   padding: 0 !important;
 }
 
-.filtro-wrapper {
+.filter-wrapper {
   margin: 30px 15px 15px;
   padding: 10px;
   border: 1px solid lightblue;
@@ -20,13 +20,14 @@ nb-layout-column {
     user-select: none;
   }
 
-  .filtro-menu-wrapper {
+  .filter-menu-wrapper {
     margin-left: 2em;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
   }
 
-  .filtro-dropdown {
+  .filter-dropdown {
     margin-right: 15px;
   }
 
@@ -87,17 +88,9 @@ nb-tag {
   }
 }
 
-
 .titulo {
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   text-align: center;
-}
-
-.filter-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  // margin-right: 80px;
-  margin: 10px;
 }
 
 .card-wrapper {
@@ -139,7 +132,7 @@ nb-tag {
   max-height: 310px;
 
   .nv-prev {
-    padding-bottom: 1em;
+    padding-bottom: 0em;
 
     nb-alert {
       height: 25px;
@@ -188,8 +181,11 @@ nb-tag {
     .coleta {
       background: nb-theme(color-success-500);
     }
-    .transporte {
+    .Coletado {
       background: nb-theme(color-success-700);
+    }
+    .industrializado {
+      background: nb-theme(color-danger-800);
     }
 
   }
@@ -213,8 +209,6 @@ nb-tag {
   img {
     width: auto;
     max-width: 180px;
-    // height: 250px;
-    // border-radius: 20px 5px;
     height: 100%;
     object-fit: cover;
     cursor: pointer;
@@ -228,10 +222,6 @@ nb-tag {
   .bt-edit {
     cursor: pointer;
   }
-
-  // .c-qnt {
-  //   font-weight: 600;
-  // }
 }
 
 .c-header {
@@ -240,7 +230,12 @@ nb-tag {
   justify-content: space-between;
 }
 
-@media (max-width: 375px) {
+.error-notfound {
+  text-align: center;
+  margin-top: 3em;
+}
+
+@media (max-width: 360px) {
   .titulo {
     font-size: 25px;
   }
@@ -263,22 +258,18 @@ nb-tag {
   }
 }
 
-.error-notfound {
-  text-align: center;
-  margin-top: 3em;
-}
-
-@media (min-width:375px) and (max-width: 475px) {
+@media (min-width:360px) and (max-width: 475px) {
   .filter-wrapper {
-    margin: 0 0 10px;
+    margin: 18px 0;
+
+    .filter-menu-wrapper {
+      margin: 0 !important;
+      justify-content: center;
+    }
   }
 
-  .filtro-menu-wrapper {
-    margin: 0 0 15px !important;
-    flex-direction: column;
-  }
 
-  .filtro-dropdown {
+  .filter-dropdown {
     margin: 0 0 10px !important;
   }
 
@@ -296,6 +287,10 @@ nb-tag {
   }
   .toolbar-info {
     margin-top: 20px;
+  }
+
+  .c-qnt {
+    margin-bottom: 3px;
   }
 
 }

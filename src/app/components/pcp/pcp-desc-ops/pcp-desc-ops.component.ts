@@ -12,6 +12,7 @@ import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
+import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
 
 @Component({
   selector: 'fc-pcp-desc-ops',
@@ -43,6 +44,7 @@ export class PcpDescOpsComponent implements OnInit {
   faccao: Faccoes = [];
   listOPs$: BehaviorSubject<OPs> = new BehaviorSubject(this.faccaoList);
 
+  dtHoje = new Date();
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
 
   constructor(
@@ -128,7 +130,9 @@ export class PcpDescOpsComponent implements OnInit {
     this.faccaoList = thisOPs;
     this.tituloLocal = this.tituloStatus;
     if (this.origemStatus) {
-      this.faccaoList = this.faccaoList.filter((x) => x.DS_TIPO == this.origemStatus);
+      this.faccaoList = this.faccaoList.filter(
+        (x) => x.DS_TIPO == this.origemStatus
+      );
     }
     if (this.facIdStatus != '99999') {
       this.faccaoList = this.faccaoList.filter(
@@ -137,60 +141,76 @@ export class PcpDescOpsComponent implements OnInit {
       this.tituloLocal = this.faccaoList[0].DS_LOCAL;
     }
     this.faccaoList.map((x) => {
-      if(!x.PREV_RETORNO){
+      if (!x.PREV_RETORNO) {
         x.PREV_RETORNO = '01/01/2001 00:00:00';
       }
-      x.DT_ENTRADA = `${x.DT_ENTRADA.substring(6, 10)}-${x.DT_ENTRADA.substring(
-        3,
-        5
-      )}-${x.DT_ENTRADA.substring(0, 2)}  04:00:00`;
-      x.PREV_RETORNO = `${x.PREV_RETORNO.substring(
-        6,
-        10
-      )}-${x.PREV_RETORNO.substring(3, 5)}-${x.PREV_RETORNO.substring(
-        0,
-        2
-      )} 04:00:00`;
+
+      let newDtEntrada = x.DT_ENTRADA.split(' ')[0].split('/');
+      let dataEntrada = new Date(
+        +newDtEntrada[2],
+        +newDtEntrada[1] - 1,
+        +newDtEntrada[0]
+      );
+      let newDtPrev = x.PREV_RETORNO.split(' ')[0].split('/');
+      x.PREV_RETORNO = newDtPrev[2] + '-' + newDtPrev[1] + '-' + newDtPrev[0];
+      let dtPrev = new Date(+newDtPrev[2], +newDtPrev[1] - 1, +newDtPrev[0]);
+
+      x.css_class = dtPrev < this.dtHoje ? 'atraso' : 'andamento';
 
       let atraso!: Motivo;
       if (this.motivoList.toString() != 'error') {
         atraso = this.motivoList.filter(
-          (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
+          (_) => _.cod + '-' + _.CD_LOCAL == x.cod! + '-' + x.CD_LOCAL
         )[0];
       }
 
       let apontamento!: Apontamento;
       if (this.apontamentoList.toString() != 'error') {
         apontamento = this.apontamentoList.filter(
-          (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
+          (_) => _.cod + '-' + _.CD_LOCAL == x.cod! + '-' + x.CD_LOCAL
         )[0];
       }
-
-      let hj = new Date();
-
-      let dataEntrada = new Date(x.DT_ENTRADA);
-      let dtPrev = new Date(x.PREV_RETORNO);
-
-      x.css_class = dtPrev < hj ? 'atraso' : 'andamento';
 
       if (!x.DS_COORDENADO) {
         x.DS_COORDENADO = x.DS_GRUPO;
       }
       x['dias_faccao'] = Math.floor(
-        (hj.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
+        (this.dtHoje.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
       );
+
+      x['motivo_atraso'] = '-';
+      x['nova_previsao'] = '-';
 
       //  verifica se teve atraso para essa OP
       if (atraso) {
-        x['motivo_atraso'] = atraso.MOTIVO;
-        x['nova_previsao'] = atraso.NOVA_PREVISAO;
-      } else {
-        x['motivo_atraso'] = '-';
-        x['nova_previsao'] = '-';
+        let newDtNovaPrev = atraso.NOVA_PREVISAO.split('/');
+        let dtNovaPrev = new Date(
+          +newDtNovaPrev[2],
+          +newDtNovaPrev[1] - 1,
+          +newDtNovaPrev[0]
+        );
+
+        if (dtNovaPrev >= this.dtHoje) {
+          x['motivo_atraso'] = atraso.MOTIVO;
+          x['nova_previsao'] = atraso.NOVA_PREVISAO;
+        }
       }
 
       //  verifica se teve apontamento para essa OP
-      x['apontamento'] = apontamento ? apontamento.Situacao : '-';
+      let apontamentoShowed: string;
+      apontamentoShowed = apontamento ? apontamento.Situacao! : '-';
+      apontamentoShowed = apontamentoShowed.includes('Parado')
+        ? 'Parado'
+        : apontamentoShowed;
+      if (!apontamentoShowed.includes('-')) {
+        x['apontamento'] =
+          '0' +
+          ApontamentoList[apontamentoShowed as keyof typeof ApontamentoList] +
+          ' - ' +
+          apontamento.Situacao;
+      } else {
+        x['apontamento'] = '-';
+      }
     });
   }
 
@@ -201,17 +221,17 @@ export class PcpDescOpsComponent implements OnInit {
     // filtra as ops de acordo com o status filtrado
     if (!!apontamentoFilter && apontamentoFilter != 'Não informado') {
       let apCodList = this.apontamentoList.flatMap(
-        (ap) => ap.cod + ap.CD_LOCAL
+        (ap) => ap.cod + '-' + ap.CD_LOCAL
       );
       listFilteredOPs = listFilteredOPs.filter((x) =>
-        apCodList.includes(x.cod! + x.CD_LOCAL)
+        apCodList.includes(x.cod! + '-' + x.CD_LOCAL)
       );
     } else if (apontamentoFilter == 'Não informado') {
       let apCodList = this.apontamentoList.flatMap(
-        (ap) => ap.cod + ap.CD_LOCAL
+        (ap) => ap.cod + '-' + ap.CD_LOCAL
       );
       listFilteredOPs = listFilteredOPs.filter(
-        (x) => !apCodList.includes(x.cod! + x.CD_LOCAL)
+        (x) => !apCodList.includes(x.cod! + '-' + x.CD_LOCAL)
       );
     }
 
@@ -238,7 +258,7 @@ export class PcpDescOpsComponent implements OnInit {
   filterApontamento(ap: Apontamentos): Apontamentos {
     let { apontamentoFilter } = this.selectedFilters;
     if (!!apontamentoFilter && apontamentoFilter != 'Não informado') {
-      return ap.filter((a) => a.Situacao! == apontamentoFilter);
+      return ap.filter((a) => a.Situacao!.includes(apontamentoFilter));
     }
     return ap;
   }

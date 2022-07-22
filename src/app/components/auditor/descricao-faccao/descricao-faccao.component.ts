@@ -15,12 +15,15 @@ import { BehaviorSubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { descOP, descOPs } from 'src/app/models/descOP';
+import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
+import { Pages } from 'src/app/models/enums/enumPages';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OP, OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
+import { UserService } from 'src/app/services/user.service';
 import { CarosselComponent } from 'src/app/shared/components/carossel/carossel.component';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
@@ -32,8 +35,9 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoFaccaoComponent implements OnInit {
-
   selectedApontamento: string[] = [];
+  idSelectedApontamento: number[] = [];
+  apontamentoEnum = ApontamentoList;
   menuApontamento: string[] = [];
 
   counter: number = 0;
@@ -68,7 +72,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   apontamento!: Apontamento;
   imgList: string[] = [];
 
-  items = [
+  itemsMenu = [
     { title: 'Atraso' },
     { title: 'Adiantamento' },
     { title: 'Apontamento de Produção' },
@@ -79,6 +83,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     private _opsFilteredService: OpsFilteredService,
     private _opsService: OpsService,
     private _auditorService: AuditorService,
+    private _userService: UserService,
     private _route: ActivatedRoute,
     private NbDdialogService: NbDialogService,
     private windowService: NbWindowService,
@@ -88,6 +93,15 @@ export class DescricaoFaccaoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    let userNivel = this._userService.getNivel();
+
+    if(Pages[userNivel] == "Fornecedor") {
+      this.itemsMenu = [
+        { title: 'Apontamento de Produção' },
+      ]
+    }
+
+    let id = this._route.snapshot.paramMap.get('id')!;
     // pega o filtro setado na página anterior (escolha da facção)
     let filtroColecao: string[] = this._opsFilteredService.getFilter().colecao;
     // pegar a semana atual
@@ -105,75 +119,47 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     this._setTitle.setTitle('Carregando...');
     // pega todos os dados da tabela de alterações
-    this._auditorService.getApontamento().subscribe((apontamentos) => {
-
-      this.menuApontamento.push('Não informado');
-      apontamentos.forEach((x) => {
-        this.menuApontamento.push(x.Situacao!);
-        this.menuApontamento = [...new Set(this.menuApontamento)];
-      });
-
-      this.menuApontamento.sort((a,b) => a > b ? 1 : b > a ? -1 : 0);
+    this._auditorService.getApontamento(id).subscribe((apontamentos) => {
+      apontamentos = apontamentos.filter((x) => x.CD_LOCAL + '' == id);
+      let situacaoEnum = Object.values(ApontamentoList).filter(
+        (value) => typeof value === 'string'
+      );
+      for (let [i, item] of situacaoEnum.entries()) {
+        this.menuApontamento.push(item as string);
+      }
 
       this.apontamentoList = apontamentos;
-      this._auditorService.getMotivos().subscribe((motivo) => {
+      this._auditorService.getMotivos(id).subscribe((motivo) => {
         this.motivoList = motivo;
 
-        let id = this._route.snapshot.paramMap.get('id')!;
         this._opsService.getOpById(id).subscribe({
           next: (ops: OPs) => {
             if (filtroColecao.length > 0) {
               ops = ops.filter((x) => {
-                return filtroColecao.includes(x.DS_CICLO)
+                return filtroColecao.includes(x.DS_CICLO);
               });
             }
+
             ops.sort((a, b) => {
-              let dataRetornoA = `${a.PREV_RETORNO.substring(
-                6,
-                10
-              )}-${a.PREV_RETORNO.substring(3, 5)}-${a.PREV_RETORNO.substring(
-                0,
-                2
-              )}`;
-              let dataRetornoB = `${b.PREV_RETORNO.substring(
-                6,
-                10
-              )}-${b.PREV_RETORNO.substring(3, 5)}-${b.PREV_RETORNO.substring(
-                0,
-                2
-              )}`;
+              let dtPrevRetornoA: string[] = a.PREV_RETORNO.split(' ')[0].split('/');
+              let dataRetornoA: Date = new Date(`${dtPrevRetornoA[2]}-${dtPrevRetornoA[1]}-${dtPrevRetornoA[0]} 04:00:00`);
+              let dtPrevRetornoB: string[] = b.PREV_RETORNO.split(' ')[0].split('/');
+              let dataRetornoB: Date = new Date(`${dtPrevRetornoB[2]}-${dtPrevRetornoB[1]}-${dtPrevRetornoB[0]} 04:00:00`);
 
-              let x = new Date(dataRetornoA);
-              let y = new Date(dataRetornoB);
+              let result = dataRetornoA > dataRetornoB ? 1 : dataRetornoB > dataRetornoA ? -1 : 0;
 
-              if (x > y) {
-                return 1;
-              } else if (y > x) {
-                return -1;
-              } else {
-                return 0;
-              }
+              return result;
             });
 
             let imgListAll: string[] = [];
             let maiorMotivo;
             let maiorApontamento;
 
-            ops.map((op: OP) => {
-              op.DT_ENTRADA = `${op.DT_ENTRADA.substring(
-                6,
-                10
-              )}-${op.DT_ENTRADA.substring(3, 5)}-${op.DT_ENTRADA.substring(
-                0,
-                2
-              )} 04:00:00`;
-              op.PREV_RETORNO = `${op.PREV_RETORNO.substring(
-                6,
-                10
-              )}-${op.PREV_RETORNO.substring(3, 5)}-${op.PREV_RETORNO.substring(
-                0,
-                2
-              )} 04:00:00`;
+            ops.forEach((op: OP) => {
+              let dtEntrada = op.DT_ENTRADA.split(' ')[0].split('/');
+              op.DT_ENTRADA = `${dtEntrada[2]}-${dtEntrada[1]}-${dtEntrada[0]} 04:00:00`;
+              let dtPrevRetorno = op.PREV_RETORNO.split(' ')[0].split('/');
+              op.PREV_RETORNO = `${dtPrevRetorno[2]}-${dtPrevRetorno[1]}-${dtPrevRetorno[0]} 04:00:00`;
 
               let newImage = new Image();
               newImage.src =
@@ -202,8 +188,10 @@ export class DescricaoFaccaoComponent implements OnInit {
                 this.imgList = [...new Set(imgListAll)];
               }
 
-              maiorMotivo = this.filtraMaiorMotivo(op.cod!);
-              maiorApontamento = this.filtraMaiorApontamento(op.cod!);
+              maiorMotivo = this.filtraMaiorMotivo(op.cod! + '-' + op.CD_LOCAL);
+              maiorApontamento = this.filtraMaiorApontamento(
+                op.cod! + '-' + op.CD_LOCAL
+              );
 
               let prevdate = new Date(op.PREV_RETORNO);
               let prev = prevdate
@@ -257,14 +245,18 @@ export class DescricaoFaccaoComponent implements OnInit {
                 qnt: op.QT_OP,
               });
               this.descOP.map((desc) => {
-                if (desc.status == 'Em andamento') {
-                  desc.accent = 'success';
-                } else if (desc.status == 'Pendente') {
-                  desc.accent = 'warning';
-                } else if (desc.status == 'Em atraso') {
-                  desc.accent = 'danger';
-                } else {
-                  desc.accent = 'basic';
+                switch (desc.status) {
+                  case 'Em andamento':
+                    desc.accent = 'success';
+                    break;
+                  case 'Pendente':
+                    desc.accent = 'warning';
+                    break;
+                  case 'Em atraso':
+                    desc.accent = 'danger';
+                    break;
+                  default:
+                    desc.accent = 'basic';
                 }
               });
             });
@@ -330,7 +322,9 @@ export class DescricaoFaccaoComponent implements OnInit {
     if (this.motivoList) {
       let erro = this.motivoList.toString() == 'error';
       if (!erro) {
-        let motivos = this.motivoList.filter((m) => m.cod == cod);
+        let motivos = this.motivoList.filter(
+          (m) => m.cod + '-' + m.CD_LOCAL == cod
+        );
         if (motivos.length > 0) {
           this.motivo = motivos.reduce((p, c) => {
             return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
@@ -346,12 +340,13 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
     return { ds_atraso: '', dt_atraso: '', i_checked: false };
   }
+
   filtraMaiorApontamento(cod: string) {
     if (this.apontamentoList) {
       let erro = this.apontamentoList.toString() == 'error';
       if (!erro) {
         let apontamentos = this.apontamentoList.filter(
-          (m) => m.cod == cod
+          (m) => m.cod + '-' + m.CD_LOCAL == cod
         );
         if (apontamentos.length > 0) {
           this.apontamento = apontamentos.reduce((p, c) => {
@@ -371,7 +366,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   filtroOP(event: Event): void {
     document.getElementById('filtro-op')?.focus();
     const filterValue = (event.target as HTMLInputElement).value;
-    this.selectedApontamento = [];
+    this.idSelectedApontamento = [];
     if (filterValue == '') {
       this.filtroAtivo = false;
       this.descOP$.next(this.descOP);
@@ -405,20 +400,32 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   filtrosDropdown() {
+    this.selectedApontamento = [];
+    this.idSelectedApontamento.forEach((x) => {
+      this.selectedApontamento.push(this.apontamentoEnum[x]);
+    });
     this.filtroAtivo = false;
     (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
     if (this.semanaSelecionada != 'Todas') {
-      this.descOP$.next(this.descOP.filter((_) => _.semana == parseInt(this.semanaSelecionada)));
-      if(this.selectedApontamento.length != 0) {
+      this.descOP$.next(
+        this.descOP.filter((_) => _.semana == parseInt(this.semanaSelecionada))
+      );
+      if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!) && _.semana == parseInt(this.semanaSelecionada))
+          this.descOP.filter(
+            (_) =>
+              this.selectedApontamento.includes(_.Situacao!) &&
+              _.semana == parseInt(this.semanaSelecionada)
+          )
         );
       }
     } else {
       this.descOP$.next(this.descOP);
-      if(this.selectedApontamento.length != 0) {
+      if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!))
+          this.descOP.filter((_) =>
+            this.selectedApontamento.includes(_.Situacao!)
+          )
         );
       }
     }
@@ -449,17 +456,23 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.semanaSelecionada = 'Todas';
       (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
       this.descOP$.next(this.descOP);
-      if(this.selectedApontamento.length != 0) {
+      if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!))
+          this.descOP.filter((_) =>
+            this.selectedApontamento.includes(_.Situacao!)
+          )
         );
       }
     } else {
       this.semanaSelecionada = event.toString();
       this.descOP$.next(this.descOP.filter((_) => _.semana == event));
-      if(this.selectedApontamento.length != 0) {
+      if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => this.selectedApontamento.includes(_.Situacao!) && _.semana == parseInt(this.semanaSelecionada))
+          this.descOP.filter(
+            (_) =>
+              this.selectedApontamento.includes(_.Situacao!) &&
+              _.semana == parseInt(this.semanaSelecionada)
+          )
         );
       }
       this.descOP$.subscribe((x) => {

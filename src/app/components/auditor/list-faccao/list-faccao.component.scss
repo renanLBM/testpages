@@ -1,5 +1,9 @@
 @import "../../../../themes.scss";
 
+nb-layout-column {
+  padding: 0 !important;
+}
+
 .card-wrapper {
   display: flex;
   justify-content: center;
@@ -7,7 +11,7 @@
 }
 
 .filter-wrapper {
-  margin: 0 15px 15px;
+  margin: 20px 15px;
   padding: 10px;
   border: 1px solid lightblue;
   border-radius: 5px;
@@ -38,9 +42,13 @@
   width: 275px;
 }
 
+.list-viewport {
+  height: 500px;
+}
+
 @media screen and (max-width: 475px) {
   .filter-wrapper {
-    margin: 10px 0;
+    margin: 20px 0;
   }
 
   .filter-menu-wrapper {
@@ -52,4 +60,33 @@
   .filtro-dropdown {
     margin: 0 0 10px !important;
   }
+
+  .list-viewport {
+    height: 700px;
+  }
+
 }
+
+@media screen and (min-height: 900px) {
+  .list-viewport {
+    height: 800px;
+  }
+}
+
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #bdbdbd #ffffff;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 9px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #bdbdbd;
+    border-radius: 10px;
+  }
+

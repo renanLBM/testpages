@@ -52,7 +52,8 @@
               "node_modules/datatables.net-buttons/js/buttons.print.js"
             ],
             "serviceWorker": true,
-            "ngswConfigPath": "ngsw-config.json"
+            "ngswConfigPath": "ngsw-config.json",
+            "allowedCommonJsDependencies": ["eva-icons"]
           },
           "configurations": {
             "production": {
@@ -130,5 +131,7 @@
       }
     }
   },
-  "defaultProject": "facao-control"
+  "cli": {
+    "analytics": "63e3a87a-96b7-44b6-9a8c-b50310e6b998"
+  }
 }

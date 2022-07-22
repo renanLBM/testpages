@@ -1,0 +1,219 @@
+[33mcommit 3ff7aede45b71f690a795dbc63210ad0d028da25[m[33m ([m[1;36mHEAD -> [m[1;32mdev_test[m[33m, [m[1;31morigin/dev_test[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Jul 20 19:28:50 2022 -0300
+
+    New version - change in apontamentos
+
+[33mcommit 9c324bfc104717037956ab652470a3d230ad0464[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Jul 14 11:29:52 2022 -0300
+
+    Changed the way apontamento 'Parado' works
+
+[33mcommit 088948a9f3e918053d05d1914545a1fe12f1dc0b[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Jul 13 11:33:03 2022 -0300
+
+    bugfix - adjusting margin of the new dorpdown
+
+[33mcommit b6d1aed6dd326ee973647ee5751e485bfa23b3a1[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Jul 13 11:18:50 2022 -0300
+
+    feature - changed the apontamento list; adding Atualizacoes in the sidebar
+
+[33mcommit aef5b3739b388bb02ef6f1d0f7ff8c20c72f393f[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Jul 7 14:23:36 2022 -0300
+
+    bugfix - filter local on apointment before set on auditor description; fixed card height auditor description; added information on read m'
+
+[33mcommit f8f094c8883413e1770b64ca15b1036cc9b2338c[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Jul 5 14:09:32 2022 -0300
+
+    bugfix - remove scroll on card
+
+[33mcommit 937c1ded9769975aacac05558cb376fc06b28b53[m
+Merge: c9126b2 64fa2a3
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Jul 5 09:29:12 2022 -0300
+
+    created dev test
+
+[33mcommit 64fa2a35f74d94d8e1c0ec5604c9bcfe2e677cc3[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Jul 5 08:15:08 2022 -0300
+
+    teste inputmode none
+
+[33mcommit c07c8a304e27dd4942b0328762961202ed11286d[m[33m ([m[1;33mtag: V0.2.36[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Mon Jul 4 17:49:27 2022 -0300
+
+    bugfix - loading page - auditor and motorista
+
+[33mcommit 2c5e7bdfab5e1e63fa37b5fcd2d458ca8f085f50[m[33m ([m[1;33mtag: V0.2.35[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Mon Jul 4 17:04:34 2022 -0300
+
+    bugfix - searching apointments by cod not ref
+
+[33mcommit 2017c11a5dbc14b26cbf7f70bff4bc035385c2af[m[33m ([m[1;33mtag: V0.2.34[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Jul 1 13:31:22 2022 -0300
+
+    version adjust
+
+[33mcommit eb2a8befdce85a7f6c76cd35c3c1b0a5127be0fb[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Jul 1 13:27:32 2022 -0300
+
+    bugfix - solved problem count ops ono auditor module
+
+[33mcommit 5ebb8cdc1073af86991eba7fa33668cf598494a7[m[33m ([m[1;33mtag: V0.2.33[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Jul 1 13:09:26 2022 -0300
+
+    feature - apontamento filter on auditor component
+
+[33mcommit 0cab4b681e4b922811efbf31a608bf0862fcc126[m[33m ([m[1;33mtag: V0.2.32[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Jun 30 10:49:18 2022 -0300
+
+    feature - added new route - motorista
+
+[33mcommit ca40f116d668e4c946eeb6bc95b9bfebe6e67189[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Jun 29 09:50:24 2022 -0300
+
+    bugfix - cathing error when token expired
+
+[33mcommit 29008c45f3d6b023bd2b4f9febb8fad013357584[m[33m ([m[1;33mtag: V0.2.3[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Jun 28 14:20:01 2022 -0300
+
+    version adjust
+
+[33mcommit 7e1d607b16659dbc4d59b408287d9bee5a30dccf[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Jun 28 14:19:03 2022 -0300
+
+    created token service
+
+[33mcommit 7a150b269ba8998a1c3004579d5af43b2ec9b859[m[33m ([m[1;33mtag: V0.2.26[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Jun 24 17:00:40 2022 -0300
+
+    bugfix - adjusted datatable in the pcp op-description
+
+[33mcommit bfc1585702509ec990c3f4758f9dc879b40ab41e[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Jun 24 14:37:28 2022 -0300
+
+    test errors
+
+[33mcommit 235f5e7b7ba8be4060efdfc5b5e9e04c617a6dca[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Jun 24 11:03:14 2022 -0300
+
+    bugfix - showing all ops on motorista module
+
+[33mcommit 8a69001b709e2604be515653bd59ddff2318b196[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Jun 24 10:58:07 2022 -0300
+
+    feature - update motirista component
+
+[33mcommit 77f5d9f19c61844d1e790ca41b3959fceb8cac10[m[33m ([m[1;33mtag: V0.2.24[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Jun 23 13:49:49 2022 -0300
+
+    version adjust
+
+[33mcommit 948d0116c2de89d6e3a2fc4665a00edb4dec6817[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Jun 23 13:48:12 2022 -0300
+
+    bug-fix - motorista qnt_pecas fixed
+
+[33mcommit 7b708465603c3ea191e737c36e749a7e384f3fa3[m[33m ([m[1;33mtag: V0.2.23[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Jun 22 13:02:52 2022 -0300
+
+    bugfix - propagate colecao filter on auditor page
+
+[33mcommit a4cbb01de0419ff2378637e8eab861c21ef3d53a[m[33m ([m[1;33mtag: V0.2.22[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Jun 21 10:41:22 2022 -0300
+
+    bugfix - aditor filter error cleaning
+
+[33mcommit 7fc7ddde6f74ffb5a46af41e7f858c6d2dc6d63d[m[33m ([m[1;33mtag: V0.2.21[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Jun 21 10:24:45 2022 -0300
+
+    bugfix - propagate filter to other pages
+
+[33mcommit f1a66b6e7561b81de7b612f7c661d590a534ea26[m[33m ([m[1;33mtag: V0.2.2[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Jun 21 10:09:59 2022 -0300
+
+    feature - making filter multiple selection
+
+[33mcommit 9af14ce9c65a4ac0eb4c6ca80eb01738bc7135b3[m[33m ([m[1;33mtag: V0.2.1[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Jun 15 14:59:25 2022 -0300
+
+    bugfix - coleta date
+
+[33mcommit 6963bd00c75cfddbc9e19b31007df85ce31b5617[m[33m ([m[1;33mtag: V0.2.0[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Jun 15 13:34:14 2022 -0300
+
+    module Motorista
+
+[33mcommit 1aa8abb1f4aba3b1cb056ef2c3c087a1f9c7d199[m[33m ([m[1;33mtag: V0.1.7[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Jun 14 08:24:46 2022 -0300
+
+    added colecao filter and seted the local filter by auditor in the auditor module
+
+[33mcommit 0fa80e8261997350f9169f2a354091298cdd0b29[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Jun 10 11:52:28 2022 -0300
+
+    bug fix - 'Não informado' was not filtering
+
+[33mcommit 4f1e8e85e576d2bfdde8c6da1e5a7268e4153069[m[33m ([m[1;33mtag: V0.1.5[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Fri Jun 10 10:59:20 2022 -0300
+
+    click on apontamento on the home go to OP's descriptions table
+
+[33mcommit 5bd1240ca2e89081871eb9415490a995a097ea88[m[33m ([m[1;33mtag: V0.1.4[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Jun 9 14:04:06 2022 -0300
+
+    fixing home button and added link to the faccao name in the description table - PCP
+
+[33mcommit ded74e98808d20d11baa51cb9a206b05a9aa80fe[m[33m ([m[1;33mtag: v0.1.3[m[33m)[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Thu Jun 9 13:44:10 2022 -0300
+
+    fixing the icons on the header
+
+[33mcommit 6a4f110473b2447c96036b5c473155edfbb9d0f4[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Wed Jun 8 10:37:44 2022 -0300
+
+    inserted the percent os apontamentos in the pcp homepage
+
+[33mcommit db1e2180fdc315c8a91002f2c5ac9860f8be2bd6[m
+Author: GarciaRenan <renan.garcia@labellamafia.com.br>
+Date:   Tue Jun 7 15:08:45 2022 -0300
+
+    adding collumn apontamneto in the PCP table
+
+[33mcommit 258075b88ff8a15dc3313206b3dbf4fc3916cd0c[m[33m ([m[1;33mtag: V0.1.2[m[33m)[m
+Author: GarciaRenan <renan.garci

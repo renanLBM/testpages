@@ -1,8 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { Apontamento } from 'src/app/models/apontamento';
 import { descOP } from 'src/app/models/descOP';
+import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
+import { MotivoAtraso } from 'src/app/models/enums/enumMotivoAtraso';
+import { ParadoList } from 'src/app/models/enums/enumParadoList';
 import { Motivo } from 'src/app/models/motivo';
 import { AuditorService } from 'src/app/services/auditor.service';
 import { UserService } from 'src/app/services/user.service';
@@ -20,24 +23,11 @@ export class DialogComponent implements OnInit {
   retorno!: number;
 
   user = '';
-  motivosAtraso = [
-    'Alterado sequencia de produção',
-    'Atraso de aviamento',
-    'Atraso da facção',
-    'Complexidade alta',
-    'Conserto',
-    'Modelagem',
-    'Reposição de corte',
-    'Reprovado na inspeção',
-    'Sacrifício',
-  ];
-  situacaoList = [
-    'Em fila',
-    'Em produção',
-    'Parado',
-    'Em inspeção',
-    'Disponível para coleta',
-  ];
+  motivosAtraso = MotivoAtraso;
+  situacaoList: string[] = [];
+  paradoList = Object.values(ParadoList).filter(
+    (value) => typeof value === 'string'
+  );
 
   err: boolean = false;
 
@@ -50,12 +40,14 @@ export class DialogComponent implements OnInit {
   @Input() situacao: string = '';
 
   selected!: number;
+  selectedParado: number = -1;
   apontamento: boolean = false;
 
-  dialogForm = new FormGroup({
-    motivoControl: new FormControl(),
-    dtControl: new FormControl(),
-    situacaoControl: new FormControl(),
+  dialogForm = new UntypedFormGroup({
+    motivoControl: new UntypedFormControl(),
+    dtControl: new UntypedFormControl(),
+    situacaoControl: new UntypedFormControl(),
+    motivoParadoControl: new UntypedFormControl(),
   });
 
   removed: boolean = false;
@@ -71,6 +63,18 @@ export class DialogComponent implements OnInit {
     let dateInput = document.getElementById('dateInput');
     dateInput?.blur();
     dateInput?.setAttribute('readonly', 'readonly'); // Force mobile keyboard to hide on input field.
+
+    let situacaoEnum = Object.values(ApontamentoList).filter(
+      (value) => typeof value === 'string'
+    );
+    for (let [i, item] of situacaoEnum.entries()) {
+      if (
+        ApontamentoList[i] != 'Em transporte' &&
+        ApontamentoList[i] != 'Não informado' &&
+        ApontamentoList[i] != 'Coletado'
+      )
+        this.situacaoList.push(('0'+i + ' - ' + item) as string);
+    }
 
     this.loading = false;
 
@@ -138,7 +142,7 @@ export class DialogComponent implements OnInit {
       prev: this.prev,
       motivo: this.i_motivo,
       removed: this.removed,
-      situacao: this.situacao
+      situacao: this.situacao,
     });
   }
 
@@ -147,7 +151,7 @@ export class DialogComponent implements OnInit {
 
     // if the selected menu is equals to apontamento, will call the correct method and exit the submit when completed
     if (this.apontamento) {
-      this.submitiApontamento();
+      this.submitApontamento();
       return;
     }
     let dataInserida = new Date(nMotivo.dtControl);
@@ -165,12 +169,14 @@ export class DialogComponent implements OnInit {
     let novoMotivoForm = '';
 
     novaDataForm = nMotivo.dtControl
-    ? dataInserida.toLocaleString('pt-Br').substring(0, 10)
-    : this.prev;
+      ? dataInserida.toLocaleString('pt-Br').substring(0, 10)
+      : this.prev;
+
+    let motivoSelected: number = nMotivo.motivoControl;
     novoMotivoForm =
-    this.tipo == 'Adiantamento'
+      this.tipo == 'Adiantamento'
         ? this.tipo
-        : this.motivosAtraso[nMotivo.motivoControl];
+        : Object.values(this.motivosAtraso)[motivoSelected];
     this.user = this._userService.getSession().nome;
 
     this.novoMotivo = {
@@ -228,12 +234,26 @@ export class DialogComponent implements OnInit {
     }
   }
 
-  submitiApontamento(): void {
+  submitApontamento(): void {
+    this.err = false;
     let nApontamento = this.dialogForm.value;
 
-    let novoApontamentoForm = this.situacaoList[nApontamento.situacaoControl];
+    let selectedApontament: number = nApontamento.situacaoControl;
+    let novoApontamentoForm = this.situacaoList[selectedApontament];
+    let selectedMotivoParado: number = nApontamento.motivoParadoControl;
+    let selectedMotivoParadoForm = this.paradoList[selectedMotivoParado];
+
+    novoApontamentoForm = novoApontamentoForm.split(" - ")[1];
+
+    let motivoParado = selectedMotivoParadoForm
+      ? ' - ' + selectedMotivoParadoForm
+      : '';
+    novoApontamentoForm = novoApontamentoForm.includes('Parado')
+      ? novoApontamentoForm + motivoParado
+      : novoApontamentoForm;
 
     this.user = this._userService.getSession().nome;
+
 
     this.novoApontamento = {
       cod: '',
@@ -251,7 +271,12 @@ export class DialogComponent implements OnInit {
       longitude: this.longitude,
     };
 
-    if (novoApontamentoForm) {
+    if (novoApontamentoForm.match('Parado') && this.selectedParado < 0) {
+      this.err = true;
+      this.loading = false;
+    }
+
+    if (novoApontamentoForm && !this.err) {
       this.loading = true;
       this._auditorService.setApontamento(this.novoApontamento).subscribe({
         next: (ret) => {
