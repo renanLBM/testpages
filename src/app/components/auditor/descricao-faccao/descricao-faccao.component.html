@@ -75,7 +75,8 @@
 
     <div *ngIf="!isEmptyList; else listaVazia">
       <div class="card-wrapper">
-        <nb-card [accent]="item.accent || 'basic'" *ngFor="let item of descOP$ | async; trackBy: trackByOP">
+        <nb-card class="search-results" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
+          [accent]="item.accent || 'basic'" *ngFor="let item of descOP$ | async; trackBy: trackByOP">
           <nb-card-body>
             <div class="c-body-wrapper">
               <div (click)="openWindow(item.ref.toString())" class="c-img">

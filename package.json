@@ -36,6 +36,7 @@
     "jszip": "^3.9.1",
     "jwt-decode": "^3.1.2",
     "ng-lazyload-image": "^9.1.2",
+    "ngx-infinite-scroll": "^14.0.0",
     "ngx-useful-swiper": "^10.0.1",
     "rxjs": "~7.4.0",
     "swiper": "^6.8.1",

@@ -15,9 +15,10 @@ import {
   NbSelectModule,
   NbSpinnerModule,
   NbTagModule,
-  NbTooltipModule,
+  NbTooltipModule
 } from '@nebular/theme';
-import { LAZYLOAD_IMAGE_HOOKS, LazyLoadImageModule, ScrollHooks } from 'ng-lazyload-image';
+import { LazyLoadImageModule, LAZYLOAD_IMAGE_HOOKS, ScrollHooks } from 'ng-lazyload-image';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
 
 import { AuditorRoutingModule } from './auditor-routing.module';
@@ -32,6 +33,7 @@ import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
     FormsModule,
     AuditorRoutingModule,
     SharedComponentsModule,
+    InfiniteScrollModule,
     LazyLoadImageModule,
     ScrollingModule,
     NbAlertModule,
