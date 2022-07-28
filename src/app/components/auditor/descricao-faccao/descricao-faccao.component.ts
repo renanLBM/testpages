@@ -95,7 +95,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   ngOnInit(): void {
     let userNivel = this._userService.getNivel();
 
-    if(Pages[userNivel] == "Fornecedor") {
+    if(Pages[userNivel] == "fornecedor") {
       this.itemsMenu = [
         { title: 'Apontamento de Produção' },
       ]
