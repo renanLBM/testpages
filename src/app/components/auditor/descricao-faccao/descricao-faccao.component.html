@@ -67,7 +67,7 @@
             Qtd. Peças:
           </div>
           <div class="h6">
-            {{qntPecas}}
+            {{qntPecas | number: '1.0':'pt-Br'}}
           </div>
         </div>
       </div>
@@ -100,7 +100,7 @@
                     <p *ngIf="item.motivo_atraso == 'Adiantamento'" class="nv-prev-text adiantamento-text">
                       {{ item.motivo_atraso }}</p>
                     <p *ngIf="item.motivo_atraso != 'Adiantamento'" class="nv-prev-text atraso">
-                      <b>Motivo atraso:</b> {{ item.motivo_atraso }}
+                      <b>Motivo atraso:</b> {{ item.motivo_atraso | date: 'dd/MM/yyyy' }}
                     </p>
                   </div>
                   <p><b>Ciclo:</b> {{ item.ciclo }} / <b>OP:</b> {{ item.op }}</p>

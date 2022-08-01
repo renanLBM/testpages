@@ -24,9 +24,10 @@ import { SharedComponentsModule } from 'src/app/shared/shared-components.module'
 import { AuditorRoutingModule } from './auditor-routing.module';
 import { DescricaoFaccaoComponent } from './descricao-faccao/descricao-faccao.component';
 import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
+import { PendenciaComponent } from './pendencia/pendencia.component';
 
 @NgModule({
-  declarations: [ListFaccaoComponent, DescricaoFaccaoComponent],
+  declarations: [ListFaccaoComponent, DescricaoFaccaoComponent, PendenciaComponent],
   imports: [
     RouterModule,
     CommonModule,

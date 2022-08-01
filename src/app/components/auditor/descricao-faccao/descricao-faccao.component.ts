@@ -4,7 +4,7 @@ import {
   Component,
   OnInit,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   NbDialogService,
   NbMenuService,
@@ -46,6 +46,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   loadingError: boolean = false;
   isEmptyList: boolean = false;
   filtroAtivo: boolean = false;
+  routeId: string = '0';
 
   qntOPs: number = 0;
   qntPecas: number = 0;
@@ -76,6 +77,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     { title: 'Atraso' },
     { title: 'Adiantamento' },
     { title: 'Apontamento de Produção' },
+    { title: 'Pendências' },
   ];
 
   constructor(
@@ -85,6 +87,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     private _auditorService: AuditorService,
     private _userService: UserService,
     private _route: ActivatedRoute,
+    private _router: Router,
     private NbDdialogService: NbDialogService,
     private windowService: NbWindowService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -95,13 +98,11 @@ export class DescricaoFaccaoComponent implements OnInit {
   ngOnInit(): void {
     let userNivel = this._userService.getNivel();
 
-    if(Pages[userNivel] == "fornecedor") {
-      this.itemsMenu = [
-        { title: 'Apontamento de Produção' },
-      ]
+    if (Pages[userNivel] == 'fornecedor') {
+      this.itemsMenu = [{ title: 'Apontamento de Produção' }];
     }
 
-    let id = this._route.snapshot.paramMap.get('id')!;
+    this.routeId = this._route.snapshot.paramMap.get('id')!;
     // pega o filtro setado na página anterior (escolha da facção)
     let filtroColecao: string[] = this._opsFilteredService.getFilter().colecao;
     // pegar a semana atual
@@ -119,195 +120,215 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     this._setTitle.setTitle('Carregando...');
     // pega todos os dados da tabela de alterações
-    this._auditorService.getApontamento(id).subscribe((apontamentos) => {
-      apontamentos = apontamentos.filter((x) => x.CD_LOCAL + '' == id);
-      let situacaoEnum = Object.values(ApontamentoList).filter(
-        (value) => typeof value === 'string'
-      );
-      for (let [i, item] of situacaoEnum.entries()) {
-        this.menuApontamento.push(item as string);
-      }
+    this._auditorService
+      .getApontamento(this.routeId)
+      .subscribe((apontamentos) => {
+        apontamentos = apontamentos.filter(
+          (x) => x.CD_LOCAL + '' == this.routeId
+        );
+        let situacaoEnum = Object.values(ApontamentoList).filter(
+          (value) => typeof value === 'string'
+        );
+        for (let [i, item] of situacaoEnum.entries()) {
+          this.menuApontamento.push(item as string);
+        }
 
-      this.apontamentoList = apontamentos;
-      this._auditorService.getMotivos(id).subscribe((motivo) => {
-        this.motivoList = motivo;
+        this.apontamentoList = apontamentos;
+        this._auditorService.getMotivos(this.routeId).subscribe((motivo) => {
+          this.motivoList = motivo;
 
-        this._opsService.getOpById(id).subscribe({
-          next: (ops: OPs) => {
-            if (filtroColecao.length > 0) {
-              ops = ops.filter((x) => {
-                return filtroColecao.includes(x.DS_CICLO);
+          this._opsService.getOpById(this.routeId).subscribe({
+            next: (ops: OPs) => {
+              if (filtroColecao.length > 0) {
+                ops = ops.filter((x) => {
+                  return filtroColecao.includes(x.DS_CICLO);
+                });
+              }
+
+              ops.sort((a, b) => {
+                let dtPrevRetornoA: string[] =
+                  a.PREV_RETORNO.split(' ')[0].split('/');
+                let dataRetornoA: Date = new Date(
+                  `${dtPrevRetornoA[2]}-${dtPrevRetornoA[1]}-${dtPrevRetornoA[0]} 04:00:00`
+                );
+                let dtPrevRetornoB: string[] =
+                  b.PREV_RETORNO.split(' ')[0].split('/');
+                let dataRetornoB: Date = new Date(
+                  `${dtPrevRetornoB[2]}-${dtPrevRetornoB[1]}-${dtPrevRetornoB[0]} 04:00:00`
+                );
+
+                let result =
+                  dataRetornoA > dataRetornoB
+                    ? 1
+                    : dataRetornoB > dataRetornoA
+                    ? -1
+                    : 0;
+
+                return result;
               });
-            }
 
-            ops.sort((a, b) => {
-              let dtPrevRetornoA: string[] = a.PREV_RETORNO.split(' ')[0].split('/');
-              let dataRetornoA: Date = new Date(`${dtPrevRetornoA[2]}-${dtPrevRetornoA[1]}-${dtPrevRetornoA[0]} 04:00:00`);
-              let dtPrevRetornoB: string[] = b.PREV_RETORNO.split(' ')[0].split('/');
-              let dataRetornoB: Date = new Date(`${dtPrevRetornoB[2]}-${dtPrevRetornoB[1]}-${dtPrevRetornoB[0]} 04:00:00`);
+              let imgListAll: string[] = [];
+              let maiorMotivo;
+              let maiorApontamento;
 
-              let result = dataRetornoA > dataRetornoB ? 1 : dataRetornoB > dataRetornoA ? -1 : 0;
+              ops.forEach((op: OP) => {
+                let dtEntrada = op.DT_ENTRADA.split(' ')[0].split('/');
+                op.DT_ENTRADA = `${dtEntrada[2]}-${dtEntrada[1]}-${dtEntrada[0]} 04:00:00`;
+                let dtPrevRetorno = op.PREV_RETORNO.split(' ')[0].split('/');
+                op.PREV_RETORNO = `${dtPrevRetorno[2]}-${dtPrevRetorno[1]}-${dtPrevRetorno[0]} 04:00:00`;
 
-              return result;
-            });
-
-            let imgListAll: string[] = [];
-            let maiorMotivo;
-            let maiorApontamento;
-
-            ops.forEach((op: OP) => {
-              let dtEntrada = op.DT_ENTRADA.split(' ')[0].split('/');
-              op.DT_ENTRADA = `${dtEntrada[2]}-${dtEntrada[1]}-${dtEntrada[0]} 04:00:00`;
-              let dtPrevRetorno = op.PREV_RETORNO.split(' ')[0].split('/');
-              op.PREV_RETORNO = `${dtPrevRetorno[2]}-${dtPrevRetorno[1]}-${dtPrevRetorno[0]} 04:00:00`;
-
-              let newImage = new Image();
-              newImage.src =
-                this.imgUrl +
-                op.CD_REFERENCIA.toString() +
-                '/' +
-                op.CD_REFERENCIA.toString() +
-                '-1.jpg';
-
-              newImage.onerror = () => {
-                this.imgList = this.imgList.filter(
-                  (im) => !im.includes(op.CD_REFERENCIA.toString())
-                );
-              };
-
-              for (let j = 1; j <= 13; j++) {
-                imgListAll.push(
-                  this.imgUrl +
-                    op.CD_REFERENCIA.toString() +
-                    '/' +
-                    op.CD_REFERENCIA.toString() +
-                    '-' +
-                    j +
-                    '.jpg'
-                );
-                this.imgList = [...new Set(imgListAll)];
-              }
-
-              maiorMotivo = this.filtraMaiorMotivo(op.cod! + '-' + op.CD_LOCAL);
-              maiorApontamento = this.filtraMaiorApontamento(
-                op.cod! + '-' + op.CD_LOCAL
-              );
-
-              let prevdate = new Date(op.PREV_RETORNO);
-              let prev = prevdate
-                ? prevdate.toLocaleString('pt-br').substring(0, 10)
-                : '01/01/2001';
-
-              // pega semana da op
-              let oneJan = new Date(prevdate.getFullYear(), 0, 1);
-              let numberOfDays = Math.floor(
-                (prevdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000)
-              );
-              let prevSemana = 0;
-              if (prevdate.getDay() === 0) {
-                prevSemana =
-                  Math.floor((prevdate.getDay() + 1 + numberOfDays) / 7) + 2;
-              } else {
-                prevSemana =
-                  Math.abs(
-                    Math.floor((prevdate.getDay() + 1 + numberOfDays - 3) / 7)
-                  ) + 2;
-              }
-
-              this.descOP.push({
-                semana: prevSemana,
-                cd_local: op.CD_LOCAL,
-                local: op.DS_LOCAL,
-                cod:
-                  op.NR_CICLO.toString() +
-                  '-' +
-                  op.NR_OP.toString() +
-                  '-' +
-                  op.CD_REFERENCIA.toString(),
-                ciclo: op.NR_CICLO,
-                op: op.NR_OP,
-                ref: op.CD_REFERENCIA,
-                previsao: prev,
-                Situacao: maiorApontamento.situacao || 'Não informado',
-                novaprevisao: maiorMotivo.dt_atraso,
-                motivo_atraso: maiorMotivo.ds_atraso,
-                checked: maiorMotivo.i_checked,
-                descricao: op.DS_GRUPO,
-                drop: op.DS_DROP,
-                img:
+                let newImage = new Image();
+                newImage.src =
                   this.imgUrl +
                   op.CD_REFERENCIA.toString() +
                   '/' +
                   op.CD_REFERENCIA.toString() +
-                  '-1.jpg',
-                status: op.Status,
-                status_color: op.Status.toLowerCase().replace(' ', '-'),
-                qnt: op.QT_OP,
+                  '-1.jpg';
+
+                newImage.onerror = () => {
+                  this.imgList = this.imgList.filter(
+                    (im) => !im.includes(op.CD_REFERENCIA.toString())
+                  );
+                };
+
+                for (let j = 1; j <= 13; j++) {
+                  imgListAll.push(
+                    this.imgUrl +
+                      op.CD_REFERENCIA.toString() +
+                      '/' +
+                      op.CD_REFERENCIA.toString() +
+                      '-' +
+                      j +
+                      '.jpg'
+                  );
+                  this.imgList = [...new Set(imgListAll)];
+                }
+
+                maiorMotivo = this.filtraMaiorMotivo(
+                  op.cod! + '-' + op.CD_LOCAL
+                );
+                maiorApontamento = this.filtraMaiorApontamento(
+                  op.cod! + '-' + op.CD_LOCAL
+                );
+
+                let prevdate = new Date(op.PREV_RETORNO);
+                let prev = prevdate
+                  ? prevdate.toLocaleString('pt-br').substring(0, 10)
+                  : '01/01/2001';
+
+                // pega semana da op
+                let oneJan = new Date(prevdate.getFullYear(), 0, 1);
+                let numberOfDays = Math.floor(
+                  (prevdate.getTime() - oneJan.getTime()) /
+                    (24 * 60 * 60 * 1000)
+                );
+                let prevSemana = 0;
+                if (prevdate.getDay() === 0) {
+                  prevSemana =
+                    Math.floor((prevdate.getDay() + 1 + numberOfDays) / 7) + 2;
+                } else {
+                  prevSemana =
+                    Math.abs(
+                      Math.floor((prevdate.getDay() + 1 + numberOfDays - 3) / 7)
+                    ) + 2;
+                }
+
+                console.log(typeof(maiorMotivo.dt_atraso) ,maiorMotivo.dt_atraso.toString());
+
+                this.descOP.push({
+                  semana: prevSemana,
+                  cd_local: op.CD_LOCAL,
+                  local: op.DS_LOCAL,
+                  cod:
+                    op.NR_CICLO.toString() +
+                    '-' +
+                    op.NR_OP.toString() +
+                    '-' +
+                    op.CD_REFERENCIA.toString(),
+                  ciclo: op.NR_CICLO,
+                  op: op.NR_OP,
+                  ref: op.CD_REFERENCIA,
+                  previsao: prev,
+                  Situacao: maiorApontamento.situacao || 'Não informado',
+                  novaprevisao: maiorMotivo.dt_atraso,
+                  motivo_atraso: maiorMotivo.ds_atraso,
+                  checked: maiorMotivo.i_checked,
+                  descricao: op.DS_GRUPO,
+                  drop: op.DS_DROP,
+                  img:
+                    this.imgUrl +
+                    op.CD_REFERENCIA.toString() +
+                    '/' +
+                    op.CD_REFERENCIA.toString() +
+                    '-1.jpg',
+                  status: op.Status,
+                  status_color: op.Status.toLowerCase().replace(' ', '-'),
+                  qnt: op.QT_OP,
+                });
+                this.descOP.map((desc) => {
+                  switch (desc.status) {
+                    case 'Em andamento':
+                      desc.accent = 'success';
+                      break;
+                    case 'Pendente':
+                      desc.accent = 'warning';
+                      break;
+                    case 'Em atraso':
+                      desc.accent = 'danger';
+                      break;
+                    default:
+                      desc.accent = 'basic';
+                  }
+                });
               });
-              this.descOP.map((desc) => {
-                switch (desc.status) {
-                  case 'Em andamento':
-                    desc.accent = 'success';
-                    break;
-                  case 'Pendente':
-                    desc.accent = 'warning';
-                    break;
-                  case 'Em atraso':
-                    desc.accent = 'danger';
-                    break;
-                  default:
-                    desc.accent = 'basic';
+
+              // lista de numero de semanas(por data da OP) da facção
+              this.descOP.forEach((o) => {
+                this.semanaList.push(o.semana!);
+                this.semanaList = [...new Set(this.semanaList)];
+
+                this.semanaListAtraso = this.semanaList.filter(
+                  (_) => _ < this.semanaAtualNumber
+                );
+                this.semanaListFuturo = this.semanaList.filter(
+                  (_) => _ > this.semanaAtualNumber
+                );
+              });
+
+              // verifica a semana mais proxima
+              this.closestSemana = this.semanaList.reduce((a, b) => {
+                let aDiff = Math.abs(a - parseInt(this.semanaSelecionada));
+                let bDiff = Math.abs(b - parseInt(this.semanaSelecionada));
+
+                if (aDiff == bDiff) {
+                  return a > b ? a : b;
+                } else {
+                  return bDiff < aDiff ? b : a;
                 }
               });
-            });
 
-            // lista de numero de semanas(por data da OP) da facção
-            this.descOP.forEach((o) => {
-              this.semanaList.push(o.semana!);
-              this.semanaList = [...new Set(this.semanaList)];
+              // troca semana atual para a mais proxima
+              this.semanaSelecionada = this.closestSemana.toString();
 
-              this.semanaListAtraso = this.semanaList.filter(
-                (_) => _ < this.semanaAtualNumber
-              );
-              this.semanaListFuturo = this.semanaList.filter(
-                (_) => _ > this.semanaAtualNumber
-              );
-            });
-
-            // verifica a semana mais proxima
-            this.closestSemana = this.semanaList.reduce((a, b) => {
-              let aDiff = Math.abs(a - parseInt(this.semanaSelecionada));
-              let bDiff = Math.abs(b - parseInt(this.semanaSelecionada));
-
-              if (aDiff == bDiff) {
-                return a > b ? a : b;
-              } else {
-                return bDiff < aDiff ? b : a;
-              }
-            });
-
-            // troca semana atual para a mais proxima
-            this.semanaSelecionada = this.closestSemana.toString();
-
-            let title = this.descOP[0].local
-              .replace('COSTURA', '')
-              .replace('CONSERTO', '')
-              .replace('ESTAMPARIA', '')
-              .replace('TERCEIROS', '');
-            this._setTitle.setTitle(title);
-            this.descOP$.next(this.descOP);
-            this.descOPLoad.next(!this.descOP.length);
-            // filtra somente a semana atual
-            this.filtraSemana(parseInt(this.semanaSelecionada));
-          },
-          error: (e) => {
-            console.error(e);
-            this._setTitle.setTitle('Erro');
-            this.loadingError = true;
-          },
+              let title = this.descOP[0].local
+                .replace('COSTURA', '')
+                .replace('CONSERTO', '')
+                .replace('ESTAMPARIA', '')
+                .replace('TERCEIROS', '');
+              this._setTitle.setTitle(title);
+              this.descOP$.next(this.descOP);
+              this.descOPLoad.next(!this.descOP.length);
+              // filtra somente a semana atual
+              this.filtraSemana(parseInt(this.semanaSelecionada));
+            },
+            error: (e) => {
+              console.error(e);
+              this._setTitle.setTitle('Erro');
+              this.loadingError = true;
+            },
+          });
         });
       });
-    });
   }
 
   ngAfterContentInit() {
@@ -523,6 +544,21 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   open(tipo: string) {
     let ehApontamento = tipo == 'Apontamento de Produção';
+    let ehPendencia = tipo == 'Pendências';
+
+    if (ehPendencia) {
+      let codOp =
+        this.tempOP.ciclo +
+        '-' +
+        this.tempOP.op +
+        '-' +
+        this.tempOP.ref +
+        '-' +
+        this.tempOP.cd_local;
+      this._router.navigate(['auditor/pendencias', codOp]);
+      return;
+    }
+
     this.NbDdialogService.open(DialogComponent, {
       context: {
         prevOP: this.tempOP,
@@ -573,5 +609,4 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.dataIni = new Date(newDate.getTime() - dataSemana.getDay() * 86400000);
     this.dataFim = new Date(this.dataIni.getTime() + 6 * 86400000);
   }
-
 }

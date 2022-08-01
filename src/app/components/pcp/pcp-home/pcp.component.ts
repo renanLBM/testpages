@@ -63,7 +63,7 @@ export class PcpComponent implements OnInit {
     inspecao: 0,
     disponivel: 0,
     coletado: 0,
-    nao_industrializado: 0
+    nao_industrializado: 0,
   };
 
   statusTipo: TipoPorStatus[] = [
@@ -159,8 +159,8 @@ export class PcpComponent implements OnInit {
         );
         break;
       case 2: // somente origem
-        listFilteredOPs = this.listStatus.filter(
-          (x) => this.selectedOrigem.includes(x.DS_CLASS)
+        listFilteredOPs = this.listStatus.filter((x) =>
+          this.selectedOrigem.includes(x.DS_CLASS)
         );
         break;
       case 3: // somente colecao
@@ -174,12 +174,12 @@ export class PcpComponent implements OnInit {
       this.tipoList.push({
         tipo: x['DS_TIPO'],
         status: x['Status'],
-        qnt: Number(x['QT_OP'].toLocaleString().replace(".","")),
+        qnt: Number(x['QT_OP'].toLocaleString().replace('.', '')),
       });
       this.tipoList.push({
         tipo: 'Total',
         status: x['Status'],
-        qnt: Number(x['QT_OP'].toLocaleString().replace(".","")),
+        qnt: Number(x['QT_OP'].toLocaleString().replace('.', '')),
       });
     });
 
@@ -400,7 +400,7 @@ export class PcpComponent implements OnInit {
 
       let situacaoListObj: any | Object = situacaoList.reduce(
         (prev: { [x: string]: any }, cur: string | number) => {
-          cur = cur.toString().includes("Parado") ? cur = 'Parado' : cur;
+          cur = cur.toString().includes('Parado') ? (cur = 'Parado') : cur;
           prev[cur] = (prev[cur] || 0) + 1;
           return prev;
         },
@@ -413,15 +413,15 @@ export class PcpComponent implements OnInit {
       });
 
       this.apontamentoList = {
-        nao_informado: (qntOpsList - totalSituacao) / qntOpsList || 0,
-        em_transporte: situacaoListObj['Em transporte'] / qntOpsList || 0,
-        em_fila: situacaoListObj['Em fila'] / qntOpsList || 0,
-        em_producao: situacaoListObj['Em produção'] / qntOpsList || 0,
-        parado: situacaoListObj['Parado'] / qntOpsList || 0,
-        inspecao: situacaoListObj['Em inspeção'] / qntOpsList || 0,
-        disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
-        coletado: situacaoListObj['Coletado'] / qntOpsList || 0,
-        nao_industrializado: situacaoListObj['Não industrializado'] / qntOpsList || 0,
+        nao_informado: qntOpsList - totalSituacao || 0,
+        em_transporte: situacaoListObj['Em transporte'] || 0,
+        em_fila: situacaoListObj['Em fila'] || 0,
+        em_producao: situacaoListObj['Em produção'] || 0,
+        parado: situacaoListObj['Parado'] || 0,
+        inspecao: situacaoListObj['Em inspeção'] || 0,
+        disponivel: situacaoListObj['Disponível para coleta'] || 0,
+        coletado: situacaoListObj['Coletado'] || 0,
+        nao_industrializado: situacaoListObj['Não industrializado'] || 0,
       };
     });
   }
@@ -440,9 +440,7 @@ export class PcpComponent implements OnInit {
   }
 
   filtrosDropdown(): void {
-    let colecaoFilter = this.selectedColecao.map(
-      (item) => item.split('-')[1]
-    );
+    let colecaoFilter = this.selectedColecao.map((item) => item.split('-')[1]);
 
     this.selectedFilters = {
       origem: this.selectedOrigem,

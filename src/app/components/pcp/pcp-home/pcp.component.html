@@ -7,13 +7,15 @@
         <div class="filtro-dropdown">
           <nb-select multiple placeholder="Origem" [(ngModel)]="selectedOrigem" status="primary">
             <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
-            <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let origem of menuOrigem" [value]="origem">{{origem}}</nb-option>
+            <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let origem of menuOrigem"
+              [value]="origem">{{origem}}</nb-option>
           </nb-select>
         </div>
         <div class="filtro-dropdown">
           <nb-select multiple placeholder="Coleção" [(ngModel)]="selectedColecao" status="primary">
             <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
-            <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}</nb-option>
+            <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()"
+              *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}</nb-option>
           </nb-select>
         </div>
       </div>
@@ -26,23 +28,24 @@
         </nb-card-header>
         <nb-card-body class="apontamento-alert-wrapper">
           <nb-alert status="danger" (click)="filterApontamento('Não informado')">Não informado: {{
-            apontamentoList.nao_informado | percent:'1.1-2' }}</nb-alert>
+            apontamentoList.nao_informado | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert status="danger" (click)="filterApontamento('Em transporte')">Em transporte: {{
-            apontamentoList.em_transporte | percent:'1.1-2' }}</nb-alert>
+            apontamentoList.em_transporte | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert status="primary" (click)="filterApontamento('Em fila')">Em fila: {{ apontamentoList.em_fila |
-            percent:'1.1-2' }}</nb-alert>
+            number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert status="info" (click)="filterApontamento('Em produção')">Em produção: {{ apontamentoList.em_producao
-            | percent:'1.1-2' }}</nb-alert>
+            | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert status="warning" (click)="filterApontamento('Parado')">Parado: {{ apontamentoList.parado |
-            percent:'1.1-2' }}</nb-alert>
-          <nb-alert class="inspecao" (click)="filterApontamento('Em inspeção')">Em inspeção: {{ apontamentoList.inspecao |
-            percent:'1.1-2' }}</nb-alert>
+            number:'1.0':'pt-Br' }}</nb-alert>
+          <nb-alert class="inspecao" (click)="filterApontamento('Em inspeção')">Em inspeção: {{ apontamentoList.inspecao
+            |
+            number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert status="success" (click)="filterApontamento('Disponível para coleta')">Disponível: {{
-            apontamentoList.disponivel | percent:'1.1-2' }}</nb-alert>
+            apontamentoList.disponivel | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert class="coletado" (click)="filterApontamento('Coletado')">Coletado: {{
-            apontamentoList.coletado | percent:'1.1-2' }}</nb-alert>
+            apontamentoList.coletado | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert class="industrializado" (click)="filterApontamento('Não industrializado')">Não industrializado {{
-            apontamentoList.nao_industrializado | percent:'1.1-2' }}</nb-alert>
+            apontamentoList.nao_industrializado | number:'1.0':'pt-Br' }}</nb-alert>
         </nb-card-body>
       </nb-card>
     </div>
