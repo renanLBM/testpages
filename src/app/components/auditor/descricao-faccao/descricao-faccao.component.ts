@@ -224,9 +224,12 @@ export class DescricaoFaccaoComponent implements OnInit {
                 );
                 let prevSemana = 0;
 
-                if (prevdate.toLocaleString('pt-br').substring(0, 10) == '01/01/2001') {
+                if (
+                  prevdate.toLocaleString('pt-br').substring(0, 10) ==
+                  '01/01/2001'
+                ) {
                   prevSemana = 0;
-                }else{
+                } else {
                   if (prevdate.getDay() === 0) {
                     prevSemana =
                       Math.floor((prevdate.getDay() + 1 + numberOfDays) / 7) +
@@ -439,20 +442,27 @@ export class DescricaoFaccaoComponent implements OnInit {
       );
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter(
-            (_) =>
-              this.selectedApontamento.includes(_.Situacao!) &&
+          this.descOP.filter((_) => {
+            let situacaoAjustada = _.Situacao?.includes('Parado')
+              ? 'Parado'
+              : _.Situacao;
+            return (
+              this.selectedApontamento.includes(situacaoAjustada!) &&
               _.semana == parseInt(this.semanaSelecionada)
-          )
+            );
+          })
         );
       }
     } else {
       this.descOP$.next(this.descOP);
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) =>
-            this.selectedApontamento.includes(_.Situacao!)
-          )
+          this.descOP.filter((_) => {
+            let situacaoAjustada = _.Situacao?.includes('Parado')
+              ? 'Parado'
+              : _.Situacao;
+            return this.selectedApontamento.includes(situacaoAjustada!);
+          })
         );
       }
     }
@@ -485,9 +495,12 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.descOP$.next(this.descOP);
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) =>
-            this.selectedApontamento.includes(_.Situacao!)
-          )
+          this.descOP.filter((_) => {
+            let situacaoAjustada = _.Situacao?.includes('Parado')
+              ? 'Parado'
+              : _.Situacao;
+            return this.selectedApontamento.includes(situacaoAjustada!);
+          })
         );
       }
     } else {
@@ -495,11 +508,15 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.descOP$.next(this.descOP.filter((_) => _.semana == event));
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter(
-            (_) =>
-              this.selectedApontamento.includes(_.Situacao!) &&
+          this.descOP.filter((_) => {
+            let situacaoAjustada = _.Situacao?.includes('Parado')
+              ? 'Parado'
+              : _.Situacao;
+            return (
+              this.selectedApontamento.includes(situacaoAjustada!) &&
               _.semana == parseInt(this.semanaSelecionada)
-          )
+            );
+          })
         );
       }
       this.descOP$.subscribe((x) => {

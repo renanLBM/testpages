@@ -137,7 +137,7 @@ nb-tag {
     nb-alert {
       height: 25px;
       font-size: 13px;
-      padding: 2px 10px;
+      padding: 1px 10px;
       display: inline-block;
       margin: 0;
       margin-top: 5px;
@@ -256,6 +256,12 @@ nb-tag {
       max-width: 115px;
     }
   }
+
+  .pendência {
+    height: 33px !important;
+    line-height: 1;
+    padding: 3px 10px !important;
+   }
 }
 
 @media (min-width:360px) and (max-width: 475px) {
