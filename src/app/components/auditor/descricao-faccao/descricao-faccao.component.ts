@@ -77,7 +77,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     { title: 'Atraso' },
     { title: 'Adiantamento' },
     { title: 'Apontamento de Produção' },
-    { title: 'Pendências' },
+    // { title: 'Pendências' },
   ];
 
   constructor(
@@ -223,17 +223,23 @@ export class DescricaoFaccaoComponent implements OnInit {
                     (24 * 60 * 60 * 1000)
                 );
                 let prevSemana = 0;
-                if (prevdate.getDay() === 0) {
-                  prevSemana =
-                    Math.floor((prevdate.getDay() + 1 + numberOfDays) / 7) + 2;
-                } else {
-                  prevSemana =
-                    Math.abs(
-                      Math.floor((prevdate.getDay() + 1 + numberOfDays - 3) / 7)
-                    ) + 2;
-                }
 
-                console.log(typeof(maiorMotivo.dt_atraso) ,maiorMotivo.dt_atraso.toString());
+                if (prevdate.toLocaleString('pt-br').substring(0, 10) == '01/01/2001') {
+                  prevSemana = 0;
+                }else{
+                  if (prevdate.getDay() === 0) {
+                    prevSemana =
+                      Math.floor((prevdate.getDay() + 1 + numberOfDays) / 7) +
+                      2;
+                  } else {
+                    prevSemana =
+                      Math.abs(
+                        Math.floor(
+                          (prevdate.getDay() + 1 + numberOfDays - 3) / 7
+                        )
+                      ) + 2;
+                  }
+                }
 
                 this.descOP.push({
                   semana: prevSemana,
@@ -473,7 +479,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     if (reset) {
       this.semanaSelecionada = '';
     }
-    if (event == 0) {
+    if (event == -1) {
       this.semanaSelecionada = 'Todas';
       (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
       this.descOP$.next(this.descOP);

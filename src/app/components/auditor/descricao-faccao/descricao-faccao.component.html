@@ -43,7 +43,7 @@
         <span>Semana selecionada: <b>{{semanaSelecionada}}</b> <span *ngIf="semanaSelecionada != 'Todas'"> (de {{
             dataIni | date: 'dd/MM/yyyy' }} a {{ dataFim | date: 'dd/MM/yyyy' }})</span></span>
         <nb-tag-list style="margin: 5px;">
-          <nb-tag status="basic" appearance="outline" text=" Todas " (click)="filtraSemana(0, true)"></nb-tag>
+          <nb-tag status="basic" appearance="outline" text=" Todas " (click)="filtraSemana(-1, true)"></nb-tag>
           <nb-tag status="danger" appearance="outline" *ngFor="let item of semanaListAtraso" text="Sem. {{item}}"
             (click)="filtraSemana(item, true)"></nb-tag>
           <nb-tag *ngIf="semanaAtualNumber == closestSemana" status="primary" appearance="filled"
@@ -100,7 +100,7 @@
                     <p *ngIf="item.motivo_atraso == 'Adiantamento'" class="nv-prev-text adiantamento-text">
                       {{ item.motivo_atraso }}</p>
                     <p *ngIf="item.motivo_atraso != 'Adiantamento'" class="nv-prev-text atraso">
-                      <b>Motivo atraso:</b> {{ item.motivo_atraso | date: 'dd/MM/yyyy' }}
+                      <b>Motivo atraso:</b> {{ item.motivo_atraso }}
                     </p>
                   </div>
                   <p><b>Ciclo:</b> {{ item.ciclo }} / <b>OP:</b> {{ item.op }}</p>
