@@ -6,7 +6,7 @@
 
 .back-button {
   height: fit-content;
-  margin-bottom: 7px;
+  margin-bottom: 0.25em;
   display: flex;
   justify-content: flex-end;
 }
@@ -76,6 +76,10 @@ nb-layout-column {
   flex-wrap: wrap;
 }
 
+nb-card-body {
+  padding: 0.75rem !important;
+}
+
 .bt-send {
   position: fixed;
   bottom: 2rem;
@@ -95,7 +99,7 @@ nb-layout-column {
 $breakpoint-alpha: 480px; // adjust to your needs
 
 .rwd-table {
-  margin: 1em 0;
+  margin: 0;
   min-width: 300px; // adjust to your needs
 
   tr {
@@ -173,7 +177,7 @@ h1 {
 }
 
 .rwd-table {
-  background: nb-theme(background-basic-color-2);
+  background: nb-theme(background-basic-color-1);
   color: nb-theme(text-basic-color);
   font-weight: 400;
   border-radius: .4em;

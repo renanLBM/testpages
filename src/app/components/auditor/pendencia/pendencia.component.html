@@ -46,32 +46,29 @@
           <h4>Grupo: {{test.DS_CLASSIFICACAO}}</h4>
         </nb-card-header>
         <nb-card-body>
-          <div class="c-body-wrapper">
-            <div class="c-body">
-              <table class="rwd-table">
-                <tr>
-                  <th>Cód. Produto</th>
-                  <th>Produto</th>
-                  <th>Qnt. Unitádia</th>
-                  <th>Solicitação</th>
-                </tr>
-                <ng-container *ngFor="let item of test.mp_list">
-                  <tr>
-                    <td data-th="Cód. Produto">{{ item.CD_PRODUTO_MP }}</td>
-                    <td data-th="Produto">{{ item.DS_PRODUTO_MP }}</td>
-                    <td data-th="Qnt. Unitádia">{{ item.QT_CONSUMOUNIT }}</td>
-                    <td data-th="Solicitação"><input nbInput status="warning" type="number" min="0" placeholder="0">
-                    </td>
-                  </tr>
-                </ng-container>
-              </table>
-            </div>
-          </div>
+          <table class="rwd-table">
+            <tr>
+              <th>Cód. Produto</th>
+              <th>Produto</th>
+              <th>Qnt. Unitádia</th>
+              <th>Solicitação</th>
+            </tr>
+            <ng-container *ngFor="let item of test.mp_list">
+              <tr>
+                <td data-th="Cód. Produto">{{ item.CD_PRODUTO_MP }}</td>
+                <td data-th="Produto">{{ item.DS_PRODUTO_MP }}</td>
+                <td data-th="Qnt. Unitádia">{{ item.QT_CONSUMOUNIT }}</td>
+                <td data-th="Solicitação"><input nbInput status="warning" type="number" min="0" placeholder="0">
+                </td>
+                <hr>
+              </tr>
+            </ng-container>
+          </table>
         </nb-card-body>
       </nb-card>
     </ng-container>
-    <h4>Observações:</h4>
-    <textarea nbInput fullWidth status="warning" type="text" name="obs" class="txt-area"></textarea>
+    <h4><b>Observações:</b></h4>
+    <textarea nbInput fullWidth status="warning" type="text" rows="4" name="obs" class="txt-area"></textarea>
   </div>
   <button nbButton hero shape="round" status="success" class="bt-send">Enviar</button>
 </div>
