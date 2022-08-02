@@ -77,7 +77,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     { title: 'Atraso' },
     { title: 'Adiantamento' },
     { title: 'Apontamento de Produção' },
-    // { title: 'Pendências' },
+    { title: 'Pendências' },
   ];
 
   constructor(

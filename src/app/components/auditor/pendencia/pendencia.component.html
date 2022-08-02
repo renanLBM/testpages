@@ -1,10 +1,86 @@
-<div class="back-button">
-  <div class="bt-voltar-wrapper">
-    <button nbButton outline status="primary" size="small" class="bt-voltar" (click)="voltar()">
-      Voltar
-    </button>
+<div class="body-wrapper">
+  <div class="back-button">
+    <div class="bt-voltar-wrapper">
+      <button nbButton outline status="primary" size="small" class="bt-voltar" (click)="voltar()">
+        Voltar
+      </button>
+    </div>
+  </div>
+
+  <!-- toolbar -->
+  <div class="toolbar-wrapper">
+    <div class="toolbar-info">
+      <div class="toolbar-value">
+        <div>
+          Ciclo:
+        </div>
+        <div class="h6">
+          1551
+        </div>
+      </div>
+      <div class="toolbar-value">
+        <div>
+          OP:
+        </div>
+        <div class="h6">
+          576
+        </div>
+      </div>
+      <div class="toolbar-value">
+        <div>
+          Referência:
+        </div>
+        <div class="h6">
+          23815
+        </div>
+      </div>
+      <div class="toolbar-value">
+        <div>
+          Qtd. Peças:
+        </div>
+        <div class="h6">
+          50
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- placeholder while loading -->
+  <div class="card-wrapper">
+    <ng-container *ngFor="let test of test_data">
+      <nb-card>
+        <nb-card-header>
+          <h4>Produto: {{test.DS_PRODUTO}}</h4>
+        </nb-card-header>
+        <nb-card-body>
+          <div class="c-body-wrapper">
+            <div class="c-header">
+              <div>
+                <h4>Grupo: {{test.DS_CLASSIFICACAO}}</h4>
+              </div>
+            </div>
+            <div class="c-body">
+              <table class="rwd-table">
+                <tr>
+                  <th>Cód. Produto</th>
+                  <th>Produto</th>
+                  <th>Qnt. Unitádia</th>
+                  <th>Solicitação</th>
+                </tr>
+                <ng-container *ngFor="let item of test.mp_list">
+                  <tr>
+                    <td data-th="Cód. Produto">{{ item.CD_PRODUTO_MP }}</td>
+                    <td data-th="Produto">{{ item.DS_PRODUTO_MP }}</td>
+                    <td data-th="Qnt. Unitádia">{{ item.QT_CONSUMOUNIT }}</td>
+                    <td data-th="Solicitação"><input nbInput status="warning" type="number" min="0" placeholder="0"></td>
+                  </tr>
+                </ng-container>
+              </table>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </ng-container>
   </div>
 </div>
-<div>
-
-<p>pendencia works!</p>
