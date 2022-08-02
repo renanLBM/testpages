@@ -1,6 +1,6 @@
 {
   "name": "faccao-control",
-  "version": "0.2.45",
+  "version": "0.2.46",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

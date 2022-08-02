@@ -25,7 +25,7 @@ nb-layout-column {
   flex: 1;
   background-color: nb-theme(input-basic-background-color);
   justify-content: space-around;
-  padding: 0.75rem 4rem 0.50rem;
+  padding: 0.75rem 1rem 0.50rem;
   border: 1px solid nb-theme(background-basic-color-3);
   border-right: none;
   border-left: none;
@@ -76,6 +76,15 @@ nb-layout-column {
   flex-wrap: wrap;
 }
 
+.bt-send {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+}
+
+.txt-area {
+  margin-bottom: 3rem;
+}
 
 // Table
 @import "~compass-mixins/lib/compass/css3";
@@ -124,7 +133,7 @@ $breakpoint-alpha: 480px; // adjust to your needs
     }
 
     input {
-      max-width: 2rem;
+      max-width: 3rem;
     }
   }
 
