@@ -17,8 +17,12 @@ export class AppUpdateService {
   }
 
   showAppUpdateAlert() {
-    const header = 'Atualização disponível';
-    const message = 'Click em OK para atualizar';
+    const header = 'Atualização v0.2.46';
+    const message = "\
+              ➤ Adicionado o componente 'Pendências' no módulo Auditor; \
+              ➤ O item pode ser encontrado no menu da descrição da OP; \
+          ";
+
 
     this.dialogService.open(DialogDefaultBodyComponent, {
       closeOnBackdropClick: false,
