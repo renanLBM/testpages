@@ -1,10 +1,7 @@
 <nb-layout-header fixed>
   <div class="header-wrapper">
     <div class="header-container">
-      <nb-icon *ngIf="!showIcon && !adm"  class="icon-header" icon="log-in-outline"
-        aria-label="login">
-      </nb-icon>
-      <nb-icon *ngIf="showIcon && adm" (click)="toggleSidebar()" class="icon-header" icon="menu-outline"
+      <nb-icon *ngIf="showIcon && showMenu" (click)="toggleSidebar()" class="icon-header" icon="menu-outline"
         aria-label="menu">
       </nb-icon>
       <nb-icon *ngIf="showIcon" [routerLink]="['login']" class="icon-header" icon="home-outline"
