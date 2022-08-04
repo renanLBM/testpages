@@ -14,7 +14,7 @@ const routes: Routes = [
     component: DescricaoFaccaoComponent
   },
   {
-    path: 'pendencias/:id',
+    path: 'pendencias/:cod',
     component: PendenciaComponent
   }
 ];

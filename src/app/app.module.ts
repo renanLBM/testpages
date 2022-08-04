@@ -17,7 +17,7 @@ import {
   NbRouteTabsetModule,
   NbSidebarModule,
   NbTabsetModule,
-  NbThemeModule,
+  NbThemeModule
 } from '@nebular/theme';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';

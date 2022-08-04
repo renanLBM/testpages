@@ -118,13 +118,13 @@ export class AuditorService {
       );
   }
 
-  getToken() {
+  private getToken() {
     const token = this._tokenService.getToken();
     let headerDict = new HttpHeaders().append('x-access-token', token);
     return headerDict;
   }
 
-  missingToken() {
+  private missingToken() {
     alert('Sessão expirada!');
     this._userService.logout();
   }

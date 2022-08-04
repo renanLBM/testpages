@@ -50,10 +50,11 @@ export class OpsService {
       );
   }
 
-  getOpById(id: string): Observable<OPs> {
+  getOpById(local: string, cod?:string): Observable<OPs> {
     const headers = this.getToken();
-    return this._httpClient
-      .get<OPs>(`${API}/api/getop/${id}/`, {
+    if (!!cod) {
+      return this._httpClient
+      .get<OPs>(`${API}/api/getop/${local}/${cod}`, {
         headers,
       })
       .pipe(
@@ -62,6 +63,18 @@ export class OpsService {
           return EMPTY;
         })
       );
+    }else{
+      return this._httpClient
+        .get<OPs>(`${API}/api/getop/${local}/`, {
+          headers,
+        })
+        .pipe(
+          catchError((error: HttpErrorResponse) => {
+            if (error.status == 401) this.missingToken();
+            return EMPTY;
+          })
+        );
+    }
   }
 
   getOpByStatus(status: string, origem?: string): Observable<OPs> {
@@ -91,7 +104,7 @@ export class OpsService {
     }
   }
 
-  getToken() {
+  private getToken() {
     const token = this._tokenService.getToken();
     if (!token) {
       let headerDict = new HttpHeaders();
@@ -101,7 +114,7 @@ export class OpsService {
     return headerDict;
   }
 
-  missingToken() {
+  private missingToken() {
     alert('Sessão expirada!');
     this._userService.logout();
   }
