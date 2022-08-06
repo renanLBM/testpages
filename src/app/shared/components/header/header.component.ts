@@ -82,6 +82,8 @@ export class HeaderComponent implements OnInit {
   }
 
   sair() {
+    this._setTitle.isMenuOpen.next(false);
+    this._sidebarService.collapse();
     this.showIcon = false;
     this._userService.logout();
     this._router.navigateByUrl('');

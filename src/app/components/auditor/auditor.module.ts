@@ -30,12 +30,14 @@ import { AuditorRoutingModule } from './auditor-routing.module';
 import { DescricaoFaccaoComponent } from './descricao-faccao/descricao-faccao.component';
 import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
 import { PendenciaComponent } from './pendencia/pendencia.component';
+import { MinhasPendenciasComponent } from './minhas-pendencias/minhas-pendencias.component';
 
 @NgModule({
   declarations: [
     ListFaccaoComponent,
     DescricaoFaccaoComponent,
     PendenciaComponent,
+    MinhasPendenciasComponent,
   ],
   imports: [
     RouterModule,

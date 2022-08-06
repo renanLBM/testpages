@@ -632,4 +632,9 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.dataIni = new Date(newDate.getTime() - dataSemana.getDay() * 86400000);
     this.dataFim = new Date(this.dataIni.getTime() + 6 * 86400000);
   }
+
+  scrollTop() {
+    var container = (document.querySelector('#top-page')! as HTMLElement);
+    container.scrollIntoView();
+  }
 }

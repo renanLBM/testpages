@@ -1,21 +1,32 @@
-import { AfterContentChecked, Component, OnInit } from '@angular/core';
+import {
+  AfterContentChecked,
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { NbMenuItem, NbSidebarService } from '@nebular/theme';
 import { Pages } from './models/enums/enumPages';
 import { AppUpdateService } from './providers/app-update.service';
 import { UserService } from './services/user.service';
-import { HeaderComponent } from './shared/components/header/header.component';
 import { SetTitleServiceService } from './shared/set-title-service.service';
 
 @Component({
   selector: 'fc-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit, AfterContentChecked {
   title = 'facControl';
   nivelLogado = -1;
   isMenuOpen!: boolean;
 
+  menuAuditor = [
+    'Atraso',
+    'Adiantamento',
+    'Apontamento de Produção',
+    'Pendências',
+  ];
   items: NbMenuItem[] = [];
 
   isLoggedIn!: boolean;
@@ -35,7 +46,7 @@ export class AppComponent implements OnInit, AfterContentChecked {
           title: 'PCP',
           icon: 'keypad-outline',
           // link: './pcp',
-          // expanded: true,
+          expanded: true,
           children: [
             {
               title: 'Gerencial',
@@ -60,6 +71,7 @@ export class AppComponent implements OnInit, AfterContentChecked {
         this.items.push({
           title: 'Auditor',
           icon: 'file-text-outline',
+          expanded: true,
           children: [
             {
               title: 'Lista de Facções',
@@ -67,9 +79,9 @@ export class AppComponent implements OnInit, AfterContentChecked {
             },
             {
               title: 'Minhas Pendências',
-              link: './minhas_pendencias',
+              link: './auditor/minhas_pendencias',
             },
-          ]
+          ],
         });
       }
       if (
@@ -93,27 +105,23 @@ export class AppComponent implements OnInit, AfterContentChecked {
   }
 
   toggle(event: Event): void {
-    this._setTitle.isMenuOpen.subscribe((_) => this.isMenuOpen = _);
-    let ehSpan = (event.target as HTMLElement).tagName == "SPAN";
+    this._setTitle.isMenuOpen.subscribe((_) => (this.isMenuOpen = _));
+    let ehMenu = (event.target as HTMLElement).className.includes('menu-title');
     let btClicado = (event.target as HTMLElement).innerText;
 
-    let ehCabecalho = btClicado == "Auditor" || btClicado == "PCP";
+    let ehCabecalho = btClicado == 'Auditor' || btClicado == 'PCP';
+    let ehMenuSidebar = !this.menuAuditor.includes(btClicado);
 
-    // se clicou em um span
-    if(ehSpan) {
+    if (ehMenu && !ehCabecalho && ehMenuSidebar) {
       // se não for cabeçalho executar o toggle
-      if(!ehCabecalho) {
-        this._setTitle.isMenuOpen.next(!this.isMenuOpen);
-        this._sidebarService.toggle();
-      }
-    }else {
+      this._setTitle.isMenuOpen.next(false);
+      this._sidebarService.toggle();
+    } else if (this.isMenuOpen) {
       // se não clicou em span
       // verificar se o menu está aberto
-      if(this.isMenuOpen) {
-        // se sim executar o toggle
-        this._setTitle.isMenuOpen.subscribe((_) => this.isMenuOpen = _);
-        this._sidebarService.toggle();
-      }
+      // se sim executar o toggle
+      this._setTitle.isMenuOpen.subscribe((_) => (this.isMenuOpen = _));
+      this._sidebarService.toggle();
     }
   }
 }

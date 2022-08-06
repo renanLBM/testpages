@@ -10,6 +10,7 @@ export interface MateriaPrima {
 export type MateriasPrimas = Array<MateriaPrima>;
 
 export interface MateriaPrimaList {
+  tipo?: string,
   CD_PRODUTO_MP: number,
   DS_PRODUTO_MP: string,
   QT_CONSUMOUNIT: string

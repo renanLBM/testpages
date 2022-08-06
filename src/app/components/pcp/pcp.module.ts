@@ -28,6 +28,7 @@ import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
 import { PcpComponent } from './pcp-home/pcp.component';
 import { PCPRoutingModule } from './pcp-routing.module';
 import { PCPPendenciasComponent } from './pendencias/pcp-pendencias.component';
+import { SolicitacoesPendenciasComponent } from './solicitacoes-pendencias/solicitacoes-pendencias.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { PCPPendenciasComponent } from './pendencias/pcp-pendencias.component';
     PcpDescOpsComponent,
     PCPPendenciasComponent,
     FsIconComponent,
+    SolicitacoesPendenciasComponent,
   ],
   imports: [
     RouterModule,

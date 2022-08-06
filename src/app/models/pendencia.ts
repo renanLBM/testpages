@@ -6,6 +6,7 @@ export interface Pendencia {
   DS_CLASSIFICACAO: string;
   CD_PRODUTO_MP: number;
   DS_PRODUTO_MP: string;
+  QT_CONSUMOUNIT: string;
   QT_SOLICITADO: number;
   USUARIO: string;
   DT_SOLICITACAO: string;

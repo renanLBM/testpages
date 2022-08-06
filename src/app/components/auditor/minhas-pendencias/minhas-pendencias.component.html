@@ -1,0 +1,30 @@
+<div class="body-wrapper">
+  <div class="table-wrapper">
+    <table class="rwd-table">
+      <tr>
+        <th>Cód. OP</th>
+        <th>Classificação</th>
+        <th>Matéria Prima</th>
+        <th>Qtd. Solicitada</th>
+        <th>Data Solicitação</th>
+        <th>Status</th>
+        <th>Observações</th>
+      </tr>
+      <ng-container *ngFor="let pendencia of minhasPendencias$ | async">
+        <tr>
+          <td data-th="Cód. OP">{{pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
+          <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
+          <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+"-"+pendencia.DS_PRODUTO_MP }}</td>
+          <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
+          <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
+          <td data-th="Status">
+            <nb-alert [ngClass]="pendencia.STATUS" class="nv-alert">{{
+              pendencia.STATUS }}</nb-alert>
+          </td>
+          <td data-th="Observações">{{pendencia.Obs }}</td>
+          <hr>
+        </tr>
+      </ng-container>
+    </table>
+  </div>
+</div>

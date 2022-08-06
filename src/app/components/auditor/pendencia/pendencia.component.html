@@ -112,10 +112,10 @@
 
     <!-- placeholder while loading -->
     <div class="card-wrapper">
-      <ng-container *ngFor="let test of materiasPrimasList$ | async">
+      <ng-container *ngFor="let mp of materiasPrimasList$ | async">
         <nb-card>
           <nb-card-header>
-            <h4>Grupo: {{test.DS_CLASSIFICACAO}}</h4>
+            <h4>Grupo: {{mp.DS_CLASSIFICACAO}}</h4>
           </nb-card-header>
           <nb-card-body>
             <table class="rwd-table">
@@ -125,13 +125,13 @@
                 <th>Qnt. Unitádia</th>
                 <th>Solicitação</th>
               </tr>
-              <ng-container *ngFor="let item of test.mp_list; let i = index">
+              <ng-container *ngFor="let item of mp.mp_list; let i = index">
                 <tr>
                   <td data-th="Cód. Produto">{{ item.CD_PRODUTO_MP }}</td>
                   <td data-th="Produto">{{ item.DS_PRODUTO_MP }}</td>
                   <td data-th="Qnt. Unitádia">{{ item.QT_CONSUMOUNIT }}</td>
                   <td data-th="Solicitação" [id]="i"><input nbInput status="warning" type="number"
-                      [id]="item.CD_PRODUTO_MP" min="0" placeholder="0">
+                      [id]="item.CD_PRODUTO_MP+'-'+item.DS_PRODUTO_MP+'-'+item.QT_CONSUMOUNIT" min="0" placeholder="0">
                   </td>
                   <hr>
                 </tr>
