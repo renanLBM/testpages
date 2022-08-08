@@ -24,10 +24,38 @@ nb-alert {
   color: nb-theme(text-alternate-color);
   background: nb-theme(color-danger-default);
   user-select: none;
+  text-align: center;
+}
+
+// STATUS
+.nv-alert {
+  min-height: 25px;
+  font-size: 13px;
+  padding: 1px 10px;
+  display: inline-block;
+  margin: 0;
+  margin-top: 5px;
+  color: nb-theme(text-alternate-color);
+  background: nb-theme(color-danger-default);
+  user-select: none;
+  text-align: center;
+
+  border-radius: 7px;
+
+  a {
+    text-decoration: none;
+  }
 }
 
 .análise {
   background: nb-theme(color-warning-500);
+}
+.confirmar {
+  background-color: nb-theme(color-success-new);
+}
+.confirmar:hover {
+  background-color: nb-theme(color-success-500);
+  cursor: pointer;
 }
 
 // Table

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { NbToastrService } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
-import { Pendencias } from 'src/app/models/pendencia';
+import { Pendencia, Pendencias } from 'src/app/models/pendencia';
 import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
@@ -11,6 +12,8 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   styleUrls: ['./minhas-pendencias.component.scss'],
 })
 export class MinhasPendenciasComponent implements OnInit {
+  ignoredStatus = ['Finalizado', 'Recusado'];
+
   loading = true;
   loadingError = false;
   isEmptyList = false;
@@ -20,6 +23,7 @@ export class MinhasPendenciasComponent implements OnInit {
     new BehaviorSubject<Pendencias>([]);
 
   constructor(
+    private toastrService: NbToastrService,
     private _setTituloService: SetTitleServiceService,
     private _userService: UserService,
     private _pendenciaService: PendenciasService
@@ -29,18 +33,43 @@ export class MinhasPendenciasComponent implements OnInit {
     this._setTituloService.setTitle('Carregando...');
 
     let usuario = '';
-    this._userService.getUser().subscribe((_) => usuario = _.nome)
+    this._userService.getUser().subscribe((_) => (usuario = _.nome));
     this._pendenciaService.listPendencia(usuario).subscribe({
-      next: pendencias => {
+      next: (pendencias) => {
         this.minhasPendencias = pendencias;
-        this.loading = false;
+        this.minhasPendencias = this.minhasPendencias.filter(
+          (pendencia) => !this.ignoredStatus.includes(pendencia.STATUS)
+        );
         this.minhasPendencias$.next(this.minhasPendencias);
         this._setTituloService.setTitle('Minhas Pendências');
+        this.loading = false;
       },
-      error: err => {
+      error: (err) => {
         this.isEmptyList = true;
         this.loading = false;
-      }
+      },
+    });
+  }
+
+  confirmarRecebimento(pendencia: Pendencia): void {
+    this._pendenciaService.confirmarRecebimento(pendencia).subscribe({
+      next: (ret) => {
+        if (ret == 1) {
+          window.location.reload();
+          this.toastrService.danger(
+            'Erro ao enviar a solicitação!',
+            'Erro!!!',
+            {
+              preventDuplicates: true,
+            }
+          );
+        }
+      },
+      error: (err) => {
+        this.toastrService.danger('Erro ao enviar a solicitação!', 'Erro!!!', {
+          preventDuplicates: true,
+        });
+      },
     });
   }
 }

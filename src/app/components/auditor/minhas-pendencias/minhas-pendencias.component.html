@@ -9,6 +9,7 @@
         <th>Data Solicitação</th>
         <th>Status</th>
         <th>Observações</th>
+        <th>Confirmar Recebimento</th>
       </tr>
       <ng-container *ngFor="let pendencia of minhasPendencias$ | async">
         <tr>
@@ -22,6 +23,12 @@
               pendencia.STATUS }}</nb-alert>
           </td>
           <td data-th="Observações">{{pendencia.Obs }}</td>
+          <td data-th="Confirmar Recebimento">
+            <div class="nv-alert confirmar" *ngIf="pendencia.STATUS == 'Enviado'"
+              (click)="confirmarRecebimento(pendencia)">
+              <a>Recebido</a>
+            </div>
+          </td>
           <hr>
         </tr>
       </ng-container>

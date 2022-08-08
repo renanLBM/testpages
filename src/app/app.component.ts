@@ -56,10 +56,10 @@ export class AppComponent implements OnInit, AfterContentChecked {
             //   title: 'Alterações',
             //   link: './pcp/alteracoes'
             // },
-            // {
-            //   title: 'Em atraso',
-            //   link: './pcp/descricao/Em atraso'
-            // },
+            {
+              title: 'Pendências',
+              link: './pcp/pendencias'
+            },
           ],
         });
       }

@@ -1,14 +1,20 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { Pendencias } from 'src/app/models/pendencia';
-import { UserService } from 'src/app/services/user.service';
-import { NbGlobalPhysicalPosition, NbToastrService } from '@nebular/theme';
-import { PendenciasService } from 'src/app/services/pendencias.service';
+import {
+  AfterContentInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MateriaPrimaList, MateriasPrimas } from 'src/app/models/materiaPrima';
+import { NbGlobalPhysicalPosition, NbToastrService } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
-import { OpsService } from 'src/app/services/ops.service';
+import { MateriaPrimaList, MateriasPrimas } from 'src/app/models/materiaPrima';
 import { OPs } from 'src/app/models/ops';
+import { Pendencias } from 'src/app/models/pendencia';
+import { OpsService } from 'src/app/services/ops.service';
+import { PendenciasService } from 'src/app/services/pendencias.service';
+import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 interface MPList {
@@ -21,14 +27,12 @@ interface MPList {
   selector: 'fc-pendencia',
   templateUrl: './pendencia.component.html',
   styleUrls: ['./pendencia.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PendenciaComponent implements OnInit {
+export class PendenciaComponent implements OnInit, AfterContentInit {
   positions = NbGlobalPhysicalPosition;
 
   loading = true;
   loadingError = false;
-  isEmptyList = false;
 
   materiasPrimasList: MateriasPrimas = [];
   materiasPrimasList$: BehaviorSubject<MateriasPrimas> =
@@ -46,7 +50,6 @@ export class PendenciaComponent implements OnInit {
   qnt_op = 0;
 
   constructor(
-    private changeDetectorRef: ChangeDetectorRef,
     private toastrService: NbToastrService,
     private _route: ActivatedRoute,
     private _location: Location,
@@ -57,7 +60,7 @@ export class PendenciaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this._setTitulo.setTitle('Nova Solicitação')
+    this._setTitulo.setTitle('Nova Solicitação');
 
     this._userService.getUser().subscribe((user) => {
       this.loggedUser = user.nome;
@@ -66,6 +69,9 @@ export class PendenciaComponent implements OnInit {
     this.cod_op = this._route.snapshot.paramMap.get('cod')!;
     this.ref = this.cod_op.split('-')[2];
     this.cicloOP = this.cod_op.split('-')[0] + '-' + this.cod_op.split('-')[1];
+  }
+
+  ngAfterContentInit(): void {
     let cd_local = this.cod_op.split('-')[3];
 
     this._opService
@@ -84,8 +90,6 @@ export class PendenciaComponent implements OnInit {
         this.materiasPrimasList = x;
         this.materiasPrimasList$.next(this.materiasPrimasList);
         this.loading = false;
-
-        this.changeDetectorRef.detectChanges();
       },
     });
   }
@@ -172,7 +176,6 @@ export class PendenciaComponent implements OnInit {
             }
           );
           this.loading = false;
-          this.changeDetectorRef.detectChanges();
         },
         error: (err) => {
           console.log(err);
@@ -212,7 +215,7 @@ export class PendenciaComponent implements OnInit {
     }
     this.inputList = [];
     this.solicitacao = [];
-    this.changeDetectorRef.detectChanges();
+
     setTimeout(() => (this.loading = false), 300);
   }
 

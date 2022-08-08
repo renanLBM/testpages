@@ -20,29 +20,69 @@ export class PendenciasService {
 
   listMateriaPrima(cod_op: string): Observable<MateriasPrimas> {
     const headers = this.getToken();
-    return this._httpClient.get<MateriasPrimas>(`${API}/api/materiaprima/${cod_op}`, {
-      headers,
-    });
+    return this._httpClient.get<MateriasPrimas>(
+      `${API}/api/materiaprima/${cod_op}`,
+      {
+        headers,
+      }
+    );
   }
 
   listPendencia(user?: string): Observable<Pendencias> {
     const headers = this.getToken();
 
-    if(!!user) {
-      return this._httpClient.get<Pendencias>(`${API}/api/getpendencia/${user}`, {
-        headers,
-      });
+    if (!!user) {
+      return this._httpClient.get<Pendencias>(
+        `${API}/api/getpendencia/${user}`,
+        {
+          headers,
+        }
+      );
     }
     return this._httpClient.get<Pendencias>(`${API}/api/getpendencia`, {
       headers,
     });
   }
 
-  setPendencia(pendencia: Pendencias): Observable<number> {
+  setPendencia(pendencias: Pendencias): Observable<number> {
+    const headers = this.getToken();
+    const body = JSON.stringify(pendencias);
+    return this._httpClient
+      .post<any>(`${API}/api/setpendencia`, body, {
+        headers,
+      })
+      .pipe(
+        map((res) => {
+          if (res == 'ok') {
+            return 1;
+          }
+          return 0;
+        })
+      );
+  }
+
+  alterarStatus(pendencia: Pendencia) {
     const headers = this.getToken();
     const body = JSON.stringify(pendencia);
     return this._httpClient
-      .post<any>(`${API}/api/setpendencia`, body, {
+      .post<any>(`${API}/api/editstatus`, body, {
+        headers,
+      })
+      .pipe(
+        map((res) => {
+          if (res == 'ok') {
+            return 1;
+          }
+          return 0;
+        })
+      );
+  }
+
+  confirmarRecebimento(pendencia: Pendencia) {
+    const headers = this.getToken();
+    const body = JSON.stringify(pendencia);
+    return this._httpClient
+      .post<any>(`${API}/api/setconfirmapendencia`, body, {
         headers,
       })
       .pipe(

@@ -13,6 +13,7 @@ import {
   NbLayoutModule,
   NbSelectModule,
   NbSpinnerModule,
+  NbToastrModule,
   NbTooltipModule,
   NbTreeGridModule
 } from '@nebular/theme';
@@ -59,6 +60,7 @@ import { SolicitacoesPendenciasComponent } from './solicitacoes-pendencias/solic
     NbSpinnerModule,
     NbTreeGridModule,
     NbTooltipModule,
+    NbToastrModule.forRoot(),
   ],
 })
 export class PcpModule {}
