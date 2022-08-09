@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { AfterContentInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NbGlobalPhysicalPosition, NbToastrService } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
@@ -22,7 +22,7 @@ interface MPList {
   templateUrl: './pendencia.component.html',
   styleUrls: ['./pendencia.component.scss'],
 })
-export class PendenciaComponent implements OnInit, AfterContentInit {
+export class PendenciaComponent implements OnInit, AfterViewChecked {
   positions = NbGlobalPhysicalPosition;
 
   loading = true;
@@ -44,6 +44,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
   qnt_op = 0;
 
   constructor(
+    private cd: ChangeDetectorRef,
     private toastrService: NbToastrService,
     private _route: ActivatedRoute,
     private _location: Location,
@@ -65,7 +66,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     this.cicloOP = this.cod_op.split('-')[0] + '-' + this.cod_op.split('-')[1];
   }
 
-  ngAfterContentInit(): void {
+  ngAfterViewChecked(): void {
     let cd_local = this.cod_op.split('-')[3];
 
     this._opService
@@ -84,6 +85,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
         this.materiasPrimasList = x;
         this.materiasPrimasList$.next(this.materiasPrimasList);
         this.loading = false;
+        this.cd.detectChanges();
       },
     });
   }
