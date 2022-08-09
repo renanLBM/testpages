@@ -17,7 +17,7 @@ export class AppUpdateService {
   }
 
   showAppUpdateAlert() {
-    const header = 'Atualização v0.2.47';
+    const header = 'Atualização v0.3.0';
     const message = "\
               ➤ Adicionado o componente 'Pendências' no módulo Auditor;\n\
               ➤ O novo componente pode ser encontrado no menu flutuante na descrição da OP;\

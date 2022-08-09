@@ -63,8 +63,8 @@ export class PCPPendenciasComponent implements OnInit {
     });
   }
 
-  alterarStatus(event: string, pendencia: Pendencia): void {
-    const novoStatus = event.split('_')[0];
+  alterarStatus(event: Event, pendencia: Pendencia): void {
+    const novoStatus = (event.target as HTMLSelectElement).value.split('_')[0];
 
     this._pendenciaService.alterarStatus(pendencia, novoStatus).subscribe({
       next: (ret) => {

@@ -1,5 +1,8 @@
 <div class="body-wrapper">
   <div class="historico">
+    <nb-icon class="icon-header" icon="book-open-outline"
+      aria-label="historico">
+    </nb-icon>
     <a href="pcp/hist_pendencias">Histórico</a>
   </div>
   <div class="table-wrapper">
@@ -23,11 +26,13 @@
           <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
           <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
           <td data-th="Status">
-            <nb-select [placeholder]="pendencia.STATUS" [ngClass]="pendencia.STATUS" filled
-              [(ngModel)]="selectedStatusPendencia" (selectedChange)="alterarStatus($event, pendencia)">
-              <nb-option style="font-size: 12px !important;" *ngFor="let sPendencia of statusPendencia"
-                [value]="sPendencia+'_'+pendencia.CD_PENDENCIA">{{sPendencia}}</nb-option>
-            </nb-select>
+            <select (change)="alterarStatus($event, pendencia)" class="select-status" [ngClass]="pendencia.STATUS"
+              name="status" [selectedIndex]="">
+              <option *ngFor="let sPendencia of statusPendencia" [selected]="pendencia.STATUS == sPendencia"
+                [value]="sPendencia+'_'+pendencia.CD_PENDENCIA">
+                {{sPendencia}}
+              </option>
+            </select>
           </td>
           <td data-th="Observações">{{pendencia.Obs }}</td>
           <hr>
