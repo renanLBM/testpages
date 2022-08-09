@@ -12,6 +12,7 @@ export interface Pendencia {
   DT_SOLICITACAO: string;
   STATUS: string;
   Obs?: string;
+  novoStatus?: string;
 }
 
 export type Pendencias = Array<Pendencia>;

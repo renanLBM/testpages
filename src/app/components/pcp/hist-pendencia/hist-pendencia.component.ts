@@ -1,21 +1,20 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { NbToastrService } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
-import { StatusPendencia } from 'src/app/models/enums/enumStatusPendencia';
-import { Pendencia, Pendencias } from 'src/app/models/pendencia';
+import { Pendencias } from 'src/app/models/pendencia';
 import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 @Component({
-  selector: 'fc-pcppendencias',
-  templateUrl: './pcp-pendencias.component.html',
-  styleUrls: ['./pcp-pendencias.component.scss'],
+  selector: 'fc-hist-pendencia',
+  templateUrl: './hist-pendencia.component.html',
+  styleUrls: ['./hist-pendencia.component.scss'],
 })
-export class PCPPendenciasComponent implements OnInit {
+export class HistPendenciaComponent implements OnInit {
   // TODO:
   // make this an enum to change in Auditor and PCP
-  ignoredStatus = ['Finalizado', 'Recusado'];
+  ignoredStatus = ['Em análise', 'Almoxarifado', 'Enviado'];
 
   statusPendencia: string[] = [];
   selectedStatusPendencia: string = '';
@@ -29,7 +28,7 @@ export class PCPPendenciasComponent implements OnInit {
     new BehaviorSubject<Pendencias>([]);
 
   constructor(
-    private toastrService: NbToastrService,
+    private _location: Location,
     private _setTituloService: SetTitleServiceService,
     private _userService: UserService,
     private _pendenciaService: PendenciasService
@@ -37,12 +36,6 @@ export class PCPPendenciasComponent implements OnInit {
 
   ngOnInit(): void {
     this._setTituloService.setTitle('Carregando...');
-
-    Object.values(StatusPendencia).forEach((_) => {
-      if (typeof(_) == 'string') {
-        this.statusPendencia.push(_);
-      }
-    });
 
     let usuario = '';
     this._userService.getUser().subscribe((_) => (usuario = _.nome));
@@ -53,7 +46,7 @@ export class PCPPendenciasComponent implements OnInit {
           (pendencia) => !this.ignoredStatus.includes(pendencia.STATUS)
         );
         this.minhasPendencias$.next(this.minhasPendencias);
-        this._setTituloService.setTitle('Pendências');
+        this._setTituloService.setTitle('Histórico de Pendências');
         this.loading = false;
       },
       error: (err) => {
@@ -63,27 +56,7 @@ export class PCPPendenciasComponent implements OnInit {
     });
   }
 
-  alterarStatus(event: string, pendencia: Pendencia): void {
-    const novoStatus = event.split('_')[0];
-
-    this._pendenciaService.alterarStatus(pendencia, novoStatus).subscribe({
-      next: (ret) => {
-        if (ret == 1) {
-          window.location.reload();
-          this.toastrService.danger(
-            'Erro ao enviar a solicitação!',
-            'Erro!!!',
-            {
-              preventDuplicates: true,
-            }
-          );
-        }
-      },
-      error: (err) => {
-        this.toastrService.danger('Erro ao enviar a solicitação!', 'Erro!!!', {
-          preventDuplicates: true,
-        });
-      },
-    });
+  voltar() {
+    this._location.back();
   }
 }

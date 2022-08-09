@@ -1,6 +1,6 @@
 <div class="body-wrapper">
-  <div class="historico">
-    <a href="auditor/hist_pendencias">Histórico</a>
+  <div class="voltar">
+    <a (click)="voltar()">Voltar</a>
   </div>
   <div class="table-wrapper">
     <table class="rwd-table">
@@ -9,36 +9,26 @@
         <th>Classificação</th>
         <th>Matéria Prima</th>
         <th>Qtd. Solicitada</th>
+        <th>Usuário Solicitante</th>
         <th>Data Solicitação</th>
         <th>Status</th>
         <th>Observações</th>
-        <th>Confirmar Recebimento</th>
       </tr>
       <ng-container *ngFor="let pendencia of minhasPendencias$ | async">
         <tr>
           <td data-th="Cód. OP">{{pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
           <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
-          <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+"-"+pendencia.DS_PRODUTO_MP }}</td>
+          <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP }}</td>
           <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
+          <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
           <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
           <td data-th="Status">
             <nb-alert [ngClass]="pendencia.STATUS" class="nv-alert">{{
               pendencia.STATUS }}</nb-alert>
           </td>
           <td data-th="Observações">{{pendencia.Obs }}</td>
-          <td data-th="Confirmar Recebimento" class="recebido-row">
-            <div class="nv-alert confirmar" *ngIf="pendencia.STATUS == 'Enviado'; else aguardando"
-              (click)="confirmarRecebimento(pendencia)">
-              <a>Marcar como Recebido</a>
-            </div>
-            <ng-template #aguardando>
-              <div class="aguardando-msg">
-                <span>Aguardando confirmação de envio.</span>
-              </div>
-            </ng-template>
-          </td>
+          <hr>
         </tr>
-        <hr>
       </ng-container>
     </table>
   </div>

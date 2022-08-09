@@ -5,6 +5,7 @@ import { DescricaoStatusComponent } from './descricao-status/descricao-status.co
 import { PcpComponent } from './pcp-home/pcp.component';
 import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
 import { PCPPendenciasComponent } from './pendencias/pcp-pendencias.component';
+import { HistPendenciaComponent } from './hist-pendencia/hist-pendencia.component';
 
 const routes: Routes = [
   {
@@ -34,6 +35,10 @@ const routes: Routes = [
   {
     path: 'pendencias',
     component: PCPPendenciasComponent,
+  },
+  {
+    path: 'hist_pendencias',
+    component: HistPendenciaComponent,
   }
 ];
 

@@ -31,6 +31,7 @@ import { DescricaoFaccaoComponent } from './descricao-faccao/descricao-faccao.co
 import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
 import { PendenciaComponent } from './pendencia/pendencia.component';
 import { MinhasPendenciasComponent } from './minhas-pendencias/minhas-pendencias.component';
+import { HistPendenciasComponent } from './hist-pendencias/hist-pendencias.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { MinhasPendenciasComponent } from './minhas-pendencias/minhas-pendencias
     DescricaoFaccaoComponent,
     PendenciaComponent,
     MinhasPendenciasComponent,
+    HistPendenciasComponent,
   ],
   imports: [
     RouterModule,

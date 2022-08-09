@@ -1,6 +1,6 @@
 <div class="body-wrapper">
-  <div class="historico">
-    <a href="auditor/hist_pendencias">Histórico</a>
+  <div class="voltar">
+    <a (click)="voltar()">Voltar</a>
   </div>
   <div class="table-wrapper">
     <table class="rwd-table">
@@ -12,7 +12,6 @@
         <th>Data Solicitação</th>
         <th>Status</th>
         <th>Observações</th>
-        <th>Confirmar Recebimento</th>
       </tr>
       <ng-container *ngFor="let pendencia of minhasPendencias$ | async">
         <tr>
@@ -26,19 +25,8 @@
               pendencia.STATUS }}</nb-alert>
           </td>
           <td data-th="Observações">{{pendencia.Obs }}</td>
-          <td data-th="Confirmar Recebimento" class="recebido-row">
-            <div class="nv-alert confirmar" *ngIf="pendencia.STATUS == 'Enviado'; else aguardando"
-              (click)="confirmarRecebimento(pendencia)">
-              <a>Marcar como Recebido</a>
-            </div>
-            <ng-template #aguardando>
-              <div class="aguardando-msg">
-                <span>Aguardando confirmação de envio.</span>
-              </div>
-            </ng-template>
-          </td>
+          <hr>
         </tr>
-        <hr>
       </ng-container>
     </table>
   </div>

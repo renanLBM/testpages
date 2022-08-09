@@ -61,11 +61,12 @@ export class PendenciasService {
       );
   }
 
-  alterarStatus(pendencia: Pendencia) {
+  alterarStatus(pendencia: Pendencia, novoStatus?: string) {
     const headers = this.getToken();
+    pendencia['novoStatus'] = !!novoStatus ? novoStatus : '';
     const body = JSON.stringify(pendencia);
     return this._httpClient
-      .post<any>(`${API}/api/editstatus`, body, {
+      .post<any>(`${API}/api/editpendencia`, body, {
         headers,
       })
       .pipe(

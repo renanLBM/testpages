@@ -25,11 +25,11 @@ import {
   FsIconComponent
 } from './alteracoes/alteracoes.component';
 import { DescricaoStatusComponent } from './descricao-status/descricao-status.component';
+import { HistPendenciaComponent } from './hist-pendencia/hist-pendencia.component';
 import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
 import { PcpComponent } from './pcp-home/pcp.component';
 import { PCPRoutingModule } from './pcp-routing.module';
 import { PCPPendenciasComponent } from './pendencias/pcp-pendencias.component';
-import { SolicitacoesPendenciasComponent } from './solicitacoes-pendencias/solicitacoes-pendencias.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +39,7 @@ import { SolicitacoesPendenciasComponent } from './solicitacoes-pendencias/solic
     PcpDescOpsComponent,
     PCPPendenciasComponent,
     FsIconComponent,
-    SolicitacoesPendenciasComponent,
+    HistPendenciaComponent
   ],
   imports: [
     RouterModule,

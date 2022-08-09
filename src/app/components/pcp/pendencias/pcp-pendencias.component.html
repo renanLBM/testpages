@@ -1,4 +1,7 @@
 <div class="body-wrapper">
+  <div class="historico">
+    <a href="pcp/hist_pendencias">Histórico</a>
+  </div>
   <div class="table-wrapper">
     <table class="rwd-table">
       <tr>
@@ -15,14 +18,15 @@
         <tr>
           <td data-th="Cód. OP">{{pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
           <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
-          <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+"-"+pendencia.DS_PRODUTO_MP }}</td>
+          <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP }}</td>
           <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
           <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
           <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
           <td data-th="Status">
-            <nb-select [placeholder]="pendencia.STATUS" status="warning" filled [(ngModel)]="selectedStatusPendencia" (selectedChange)="alterarStatus($event, pendencia)">
+            <nb-select [placeholder]="pendencia.STATUS" [ngClass]="pendencia.STATUS" filled
+              [(ngModel)]="selectedStatusPendencia" (selectedChange)="alterarStatus($event, pendencia)">
               <nb-option style="font-size: 12px !important;" *ngFor="let sPendencia of statusPendencia"
-                [value]="sPendencia+'_'+pendencia.CD_PENDENCIA" >{{sPendencia}}</nb-option>
+                [value]="sPendencia+'_'+pendencia.CD_PENDENCIA">{{sPendencia}}</nb-option>
             </nb-select>
           </td>
           <td data-th="Observações">{{pendencia.Obs }}</td>
