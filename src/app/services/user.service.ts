@@ -1,22 +1,15 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import jwt_decode from 'jwt-decode';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user';
+import { CryptoService } from './crypto.service';
 import { TokenService } from './token.service';
-import jwt_decode from 'jwt-decode';
-import { Router } from '@angular/router';
 
 const API = environment.API_ENV;
-const KEY = environment.ENCRIPT_KEY;
-
-const header = {
-  'Content-Type': 'application/json',
-  Accept: 'application/json',
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'X-Access-Token': 'application/json',
-};
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +25,8 @@ export class UserService {
   constructor(
     private _httpClient: HttpClient,
     private _router: Router,
-    private _tokenService: TokenService
+    private _tokenService: TokenService,
+    private _cryptoService: CryptoService
   ) {
     if (this._tokenService.hasToken()) {
       this.decodeJWT();
@@ -84,17 +78,25 @@ export class UserService {
 
   setSession(): void {
     this.getUser().subscribe((user) => {
-      sessionStorage.setItem('user', JSON.stringify(user));
+      const msg = this._cryptoService.msgCrypto(JSON.stringify(user));
+      sessionStorage.setItem('user', JSON.stringify(msg));
     });
   }
 
   getSession(): User {
-    const loggedUser = sessionStorage.getItem('user');
-    return JSON.parse(loggedUser!);
+    const loggedUser = sessionStorage.getItem('user') || '';
+    const msg = this._cryptoService.msgDecrypto(loggedUser!);
+    if (!!msg) {
+      return JSON.parse(msg);
+    }
+    return {
+      nivel: 0,
+      nome: '',
+    };
   }
 
   isLogged(): boolean {
-    return !!this.getSession();
+    return !!this.getSession().nome;
   }
 
   getLogged(): Observable<boolean> {

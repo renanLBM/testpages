@@ -17,11 +17,8 @@ export class AppUpdateService {
   }
 
   showAppUpdateAlert() {
-    const header = 'Atualização v0.3.0';
-    const message = "\
-              ➤ Adicionado o componente 'Pendências' no módulo Auditor;\n\
-              ➤ O novo componente pode ser encontrado no menu flutuante na descrição da OP;\
-          ";
+    const header = 'Atualização v0.3.01';
+    const message = "Atualização do módulo de pendências.";
 
 
     this.dialogService.open(DialogDefaultBodyComponent, {

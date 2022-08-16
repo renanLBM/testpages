@@ -1,151 +1,198 @@
-<div class="body-wrapper">
-  <div class="bt-voltar-wrapper">
-    <button nbButton outline status="primary" size="small" class="bt-voltar" (click)="voltar()">
-      Voltar
-    </button>
-  </div>
-
-  <!-- placeholder while loading -->
-  <div class="loading" *ngIf="loading; else mptemplate">
-    <div class="toolbar-wrapper loading">
-      <div class="titulo">
-        <h3>Carregando...</h3>
+<nb-layout>
+  <nb-layout-column>
+    <div class="body-wrapper">
+      <div class="bt-voltar-wrapper">
+        <button nbButton outline status="primary" size="small" class="bt-voltar" (click)="voltar()">
+          Voltar
+        </button>
       </div>
-      <div class="toolbar-info">
-        <div class="toolbar-value">
-          <div>
-            Referência:
-          </div>
-          <div class="h6">
-            0
-          </div>
-        </div>
-        <div class="toolbar-value">
-          <div>
-            Ciclo-OP:
-          </div>
-          <div class="h6">
-            0
-          </div>
-        </div>
-        <div class="toolbar-value">
-          <div>
-            Qtd. Peças:
-          </div>
-          <div class="h6">
-            0
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card-wrapper loading">
-      <ng-container>
-        <nb-card>
-          <nb-card-header>
-            <h4>Grupo: ...</h4>
-          </nb-card-header>
-          <nb-card-body>
-            <table class="rwd-table loading">
-              <tr>
-                <th>Cód. Produto</th>
-                <th>Produto</th>
-                <th>Qnt. Unitádia</th>
-                <th>Solicitação</th>
-              </tr>
-              <tr>
-                <td data-th="Cód. Produto">0</td>
-                <td data-th="Produto">...</td>
-                <td data-th="Qnt. Unitádia">0</td>
-                <td data-th="Solicitação">
-                  <input nbInput status="warning" type="number" min="0" placeholder="0">
-                </td>
-                <hr>
-              </tr>
-            </table>
-          </nb-card-body>
-        </nb-card>
-      </ng-container>
-      <h4><b>Observações:</b></h4>
-      <textarea nbInput fullWidth status="warning" type="text" rows="4" class="txt-area" id="observacoes"></textarea>
-      <button [nbSpinner]="loading" nbSpinnerStatus="info" nbButton shape="round" status="success" class="bt-send"
-        (click)="enviar()" type="submit" id="'bt-send">Enviar</button>
-      <button [nbSpinner]="loading" nbSpinnerStatus="info" nbButton shape="round" status="warning" class="bt-clear"
-        (click)="limparForm()" type="submit" id="'bt-clear">Limpar</button>
-    </div>
-  </div>
 
-
-  <!-- toolbar -->
-  <ng-template #mptemplate>
-    <div class="toolbar-wrapper">
-      <div class="titulo">
-        <h3>{{ titulo }}</h3>
-      </div>
-      <div class="toolbar-info">
-        <div class="toolbar-value">
-          <div>
-            Referência:
+      <!-- placeholder while loading -->
+      <div class="loading" *ngIf="loading | async; else mptemplate">
+        <div class="toolbar-wrapper loading">
+          <div class="titulo">
+            <h3>Carregando...</h3>
           </div>
-          <div class="h6">
-            {{ ref }}
+          <div class="toolbar-info">
+            <div class="toolbar-value">
+              <div>
+                Referência:
+              </div>
+              <div class="h6">
+                0
+              </div>
+            </div>
+            <div class="toolbar-value">
+              <div>
+                Ciclo-OP:
+              </div>
+              <div class="h6">
+                0
+              </div>
+            </div>
+            <div class="toolbar-value">
+              <div>
+                Qtd. Peças:
+              </div>
+              <div class="h6">
+                0
+              </div>
+            </div>
           </div>
         </div>
-        <div class="toolbar-value">
-          <div>
-            Ciclo-OP:
-          </div>
-          <div class="h6">
-            {{ cicloOP }}
-          </div>
-        </div>
-        <div class="toolbar-value">
-          <div>
-            Qtd. Peças:
-          </div>
-          <div class="h6">
-            {{ qnt_op }}
-          </div>
+        <div class="card-wrapper loading">
+          <ng-container>
+            <nb-card>
+              <nb-card-header>
+                <h4>Grupo: ...</h4>
+              </nb-card-header>
+              <nb-card-body>
+                <table class="rwd-table loading">
+                  <tr>
+                    <th>Cód. Produto</th>
+                    <th>Produto</th>
+                    <th>Tamanho</th>
+                    <th>Solicitação</th>
+                  </tr>
+                  <tr>
+                    <td data-th="Cód. Produto">0</td>
+                    <td data-th="Produto">...</td>
+                    <td data-th="Tamanho">...</td>
+                    <td data-th="Solicitação">
+                      <input nbInput status="warning" class="solicitado-input" type="number" min="0" placeholder="0">
+                    </td>
+                    <hr>
+                  </tr>
+                </table>
+              </nb-card-body>
+            </nb-card>
+          </ng-container>
+          <h4><b>Observações:</b></h4>
+          <textarea nbInput fullWidth status="warning" type="text" rows="4" class="txt-area"
+            id="observacoes"></textarea>
+          <button [nbSpinner]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="success"
+            class="bt-send" (click)="enviar()" type="submit" id="'bt-send">Enviar</button>
+          <button [nbSpinner]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="warning"
+            class="bt-clear" (click)="limparForm()" type="submit" id="'bt-clear">Limpar</button>
         </div>
       </div>
-    </div>
 
 
-    <!-- placeholder while loading -->
-    <div class="card-wrapper">
-      <ng-container *ngFor="let mp of materiasPrimasList$ | async">
-        <nb-card>
-          <nb-card-header>
-            <h4>Grupo: {{mp.DS_CLASSIFICACAO}}</h4>
-          </nb-card-header>
-          <nb-card-body>
-            <table class="rwd-table">
-              <tr>
-                <th>Cód. Produto</th>
-                <th>Produto</th>
-                <th>Qnt. Unitádia</th>
-                <th>Solicitação</th>
-              </tr>
-              <ng-container *ngFor="let item of mp.mp_list; let i = index">
+      <!-- toolbar -->
+      <ng-template #mptemplate>
+        <div class="toolbar-wrapper">
+          <div class="titulo">
+            <h3>{{ titulo }}</h3>
+          </div>
+          <div class="toolbar-info">
+            <div class="toolbar-value">
+              <div>
+                Referência:
+              </div>
+              <div class="h6">
+                {{ ref }}
+              </div>
+            </div>
+            <div class="toolbar-value">
+              <div>
+                Ciclo-OP:
+              </div>
+              <div class="h6">
+                {{ cicloOP }}
+              </div>
+            </div>
+            <div class="toolbar-value">
+              <div>
+                Qtd. Peças:
+              </div>
+              <div class="h6">
+                {{ qntOp }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-wrapper">
+          <!-- MATÉRIAS PRIMAS -->
+          <ng-container *ngFor="let mp of materiasPrimasList$ | async">
+            <nb-card>
+              <nb-card-header>
+                <h4>{{mp.DS_CLASSIFICACAO}}</h4>
+              </nb-card-header>
+              <nb-card-body>
+                <table class="rwd-table">
+                  <tr>
+                    <th>Cód. Produto</th>
+                    <th>Produto</th>
+                    <th>Tamanho da peça</th>
+                    <th>Solicitação</th>
+                  </tr>
+                  <ng-container *ngFor="let item of mp.mp_list; let i = index">
+                    <tr>
+                      <td data-th="Cód. Produto">{{ item.CD_PRODUTO_MP }}</td>
+                      <td data-th="Produto">{{ item.DS_PRODUTO_MP }}</td>
+                      <td data-th="Tamanho da peça">
+                        <nb-select placeholder="P/M/G" status="warning" [id]="item.CD_PRODUTO_MP+'_tamanho'">
+                          <nb-option [value]="idx" *ngFor="let t of item.DS_TAMANHO; let idx = index">{{ t }}
+                          </nb-option>
+                        </nb-select>
+                      </td>
+                      <td data-th="Solicitação" [id]="i">
+                        <input nbInput status="warning" class="solicitado-input" type="number"
+                          [id]="item.CD_PRODUTO_MP+'-'+item.DS_PRODUTO_MP" min="0" placeholder="0">
+                      </td>
+                      <hr>
+                    </tr>
+                  </ng-container>
+                </table>
+              </nb-card-body>
+            </nb-card>
+          </ng-container>
+
+          <!-- CORTE -->
+          <nb-card>
+            <nb-card-header>
+              <h4>CORTE</h4>
+            </nb-card-header>
+            <nb-card-body>
+              <table class="rwd-table">
                 <tr>
-                  <td data-th="Cód. Produto">{{ item.CD_PRODUTO_MP }}</td>
-                  <td data-th="Produto">{{ item.DS_PRODUTO_MP }}</td>
-                  <td data-th="Qnt. Unitádia">{{ item.QT_CONSUMOUNIT }}</td>
-                  <td data-th="Solicitação" [id]="i"><input nbInput status="warning" type="number"
-                      [id]="item.CD_PRODUTO_MP+'-'+item.DS_PRODUTO_MP+'-'+item.QT_CONSUMOUNIT" min="0" placeholder="0">
+                  <th>Cód. Produto</th>
+                  <th>Produto</th>
+                  <th>Tamanho da peça</th>
+                  <th>Solicitação</th>
+                </tr>
+                <tr>
+                  <td data-th="Cód. Produto">001</td>
+                    <td data-th="Produto">
+                      <input nbInput status="warning" type="text" class="corte-input" id="corte"
+                        placeholder="Parte do corte desejado">
+                    </td>
+                  <td data-th="Tamanho da peça">
+                    <nb-select placeholder="P/M/G" status="warning" id="1_tamanho">
+                      <nb-option [value]="idx" *ngFor="let t of tamanhoList; let idx = index">{{ t }}
+                      </nb-option>
+                    </nb-select>
+                  </td>
+                  <td data-th="Solicitação" id="corte_row">
+                    <input nbInput status="warning" class="solicitado-input" type="number"
+                      id="1-corte" min="0" placeholder="0">
                   </td>
                   <hr>
                 </tr>
-              </ng-container>
-            </table>
-          </nb-card-body>
-        </nb-card>
-      </ng-container>
-      <h4><b>Observações:</b></h4>
-      <textarea nbInput fullWidth status="warning" type="text" rows="4" class="txt-area" id="observacoes"></textarea>
-      <button [nbSpinner]="loading" nbSpinnerStatus="info" nbButton shape="round" status="success" class="bt-send"
-        (click)="enviar()" type="submit" id="'bt-send">Enviar</button>
-      <button [nbSpinner]="loading" nbSpinnerStatus="info" nbButton shape="round" status="warning" class="bt-clear"
-        (click)="limparForm()" type="submit" id="'bt-clear">Limpar</button>
+              </table>
+            </nb-card-body>
+          </nb-card>
+
+          <h4><b>Observações:</b></h4>
+          <textarea nbInput fullWidth status="warning" type="text" rows="4" class="txt-area"
+            id="observacoes" [(ngModel)]="obsValue"></textarea>
+          <button [nbSpinner]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="success"
+            class="bt-send" (click)="enviar()" type="submit" id="'bt-send">Enviar</button>
+          <button [nbSpinner]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="warning"
+            class="bt-clear" (click)="limparForm()" type="submit" id="'bt-clear">Limpar</button>
+        </div>
+      </ng-template>
     </div>
-  </ng-template>
-</div>
+  </nb-layout-column>
+</nb-layout>

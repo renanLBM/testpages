@@ -1,6 +1,6 @@
 @import "../../../../themes.scss";
 
-$breakpoint-alpha: 480px;
+$breakpoint-alpha: 560px;
 
 .loading {
   background-color: nb-theme(background-basic-color-2) !important;
@@ -29,14 +29,6 @@ $breakpoint-alpha: 480px;
   h3 {
     font-weight: 500;
   }
-}
-
-@media (min-width: $breakpoint-alpha) {
-  .titulo {
-    min-width: 40em;
-  }
-
-  ;
 }
 
 nb-layout-column {
@@ -109,6 +101,12 @@ nb-card-body {
   margin-bottom: 4rem;
 }
 
+@media (min-width: $breakpoint-alpha) {
+  // .titulo {
+  //   min-width: 40em;
+  // }
+}
+
 // Table
 @import "~compass-mixins/lib/compass/css3";
 
@@ -153,7 +151,8 @@ nb-card-body {
       }
     }
 
-    input {
+    .solicitado-input,
+    .tamanho-input {
       max-width: 3.75rem;
     }
   }
@@ -211,8 +210,13 @@ h1 {
     @media (min-width: $breakpoint-alpha) {
       padding: 1em !important;
 
-      input {
+      .solicitado-input,
+      .tamanho-input {
         max-width: 4.75rem;
+      }
+
+      .corte-input {
+        max-width: 20em;
       }
     }
   }

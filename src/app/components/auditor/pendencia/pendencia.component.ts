@@ -1,10 +1,14 @@
 import { Location } from '@angular/common';
-import { Component, OnInit, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
+import {
+  AfterContentInit,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NbGlobalPhysicalPosition, NbToastrService } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
 import { MateriaPrimaList, MateriasPrimas } from 'src/app/models/materiaPrima';
-import { OPs } from 'src/app/models/ops';
 import { Pendencias } from 'src/app/models/pendencia';
 import { OpsService } from 'src/app/services/ops.service';
 import { PendenciasService } from 'src/app/services/pendencias.service';
@@ -13,7 +17,6 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
 
 interface MPList {
   id?: string;
-  cod?: string;
   qnt?: number;
 }
 
@@ -22,26 +25,31 @@ interface MPList {
   templateUrl: './pendencia.component.html',
   styleUrls: ['./pendencia.component.scss'],
 })
-export class PendenciaComponent implements OnInit, AfterViewChecked {
+export class PendenciaComponent implements OnInit, AfterContentInit {
   positions = NbGlobalPhysicalPosition;
+  regSanitizer = /<(?:[^>=]|='[^']*'|=\"[^\"]*\"|=[^'\"][^\\s>]*)*>|(%3c)|%3e/g;
 
-  loading = true;
+  loading = new BehaviorSubject<boolean>(true);
   loadingError = false;
 
   materiasPrimasList: MateriasPrimas = [];
   materiasPrimasList$: BehaviorSubject<MateriasPrimas> =
     new BehaviorSubject<MateriasPrimas>([]);
 
+  obsValue = '';
+  tamanhoList: string[] = [];
   solicitacao: Pendencias = [];
   inputList: MPList[] = [];
   materiasPrimas: MateriaPrimaList[] = [];
 
   loggedUser = '';
-  cod_op = '0';
-  ref = '';
-  cicloOP = '';
   titulo = 'Pendências';
-  qnt_op = 0;
+
+  cdLocal = '';
+  codOp = '0';
+  cicloOP = '';
+  ref = '';
+  qntOp = 0;
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -61,64 +69,78 @@ export class PendenciaComponent implements OnInit, AfterViewChecked {
       this.loggedUser = user.nome;
     });
 
-    this.cod_op = this._route.snapshot.paramMap.get('cod')!;
-    this.ref = this.cod_op.split('-')[2];
-    this.cicloOP = this.cod_op.split('-')[0] + '-' + this.cod_op.split('-')[1];
+    this.codOp = this._route.snapshot.paramMap.get('cod')!;
+    this.ref = this.codOp.split('-')[2];
+    this.cicloOP = this.codOp.split('-')[0] + '-' + this.codOp.split('-')[1];
+    this.cdLocal = this.codOp.split('-')[3];
   }
 
-  ngAfterViewChecked(): void {
-    let cd_local = this.cod_op.split('-')[3];
+  ngAfterContentInit(): void {
+    let opsData = this._opService
+      .getSessionData()
+      .filter((_) => _.cod == this.cicloOP + '-' + this.ref)[0];
 
-    this._opService
-      .getOpById(cd_local, this.cicloOP + '-' + this.ref)
-      .subscribe({
-        next: (ops: OPs) => {
-          this.titulo = ops[0].DS_GRUPO;
-          this.qnt_op = ops[0].QT_OP;
-        },
-        error: (err) => console.log(err),
-      });
+    this.titulo = opsData.DS_GRUPO;
+    this.qntOp = opsData.QT_OP;
 
-    this._pendenciaService.listMateriaPrima(this.cod_op).subscribe({
+    this._pendenciaService.listMateriaPrima(this.codOp).subscribe({
       next: (x) => {
+        x.map((_) => {
+          _.mp_list.forEach((y) => {
+            y.DS_TAMANHO = y.DS_TAMANHO?.toString().split(', ');
+          });
+        });
+        x.filter((_) => {
+          if (_.DS_CLASSIFICACAO == 'EMBALAGEM') {
+            this.tamanhoList = _.mp_list[0].DS_TAMANHO!;
+          }
+        });
         this.materiasPrimas = x.flatMap((m) => m.mp_list);
+
         this.materiasPrimasList = x;
         this.materiasPrimasList$.next(this.materiasPrimasList);
-        this.loading = false;
+        this.loading.next(false);
         this.cd.detectChanges();
       },
     });
   }
 
   enviar() {
-    this.loading = true;
-    // pegar valor inserido em observações
-    let obs = (document.getElementById('observacoes') as HTMLInputElement)
-      .value;
+    this.loading.next(true);
+
+    this.obsValue = this.obsValue.replace(this.regSanitizer, '');
 
     // passar por todos os inputs e pegar valor
     this.materiasPrimas.forEach((materiaPrima) => {
       let cod =
         materiaPrima.CD_PRODUTO_MP.toString() +
         '-' +
-        materiaPrima.DS_PRODUTO_MP +
-        '-' +
-        materiaPrima.QT_CONSUMOUNIT;
-      let inputSelected = document.getElementById(cod) as HTMLInputElement;
+        materiaPrima.DS_PRODUTO_MP;
+      let inputSelecionado = document.getElementById(cod) as HTMLInputElement;
+      let inputSelecionadoValor = parseInt(inputSelecionado.value);
 
-      let inputValue = parseInt(inputSelected.value);
-
-      if (!!inputValue) {
+      if (!!inputSelecionadoValor && cod != '1-corte') {
         this.inputList.push({
           id: cod,
-          cod: materiaPrima.CD_PRODUTO_MP.toString(),
-          qnt: inputValue,
+          qnt: inputSelecionadoValor,
         });
       }
     });
 
-    if (!this.inputList.length) {
-      this.loading = false;
+    let quantidadeCorte = document.getElementById(
+      '1-corte'
+    ) as HTMLInputElement;
+
+    // se não teve nenhuma inserção de quantidade retorna erro
+    if (!this.inputList.length && !parseInt(quantidadeCorte.value)) {
+      this.toastrService.warning(
+        'Nenhum campo de matéria prima preenchido!',
+        'Atenção!!!',
+        {
+          preventDuplicates: true,
+        }
+      );
+      this.loading.next(false);
       return;
     }
 
@@ -127,39 +149,93 @@ export class PendenciaComponent implements OnInit, AfterViewChecked {
 
     // criar objeto que será passado para o back
     this.materiasPrimasList.forEach((produto) => {
-      let tmpCiclo = produto.NR_CICLO;
-      let tmpOP = produto.NR_OP;
-      let tmpRef = produto.CD_REFERENCIA;
       let tmpClas = produto.DS_CLASSIFICACAO;
 
       produto.mp_list.forEach((materiaPrima) => {
         let tmpCD_MP = materiaPrima.CD_PRODUTO_MP.toString();
-        let cod =
-          tmpCD_MP +
-          '-' +
-          materiaPrima.DS_PRODUTO_MP +
-          '-' +
-          materiaPrima.QT_CONSUMOUNIT;
-        let qnt_solicitado: number =
+        let cod = tmpCD_MP + '-' + materiaPrima.DS_PRODUTO_MP;
+
+        let tamanhoSelecionadoInput = (
+          document.getElementById(tmpCD_MP + '_tamanho') as HTMLSelectElement
+        ).children[0].children[0];
+        let tamanhoSelecionado = '';
+        if (tamanhoSelecionadoInput.innerHTML.substring(0, 5) != 'P/M/G') {
+          tamanhoSelecionado = tamanhoSelecionadoInput.innerHTML.substring(
+            0,
+            2
+          );
+        }
+
+        let qntSelecionado: number =
           this.inputList.find((_) => _.id == cod)?.qnt || 0;
+
         if (codMPList.includes(cod)) {
           this.solicitacao.push({
-            NR_CICLO: tmpCiclo,
-            NR_OP: tmpOP,
-            CD_REFERENCIA: tmpRef,
+            CD_LOCAL: parseInt(this.cdLocal),
+            NR_CICLO: parseInt(this.codOp.split('-')[0]),
+            NR_OP: parseInt(this.codOp.split('-')[1]),
+            CD_REFERENCIA: parseInt(this.ref),
             DS_CLASSIFICACAO: tmpClas,
             CD_PRODUTO_MP: parseInt(tmpCD_MP),
             DS_PRODUTO_MP: materiaPrima.DS_PRODUTO_MP,
-            QT_CONSUMOUNIT: materiaPrima.QT_CONSUMOUNIT,
-            QT_SOLICITADO: qnt_solicitado,
+            TAMANHO: tamanhoSelecionado,
+            QT_SOLICITADO: qntSelecionado,
             USUARIO: this.loggedUser,
             DT_SOLICITACAO: new Date().toLocaleString('pt-Br'),
             STATUS: 'Em análise',
-            Obs: obs,
+            Obs: this.obsValue,
           });
         }
       });
     });
+
+    // corte
+    let descricaoCorte = (document.getElementById('corte') as HTMLInputElement)
+      .value;
+    descricaoCorte = descricaoCorte.replace(this.regSanitizer, '');
+    let corteInput = document.getElementById('1_tamanho') as HTMLSelectElement;
+    let tamanhoCorte = '';
+    if (corteInput.innerHTML.substring(0, 5) != 'P/M/G') {
+      tamanhoCorte =
+        corteInput.children[0].children[0].innerHTML.split('<!--')[0];
+    }
+
+    tamanhoCorte = !!parseInt(tamanhoCorte)
+      ? tamanhoCorte.substring(0, -1)
+      : tamanhoCorte;
+
+    let quantidadeCorteValor = parseInt(quantidadeCorte.value);
+
+    if (!!quantidadeCorteValor) {
+      if (!descricaoCorte && !tamanhoCorte) {
+        this.toastrService.warning(
+          'Preencha todos os campos do CORTE para enviar!',
+          'Atenção!!!',
+          {
+            preventDuplicates: true,
+          }
+        );
+        this.loading.next(false);
+        return;
+      } else {
+        // necessário pois pode ter somente solicitação de aviamento
+        this.solicitacao.push({
+          CD_LOCAL: parseInt(this.cdLocal),
+          NR_CICLO: parseInt(this.codOp.split('-')[0]),
+          NR_OP: parseInt(this.codOp.split('-')[1]),
+          CD_REFERENCIA: parseInt(this.ref),
+          DS_CLASSIFICACAO: 'CORTE',
+          CD_PRODUTO_MP: 1,
+          DS_PRODUTO_MP: descricaoCorte,
+          TAMANHO: tamanhoCorte,
+          QT_SOLICITADO: quantidadeCorteValor,
+          USUARIO: this.loggedUser,
+          DT_SOLICITACAO: new Date().toLocaleString('pt-Br'),
+          STATUS: 'Em análise',
+          Obs: this.obsValue,
+        });
+      }
+    }
 
     if (this.solicitacao.length > 0) {
       this._pendenciaService.setPendencia(this.solicitacao).subscribe({
@@ -171,7 +247,7 @@ export class PendenciaComponent implements OnInit, AfterViewChecked {
               preventDuplicates: true,
             }
           );
-          this.loading = false;
+          this.loading.next(false);
         },
         error: (err) => {
           console.log(err);
@@ -182,7 +258,7 @@ export class PendenciaComponent implements OnInit, AfterViewChecked {
               preventDuplicates: true,
             }
           );
-          this.loading = false;
+          this.loading.next(false);
         },
       });
     }
@@ -190,18 +266,18 @@ export class PendenciaComponent implements OnInit, AfterViewChecked {
   }
 
   limparForm(send?: boolean) {
-    this.loading = true;
+    this.loading.next(true);
+    this.obsValue = '';
     // passar por todos os inputs e pegar valor
     this.materiasPrimas.forEach((materiaPrima) => {
       let cod =
         materiaPrima.CD_PRODUTO_MP.toString() +
         '-' +
-        materiaPrima.DS_PRODUTO_MP +
-        '-' +
-        materiaPrima.QT_CONSUMOUNIT;
+        materiaPrima.DS_PRODUTO_MP;
       (document.getElementById(cod) as HTMLInputElement).value = '';
     });
 
+    (document.getElementById('corte') as HTMLInputElement).value = '';
     (document.getElementById('observacoes') as HTMLInputElement).value = '';
 
     if (!send) {
@@ -212,7 +288,8 @@ export class PendenciaComponent implements OnInit, AfterViewChecked {
     this.inputList = [];
     this.solicitacao = [];
 
-    setTimeout(() => (this.loading = false), 300);
+    setTimeout(() => this.loading.next(false), 300);
+    this.cd.detectChanges();
   }
 
   voltar() {
