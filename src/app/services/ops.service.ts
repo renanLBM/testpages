@@ -131,7 +131,10 @@ export class OpsService {
 
   getSessionData(): OPs {
     const dataSaved = sessionStorage.getItem('data');
-    const msg = this._cryptoService.msgDecrypto(dataSaved!);
+    const msg = !dataSaved ? null : this._cryptoService.msgDecrypto(dataSaved!);
+    if(!msg) {
+      return [];
+    }
     return JSON.parse(msg);
   }
 

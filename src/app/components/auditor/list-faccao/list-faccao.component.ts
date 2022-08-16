@@ -66,20 +66,20 @@ export class ListFaccaoComponent implements OnInit {
 
     const dataFromSession = this._opsService.getSessionData();
 
-    if(!!dataFromSession){
+    if (!!dataFromSession.length) {
       this.AllOpsList = dataFromSession;
-        this.setfaccaolist(this.AllOpsList);
+      this.setfaccaolist(this.AllOpsList);
 
-        this.faccaoList.forEach((x) => {
-          this.menuColecao.push(x.ciclo + '-' + x.colecao!);
-          this.menuColecao = [...new Set(this.menuColecao)];
-        });
+      this.faccaoList.forEach((x) => {
+        this.menuColecao.push(x.ciclo + '-' + x.colecao!);
+        this.menuColecao = [...new Set(this.menuColecao)];
+      });
 
-        this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
+      this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
 
-        this.faccaoList$.next(this.faccaoList);
-        this._setTitle.setTitle(titulo);
-    }else{
+      this.faccaoList$.next(this.faccaoList);
+      this._setTitle.setTitle(titulo);
+    } else {
       this._opsService.getAllOPs().subscribe({
         next: (list) => {
           this.AllOpsList = list;
@@ -98,7 +98,6 @@ export class ListFaccaoComponent implements OnInit {
         error: (err: Error) => console.error(err),
       });
     }
-
   }
 
   setfaccaolist(listaFaccoes: OPs) {

@@ -17,8 +17,8 @@ export class AppUpdateService {
   }
 
   showAppUpdateAlert() {
-    const header = 'Atualização v0.3.01';
-    const message = "Atualização do módulo de pendências.";
+    const header = 'Atualização';
+    const message = "Atualização disponível.";
 
 
     this.dialogService.open(DialogDefaultBodyComponent, {
