@@ -70,6 +70,7 @@ export class MinhasPendenciasComponent implements OnInit {
                 });
               }
             });
+            this.isEmptyList.next(!this.minhasPendenciasLocal.length);
             this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
           },
           error: (err) => {
@@ -92,6 +93,8 @@ export class MinhasPendenciasComponent implements OnInit {
     this.isEmptyList.next(true);
     this.loadingSend.next(false);
     this.loading.next(true);
+    pendencia.MODIFICADO_POR = this._userService.getSession().nome;
+    pendencia.DT_MODIFICACAO = new Date(Date.now()).toLocaleString('pt-Br');
     this._pendenciaService.confirmarRecebimento(pendencia).subscribe({
       next: (ret) => {
         if (ret == 1) {
@@ -103,9 +106,11 @@ export class MinhasPendenciasComponent implements OnInit {
               pendenciaRemoved.CD_PENDENCIA == pendencia.CD_PENDENCIA;
             }
           );
+          console.log(this.minhasPendenciasLocal);
           this.minhasPendenciasLocal.splice(idxRemoved, 1);
           this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
-          this.isEmptyList.next(false);
+          console.log(this.minhasPendenciasLocal);
+          this.isEmptyList.next(!!this.minhasPendenciasLocal.length);
           this.loadingSend.next(true);
           this.loading.next(false);
         }

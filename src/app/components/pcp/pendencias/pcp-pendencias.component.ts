@@ -23,8 +23,7 @@ export class PCPPendenciasComponent implements OnInit {
   selectedStatusPendencia: string = '';
 
   loading = new BehaviorSubject<boolean>(true);
-  loadingError = false;
-  isEmptyList = false;
+  loadingAtualization = new BehaviorSubject<boolean>(true);
 
   minhasPendencias: Pendencias = [];
   minhasPendenciasLocal: PendenciaLocal[] = [];
@@ -89,18 +88,22 @@ export class PCPPendenciasComponent implements OnInit {
 
         this._setTituloService.setTitle('Pendências');
         this.loading.next(false);
+        this.loadingAtualization.next(false);
       },
       error: (err) => {
-        this.isEmptyList = true;
+        this.loadingAtualization.next(false);
         this.loading.next(false);
       },
     });
   }
 
   alterarStatus(event: Event, pendencia: Pendencia): void {
+    pendencia.MODIFICADO_POR = this._userService.getSession().nome;
+    pendencia.DT_MODIFICACAO = new Date(Date.now()).toLocaleString('pt-Br');
+    this.loadingAtualization.next(true);
     const novoStatus = (event.target as HTMLSelectElement).value.split('_')[0];
     (event.target as HTMLSelectElement).style.setProperty('background-color', 'yellow');
-
+    console.log(pendencia);
     this._pendenciaService.alterarStatus(pendencia, novoStatus).subscribe({
       next: (ret) => {
         if (ret == 1) {
@@ -111,12 +114,14 @@ export class PCPPendenciasComponent implements OnInit {
               preventDuplicates: true,
             }
           );
+          this.loadingAtualization.next(false);
         }
       },
       error: (err) => {
         this.toastrService.danger('Erro ao enviar a solicitação!', 'Erro!!!', {
           preventDuplicates: true,
         });
+        this.loadingAtualization.next(false);
       },
     });
   }

@@ -10,7 +10,7 @@
       <ng-container *ngIf="loadingSend | async">
         <div class="card-wrapper">
           <ng-container *ngFor="let mp of minhasPendenciasLocal$ | async">
-            <nb-card>
+            <nb-card [nbSpinner]="!(loadingSend | async)!">
               <nb-card-header>
                 <h4>{{mp.local}}</h4>
               </nb-card-header>

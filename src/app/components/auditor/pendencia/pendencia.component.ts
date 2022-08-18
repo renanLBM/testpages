@@ -83,17 +83,23 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
     // se erro ao buscar dados no localstorage
     if (!opsData) {
-      this.toastrService.warning('Dados desincronizados!', 'Atenção!', {
-        preventDuplicates: true,
-      });
-      setTimeout(() => {
-        this.loading.next(false);
-        this._router.navigate(['/auditor']);
-      }, 1000);
+      this._opService
+        .getOpById(this.cdLocal, this.cicloOP + '-' + this.ref)
+        .subscribe({
+          next: (op) => {
+            opsData = op[0];
+            this.titulo = opsData.DS_GRUPO;
+            this.qntOp = opsData.QT_OP;
+          },
+          error: (err) => {
+            console.log(err);
+          },
+        });
+    }else {
+      this.titulo = opsData.DS_GRUPO;
+      this.qntOp = opsData.QT_OP;
     }
 
-    this.titulo = opsData.DS_GRUPO;
-    this.qntOp = opsData.QT_OP;
 
     this._pendenciaService.listMateriaPrima(this.codOp).subscribe({
       next: (x) => {

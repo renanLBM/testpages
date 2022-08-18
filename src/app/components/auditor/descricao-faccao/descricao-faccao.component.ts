@@ -79,7 +79,6 @@ export class DescricaoFaccaoComponent implements OnInit {
     { title: 'Atraso' },
     { title: 'Adiantamento' },
     { title: 'Apontamento de Produção' },
-    { title: 'Pendências' },
   ];
 
   constructor(
@@ -98,6 +97,15 @@ export class DescricaoFaccaoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // #################--- TEMPORÁRIO ---#################
+
+    let usuarioName = this._userService.getSession().nome;
+    if (['Daliani'].includes(usuarioName)) {
+      this.itemsMenu.push({ title: 'Pendências' });
+    }
+
+    // ####################################################
+
     let userNivel = this._userService.getNivel();
     this.routeId = this._route.snapshot.paramMap.get('id')!;
     this.isDistribuicao = this.routeId == '302';
