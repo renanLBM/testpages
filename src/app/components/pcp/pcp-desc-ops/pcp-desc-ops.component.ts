@@ -93,34 +93,53 @@ export class PcpDescOpsComponent implements OnInit {
         this.origemStatus = this._route.snapshot.paramMap.get('origem')!;
         this._setTitle.setTitle(this.tituloStatus);
 
+        const dataFromSession = this._opsService.getSessionData();
         if (this.tituloStatus == 'Total') {
-          this._opsService.getAllOPs().subscribe({
-            next: (list) => {
-              let opsList = this.filterOPs(list);
-              this.getOPS(opsList);
 
-              this.listOPs$.next(this.faccaoList);
-              this.dtTrigger.next(this.dtOptions);
-            },
-            error: (err: Error) => {
-              console.error(err);
-              this._setTitle.setTitle('Erro');
-            },
-          });
+          if (!!dataFromSession.length) {
+            let opsList = this.filterOPs(dataFromSession);
+            this.getOPS(opsList);
+            this.listOPs$.next(this.faccaoList);
+            this.dtTrigger.next(this.dtOptions);
+          }else {
+            this._opsService.getAllOPs().subscribe({
+              next: (list) => {
+                let opsList = this.filterOPs(list);
+                this.getOPS(opsList);
+
+                this.listOPs$.next(this.faccaoList);
+                this.dtTrigger.next(this.dtOptions);
+              },
+              error: (err: Error) => {
+                console.error(err);
+                this._setTitle.setTitle('Erro');
+              },
+            });
+          }
         } else {
-          this._opsService.getOpByStatus(this.tituloStatus).subscribe({
-            next: (list) => {
-              let opsList = this.filterOPs(list);
-              this.getOPS(opsList);
+          if (!!dataFromSession.length) {
+            let opsList = dataFromSession.filter((ops) => {
+              return ops.Status == this.tituloStatus
+            })
+            opsList = this.filterOPs(opsList);
+            this.getOPS(opsList);
+            this.listOPs$.next(this.faccaoList);
+            this.dtTrigger.next(this.dtOptions);
+          }else {
+            this._opsService.getOpByStatus(this.tituloStatus).subscribe({
+              next: (list) => {
+                let opsList = this.filterOPs(list);
+                this.getOPS(opsList);
 
-              this.listOPs$.next(this.faccaoList);
-              this.dtTrigger.next(this.dtOptions);
-            },
-            error: (err: Error) => {
-              console.error(err);
-              this._setTitle.setTitle('Erro');
-            },
-          });
+                this.listOPs$.next(this.faccaoList);
+                this.dtTrigger.next(this.dtOptions);
+              },
+              error: (err: Error) => {
+                console.error(err);
+                this._setTitle.setTitle('Erro');
+              },
+            });
+          }
         }
       });
     });

@@ -17,7 +17,7 @@ export class MinhasPendenciasComponent implements OnInit {
   ignoredStatus = ['Finalizado', 'Recusado'];
 
   loadingError = false;
-  isEmptyList = false;
+  isEmptyList = new BehaviorSubject<boolean>(true);
 
   loading = new BehaviorSubject<boolean>(true);
   loadingSend = new BehaviorSubject<boolean>(true);
@@ -39,6 +39,7 @@ export class MinhasPendenciasComponent implements OnInit {
 
   ngOnInit(): void {
     this._setTituloService.setTitle('Carregando...');
+    this.isEmptyList.next(false);
 
     let usuario = '';
     this._userService.getUser().subscribe((_) => (usuario = _.nome));
@@ -69,10 +70,10 @@ export class MinhasPendenciasComponent implements OnInit {
                 });
               }
             });
-
             this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
           },
           error: (err) => {
+            this.isEmptyList.next(true);
             console.log(err);
           },
         });
@@ -81,13 +82,14 @@ export class MinhasPendenciasComponent implements OnInit {
         this.loading.next(false);
       },
       error: (err) => {
-        this.isEmptyList = true;
+        this.isEmptyList.next(true);
         this.loading.next(false);
       },
     });
   }
 
   confirmarRecebimento(pendencia: Pendencia): void {
+    this.isEmptyList.next(true);
     this.loadingSend.next(false);
     this.loading.next(true);
     this._pendenciaService.confirmarRecebimento(pendencia).subscribe({
@@ -103,6 +105,7 @@ export class MinhasPendenciasComponent implements OnInit {
           );
           this.minhasPendenciasLocal.splice(idxRemoved, 1);
           this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
+          this.isEmptyList.next(false);
           this.loadingSend.next(true);
           this.loading.next(false);
         }

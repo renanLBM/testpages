@@ -88,7 +88,7 @@
           </ng-container>
 
           <ng-template #error>
-            <tr *ngIf="(minhasPendenciasLocal$ | async)?.length == 0">
+            <tr *ngIf="isEmptyList | async">
               <td class="error-loading" colspan="100%">
                 <h4>Nenhum item encontrado!</h4>
               </td>

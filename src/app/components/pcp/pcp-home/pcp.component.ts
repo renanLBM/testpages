@@ -107,33 +107,44 @@ export class PcpComponent implements OnInit {
 
   ngOnInit(): void {
     this._setTitle.setTitle('PCP');
-    this._opsService.getAllOPs().subscribe({
-      next: (list) => {
-        this.listStatus = list;
 
-        this.listStatus.forEach((x) => {
-          this.tipoListOriginal.push(x.DS_TIPO);
-          this.tipoListOriginal = [...new Set(this.tipoListOriginal)];
+    const dataFromSession = this._opsService.getSessionData();
 
-          this.menuOrigem.push(x.DS_CLASS);
-          this.menuOrigem = [...new Set(this.menuOrigem)];
+    if (!!dataFromSession.length) {
+      this.listStatus = dataFromSession;
+      this.startData(this.listStatus);
+    } else {
+      this._opsService.getAllOPs().subscribe({
+        next: (list) => {
+          this.listStatus = list;
+          this.startData(this.listStatus);
+        },
+        error: (err: Error) => console.error(err),
+      });
+    }
+  }
 
-          this.menuColecao.push(x.NR_CICLO + '-' + x.DS_CICLO);
-          this.menuColecao = [...new Set(this.menuColecao)];
+  startData(ops: OPs) {
+    ops.forEach((x) => {
+      this.tipoListOriginal.push(x.DS_TIPO);
+      this.tipoListOriginal = [...new Set(this.tipoListOriginal)];
 
-          this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
-        });
+      this.menuOrigem.push(x.DS_CLASS);
+      this.menuOrigem = [...new Set(this.menuOrigem)];
 
-        this.summarize();
+      this.menuColecao.push(x.NR_CICLO + '-' + x.DS_CICLO);
+      this.menuColecao = [...new Set(this.menuColecao)];
 
-        // set the filter service to pass to others components
-        this._opsFilteredService.setFilter(this.selectedFilters);
-
-        this.statusTipo$.next(this.statusTipo);
-        this.OpList$.next(this.OpList);
-      },
-      error: (err: Error) => console.error(err),
+      this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
     });
+
+    this.summarize();
+
+    // set the filter service to pass to others components
+    this._opsFilteredService.setFilter(this.selectedFilters);
+
+    this.statusTipo$.next(this.statusTipo);
+    this.OpList$.next(this.OpList);
   }
 
   summarize(filterSelected?: number): void {
@@ -430,7 +441,8 @@ export class PcpComponent implements OnInit {
         let cur = _.Situacao!;
         cur = cur.toString().includes('Parado') ? (cur = 'Parado') : cur;
         situacaoListObjQntPecas[cur] = !!situacaoListObjQntPecas[cur]
-          ? parseInt(_.QT_OP.toString()) + parseInt(situacaoListObjQntPecas[cur])
+          ? parseInt(_.QT_OP.toString()) +
+            parseInt(situacaoListObjQntPecas[cur])
           : _.QT_OP;
       });
 
@@ -461,7 +473,8 @@ export class PcpComponent implements OnInit {
         inspecao: situacaoListObjQntPecas['Em inspeção'] || 0,
         disponivel: situacaoListObjQntPecas['Disponível para coleta'] || 0,
         coletado: situacaoListObjQntPecas['Coletado'] || 0,
-        nao_industrializado: situacaoListObjQntPecas['Não industrializado'] || 0,
+        nao_industrializado:
+          situacaoListObjQntPecas['Não industrializado'] || 0,
       };
     });
   }
