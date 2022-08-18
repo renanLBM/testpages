@@ -121,7 +121,6 @@ export class UserService {
     });
     this.logged.next(false);
     this._tokenService.deleteToken();
-    localStorage.clear();
     sessionStorage.clear();
     this._router.navigate(['login']);
   }

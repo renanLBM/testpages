@@ -2,34 +2,82 @@
   <div class="voltar">
     <a (click)="voltar()">Voltar</a>
   </div>
+
+  <div class="card-wrapper">
+    <ng-container *ngFor="let mp of minhasPendenciasLocal$ | async">
+      <nb-card>
+        <nb-card-header>
+          <h4>{{mp.local}}</h4>
+        </nb-card-header>
+        <nb-card-body>
+          <table class="rwd-table">
+            <tr>
+              <th>Cód. OP</th>
+              <th>Classificação</th>
+              <th>Matéria Prima</th>
+              <th>Qtd. Solicitada</th>
+              <th>Usuário Solicitante</th>
+              <th>Data Solicitação</th>
+              <th>Status</th>
+              <th>Observações</th>
+            </tr>
+            <ng-container *ngFor="let pendencia of mp.pendencias; let i = index">
+              <tr>
+                <td data-th="Cód. OP">{{pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
+                <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
+                <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP }}</td>
+                <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
+                <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
+                <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
+                <td data-th="Status">
+                  <nb-alert [ngClass]="pendencia.STATUS" class="nv-alert">{{
+                    pendencia.STATUS }}</nb-alert>
+                </td>
+                <td data-th="Observações">{{pendencia.Obs }}</td>
+                <hr>
+              </tr>
+            </ng-container>
+          </table>
+        </nb-card-body>
+      </nb-card>
+    </ng-container>
+  </div>
+
   <div class="table-wrapper">
     <table class="rwd-table">
-      <tr>
-        <th>Cód. OP</th>
-        <th>Classificação</th>
-        <th>Matéria Prima</th>
-        <th>Qtd. Solicitada</th>
-        <th>Usuário Solicitante</th>
-        <th>Data Solicitação</th>
-        <th>Status</th>
-        <th>Observações</th>
-      </tr>
-      <ng-container *ngFor="let pendencia of minhasPendencias$ | async">
+      <ng-container *ngIf="loading | async; else error">
         <tr>
-          <td data-th="Cód. OP">{{pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
-          <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
-          <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP }}</td>
-          <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
-          <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
-          <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
-          <td data-th="Status">
-            <nb-alert [ngClass]="pendencia.STATUS" class="nv-alert">{{
-              pendencia.STATUS }}</nb-alert>
-          </td>
-          <td data-th="Observações">{{pendencia.Obs }}</td>
-          <hr>
+          <th>Cód. OP</th>
+          <th>Classificação</th>
+          <th>Matéria Prima</th>
+          <th>Qtd. Solicitada</th>
+          <th>Usuário Solicitante</th>
+          <th>Data Solicitação</th>
+          <th>Status</th>
+          <th>Observações</th>
         </tr>
+        <tr>
+          <td data-th="Cód. OP">...</td>
+          <td data-th="Classificação">...</td>
+          <td data-th="Matéria Prima">...</td>
+          <td data-th="Qtd. Solicitada">...</td>
+          <td data-th="Data Solicitação">...</td>
+          <td data-th="Status">...</td>
+          <td data-th="Observações">...</td>
+          <td data-th="Confirmar Recebimento" class="recebido-row">
+            ...
+          </td>
+        </tr>
+        <hr>
       </ng-container>
+
+      <ng-template #error>
+        <tr *ngIf="minhasPendencias.length == 0">
+          <td class="error-loading" colspan="100%">
+            <h4>Nenhum item encontrado!</h4>
+          </td>
+        </tr>
+      </ng-template>
     </table>
   </div>
 </div>

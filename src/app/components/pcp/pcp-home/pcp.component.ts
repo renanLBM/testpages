@@ -66,6 +66,18 @@ export class PcpComponent implements OnInit {
     nao_industrializado: 0,
   };
 
+  apontamentoListPercent = {
+    nao_informado: 0.0,
+    em_transporte: 0.0,
+    em_fila: 0.0,
+    em_producao: 0.0,
+    parado: 0.0,
+    inspecao: 0.0,
+    disponivel: 0.0,
+    coletado: 0.0,
+    nao_industrializado: 0.0,
+  };
+
   statusTipo: TipoPorStatus[] = [
     {
       status: 'Total',
@@ -412,16 +424,44 @@ export class PcpComponent implements OnInit {
         totalSituacao += situacaoListObj[key];
       });
 
+      // Soma do total de peças por situação
+      let situacaoListObjQntPecas: any | Object = {};
+      apontamentoFiltered.forEach((_) => {
+        let cur = _.Situacao!;
+        cur = cur.toString().includes('Parado') ? (cur = 'Parado') : cur;
+        situacaoListObjQntPecas[cur] = !!situacaoListObjQntPecas[cur]
+          ? parseInt(_.QT_OP.toString()) + parseInt(situacaoListObjQntPecas[cur])
+          : _.QT_OP;
+      });
+
+      let totalPecasPorSituacao = 0;
+      for (const key in situacaoListObjQntPecas) {
+        totalPecasPorSituacao += situacaoListObjQntPecas[key];
+      }
+
+      this.apontamentoListPercent = {
+        nao_informado: (qntOpsList - totalSituacao) / qntOpsList || 0,
+        em_transporte: situacaoListObj['Em transporte'] / qntOpsList || 0,
+        em_fila: situacaoListObj['Em fila'] / qntOpsList || 0,
+        em_producao: situacaoListObj['Em produção'] / qntOpsList || 0,
+        parado: situacaoListObj['Parado'] / qntOpsList || 0,
+        inspecao: situacaoListObj['Em inspeção'] / qntOpsList || 0,
+        disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
+        coletado: situacaoListObj['Coletado'] / qntOpsList || 0,
+        nao_industrializado:
+          situacaoListObj['Não industrializado'] / qntOpsList || 0,
+      };
+
       this.apontamentoList = {
-        nao_informado: qntOpsList - totalSituacao || 0,
-        em_transporte: situacaoListObj['Em transporte'] || 0,
-        em_fila: situacaoListObj['Em fila'] || 0,
-        em_producao: situacaoListObj['Em produção'] || 0,
-        parado: situacaoListObj['Parado'] || 0,
-        inspecao: situacaoListObj['Em inspeção'] || 0,
-        disponivel: situacaoListObj['Disponível para coleta'] || 0,
-        coletado: situacaoListObj['Coletado'] || 0,
-        nao_industrializado: situacaoListObj['Não industrializado'] || 0,
+        nao_informado: totalPecasPorSituacao - totalSituacao || 0,
+        em_transporte: situacaoListObjQntPecas['Em transporte'] || 0,
+        em_fila: situacaoListObjQntPecas['Em fila'] || 0,
+        em_producao: situacaoListObjQntPecas['Em produção'] || 0,
+        parado: situacaoListObjQntPecas['Parado'] || 0,
+        inspecao: situacaoListObjQntPecas['Em inspeção'] || 0,
+        disponivel: situacaoListObjQntPecas['Disponível para coleta'] || 0,
+        coletado: situacaoListObjQntPecas['Coletado'] || 0,
+        nao_industrializado: situacaoListObjQntPecas['Não industrializado'] || 0,
       };
     });
   }

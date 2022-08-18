@@ -77,7 +77,6 @@ nb-layout-column {
   max-width: 700px;
   display: flex;
   justify-content: center;
-  flex-direction: column;
   flex-wrap: wrap;
 }
 
@@ -99,6 +98,12 @@ nb-card-body {
 
 .txt-area {
   margin-bottom: 4rem;
+}
+
+nb-select ::ng-deep {
+  .select-button {
+    min-width: 7em !important;
+  }
 }
 
 @media (min-width: $breakpoint-alpha) {

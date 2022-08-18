@@ -1,7 +1,9 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { PendenciaLocal } from 'src/app/models/localFacao';
 import { Pendencias } from 'src/app/models/pendencia';
+import { OpsService } from 'src/app/services/ops.service';
 import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
@@ -19,19 +21,23 @@ export class HistPendenciaComponent implements OnInit {
   statusPendencia: string[] = [];
   selectedStatusPendencia: string = '';
 
-  loading = true;
+  loading = new BehaviorSubject<boolean>(true);
   loadingError = false;
   isEmptyList = false;
 
   minhasPendencias: Pendencias = [];
+  minhasPendenciasLocal: PendenciaLocal[] = [];
   minhasPendencias$: BehaviorSubject<Pendencias> =
     new BehaviorSubject<Pendencias>([]);
+  minhasPendenciasLocal$: BehaviorSubject<PendenciaLocal[]> =
+    new BehaviorSubject<PendenciaLocal[]>([]);
 
   constructor(
     private _location: Location,
     private _setTituloService: SetTitleServiceService,
     private _userService: UserService,
-    private _pendenciaService: PendenciasService
+    private _pendenciaService: PendenciasService,
+    private _opsService: OpsService
   ) {}
 
   ngOnInit(): void {
@@ -45,13 +51,41 @@ export class HistPendenciaComponent implements OnInit {
         this.minhasPendencias = this.minhasPendencias.filter(
           (pendencia) => !this.ignoredStatus.includes(pendencia.STATUS)
         );
-        this.minhasPendencias$.next(this.minhasPendencias);
+
+        let flatCdLocal = this.minhasPendencias.flatMap((_) => _.CD_LOCAL + '');
+
+        this._opsService.getLocalFaccao().subscribe({
+          next: (local) => {
+            // passar por todos os locais e adicionar na variavel minhasPendenciasLocal os que forem encontrados no flatCdLocal
+            local.forEach((lcod) => {
+              if (flatCdLocal.includes(lcod.CD_LOCAL)) {
+                let tmpPendencia: Pendencias = [];
+                // passar por todas as pendencias e incluir em cada local
+                this.minhasPendencias.forEach((pendencia) => {
+                  if (lcod.CD_LOCAL == pendencia.CD_LOCAL + '') {
+                    tmpPendencia.push(pendencia);
+                  }
+                });
+                this.minhasPendenciasLocal.push({
+                  local: lcod.CD_LOCAL + ' - ' + lcod.DS_LOCAL,
+                  pendencias: tmpPendencia,
+                });
+              }
+            });
+
+            this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
+          },
+          error: (err) => {
+            console.log(err);
+          },
+        });
+
         this._setTituloService.setTitle('Histórico de Pendências');
-        this.loading = false;
+        this.loading.next(false);
       },
       error: (err) => {
         this.isEmptyList = true;
-        this.loading = false;
+        this.loading.next(false);
       },
     });
   }

@@ -39,6 +39,8 @@ export class DescricaoFaccaoComponent implements OnInit {
   idSelectedApontamento: number[] = [];
   apontamentoEnum = ApontamentoList;
   menuApontamento: string[] = [];
+  title = '';
+  isDistribuicao = false;
 
   counter: number = 0;
   defaultImage = '../../../../assets/not-found.png';
@@ -98,15 +100,15 @@ export class DescricaoFaccaoComponent implements OnInit {
   ngOnInit(): void {
     let userNivel = this._userService.getNivel();
     this.routeId = this._route.snapshot.paramMap.get('id')!;
+    this.isDistribuicao = this.routeId == '302';
 
     if (Pages[userNivel] == 'fornecedor') {
       this.itemsMenu = [{ title: 'Apontamento de Produção' }];
     }
 
-    const getDataFromSession = this._opsService.getSessionData();
-
     // pega o filtro setado na página anterior (escolha da facção)
     let filtroColecao: string[] = this._opsFilteredService.getFilter().colecao;
+
     // pegar a semana atual
     let currentdate: Date = new Date();
     let oneJan: Date = new Date(currentdate.getFullYear(), 0, 1);
@@ -122,6 +124,17 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     this._setTitle.setTitle('Carregando...');
     // pega todos os dados da tabela de alterações
+
+    // se tiver dados no cache utiliza
+    const getDataFromSession = this._opsService.getSessionData();
+    if (this.routeId == '302' && !!getDataFromSession.length) {
+      this.listOPs = getDataFromSession.filter((op) => {
+        return op.CD_LOCAL == parseInt(this.routeId);
+      });
+      this.ajusteDosDados(filtroColecao, this.listOPs);
+      return;
+    }
+
     this._auditorService
       .getApontamento(this.routeId)
       .subscribe((apontamentos) => {
@@ -139,7 +152,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         this._auditorService.getMotivos(this.routeId).subscribe((motivo) => {
           this.motivoList = motivo;
 
-          if (!!getDataFromSession) {
+          if (!!getDataFromSession.length) {
             this.listOPs = getDataFromSession.filter((op) => {
               return op.CD_LOCAL == parseInt(this.routeId);
             });
@@ -273,6 +286,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         op: op.NR_OP,
         ref: op.CD_REFERENCIA,
         previsao: prev,
+        entrada: op.DT_ENTRADA,
         Situacao: maiorApontamento.situacao || 'Não informado',
         novaprevisao: maiorMotivo.dt_atraso,
         motivo_atraso: maiorMotivo.ds_atraso,
@@ -334,16 +348,42 @@ export class DescricaoFaccaoComponent implements OnInit {
     // troca semana atual para a mais proxima
     this.semanaSelecionada = this.closestSemana.toString();
 
-    let title = this.descOP[0].local
+    this.title = this.descOP[0].local
       .replace('COSTURA', '')
       .replace('CONSERTO', '')
       .replace('ESTAMPARIA', '')
       .replace('TERCEIROS', '');
-    this._setTitle.setTitle(title);
+    this._setTitle.setTitle(this.title);
+
+    // se distribuição, ordenar por entrada
+    if (this.isDistribuicao) {
+      this.ordenarMenor();
+    }
     this.descOP$.next(this.descOP);
     this.descOPLoad.next(!this.descOP.length);
     // filtra somente a semana atual
     this.filtraSemana(parseInt(this.semanaSelecionada));
+  }
+
+  ordenarMenor(): void {
+    this.descOP.sort((a, b) => {
+      let dateA = new Date(a.entrada! || '0');
+      let dateB = new Date(b.entrada! || '0');
+      let result = dateA > dateB ? 1 : dateB > dateA ? -1 : 0;
+
+      return result;
+    });
+    this.descOP$.next(this.descOP);
+  }
+  ordenarMaior(): void {
+    this.descOP.sort((a, b) => {
+      let dateA = new Date(a.entrada! || '0');
+      let dateB = new Date(b.entrada! || '0');
+      let result = dateA < dateB ? 1 : dateB < dateA ? -1 : 0;
+
+      return result;
+    });
+    this.descOP$.next(this.descOP);
   }
 
   filtraMaiorMotivo(cod: string) {

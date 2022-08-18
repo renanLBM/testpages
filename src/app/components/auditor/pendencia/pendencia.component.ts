@@ -5,7 +5,7 @@ import {
   Component,
   OnInit,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NbGlobalPhysicalPosition, NbToastrService } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
 import { MateriaPrimaList, MateriasPrimas } from 'src/app/models/materiaPrima';
@@ -55,6 +55,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     private cd: ChangeDetectorRef,
     private toastrService: NbToastrService,
     private _route: ActivatedRoute,
+    private _router: Router,
     private _location: Location,
     private _setTitulo: SetTitleServiceService,
     private _userService: UserService,
@@ -79,6 +80,17 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     let opsData = this._opService
       .getSessionData()
       .filter((_) => _.cod == this.cicloOP + '-' + this.ref)[0];
+
+    // se erro ao buscar dados no localstorage
+    if (!opsData) {
+      this.toastrService.warning('Dados desincronizados!', 'Atenção!', {
+        preventDuplicates: true,
+      });
+      setTimeout(() => {
+        this.loading.next(false);
+        this._router.navigate(['/auditor']);
+      }, 1000);
+    }
 
     this.titulo = opsData.DS_GRUPO;
     this.qntOp = opsData.QT_OP;

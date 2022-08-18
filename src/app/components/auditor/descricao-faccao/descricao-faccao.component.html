@@ -13,7 +13,7 @@
         <div class="filter-wrapper">
           <h6 class="filter-title">Filtros</h6>
           <div class="filter-menu-wrapper">
-            <div class="filter-dropdown">
+            <div class="filter-dropdown" *ngIf="!isDistribuicao">
               <nb-select multiple placeholder="Apontamento" [(ngModel)]="idSelectedApontamento" status="primary">
                 <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
                 <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()"
@@ -35,25 +35,34 @@
                 </button>
               </nb-form-field>
             </div>
+            <div class="order-bts" *ngIf="isDistribuicao">
+              <span>Ordenar datas:</span>
+              <div>
+                <button nbButton nbTooltip="ordenar do menor" shape="round" ghost (click)="ordenarMenor()"><nb-icon icon="arrow-up-outline"></nb-icon></button>
+                <button nbButton nbTooltip="ordenar do maior" shape="round" ghost (click)="ordenarMaior()"><nb-icon icon="arrow-down-outline"></nb-icon></button>
+              </div>
+            </div>
           </div>
-        </div>
+          </div>
       </ng-template>
 
       <!-- toolbar -->
       <div class="toolbar-wrapper">
-        <div class="tag-wrapper">
-          <span>Semana selecionada: <b>{{semanaSelecionada}}</b> <span *ngIf="semanaSelecionada != 'Todas'"> (de {{
-              dataIni | date: 'dd/MM/yyyy' }} a {{ dataFim | date: 'dd/MM/yyyy' }})</span></span>
-          <nb-tag-list style="margin: 5px;">
-            <nb-tag status="basic" appearance="outline" text=" Todas " (click)="filtraSemana(-1, true)"></nb-tag>
-            <nb-tag status="danger" appearance="outline" *ngFor="let item of semanaListAtraso" text="Sem. {{item}}"
-              (click)="filtraSemana(item, true)"></nb-tag>
-            <nb-tag *ngIf="semanaAtualNumber == closestSemana" status="primary" appearance="filled"
-              text="Sem. {{semanaAtualNumber}}" (click)="filtraSemana(semanaAtualNumber, true)"></nb-tag>
-            <nb-tag status="success" appearance="outline" *ngFor="let item of semanaListFuturo" text="Sem. {{item}}"
-              (click)="filtraSemana(item, true)"></nb-tag>
-          </nb-tag-list>
-        </div>
+        <ng-container *ngIf="!isDistribuicao">
+          <div class="tag-wrapper">
+            <span>Semana selecionada: <b>{{semanaSelecionada}}</b> <span *ngIf="semanaSelecionada != 'Todas'"> (de {{
+                dataIni | date: 'dd/MM/yyyy' }} a {{ dataFim | date: 'dd/MM/yyyy' }})</span></span>
+            <nb-tag-list style="margin: 5px;">
+              <nb-tag status="basic" appearance="outline" text=" Todas " (click)="filtraSemana(-1, true)"></nb-tag>
+              <nb-tag status="danger" appearance="outline" *ngFor="let item of semanaListAtraso" text="Sem. {{item}}"
+                (click)="filtraSemana(item, true)"></nb-tag>
+              <nb-tag *ngIf="semanaAtualNumber == closestSemana" status="primary" appearance="filled"
+                text="Sem. {{semanaAtualNumber}}" (click)="filtraSemana(semanaAtualNumber, true)"></nb-tag>
+              <nb-tag status="success" appearance="outline" *ngFor="let item of semanaListFuturo" text="Sem. {{item}}"
+                (click)="filtraSemana(item, true)"></nb-tag>
+            </nb-tag-list>
+          </div>
+        </ng-container>
 
         <div class="toolbar-info">
           <div class="toolbar-value">
@@ -89,14 +98,19 @@
                     <div class="titulo">
                       <h4>Ref: {{ item.ref }}</h4>
                     </div>
-                    <div class="bt-edit">
+                    <div class="bt-edit" *ngIf="!isDistribuicao">
                       <nb-icon icon="more-vertical-outline" [nbContextMenu]="itemsMenu" (click)="openMenu(item)"
                         nbContextMenuTag="auditor-list" nbContextMenuTrigger="click">
                       </nb-icon>
                     </div>
                   </div>
                   <div class="c-body">
-                    <p style="font-size: 15px;"><b>Previsão de retorno:</b> {{ item.previsao }}</p>
+                    <p *ngIf="!isDistribuicao; else entrada" style="font-size: 15px;"><b>Previsão de retorno:</b> {{
+                      item.previsao }}</p>
+                    <ng-template #entrada>
+                      <p style="font-size: 15px;"><b>Disponibilizado na distribuição:</b> {{ item.entrada |
+                        date:'dd/MM/yyyy' }}</p>
+                    </ng-template>
                     <div class="nv-prev" *ngIf="item.checked">
                       <p class="nv-prev-text atraso"><b>Nova previsão:</b> {{ item.novaprevisao }}</p>
                       <p *ngIf="item.motivo_atraso == 'Adiantamento'" class="nv-prev-text adiantamento-text">
@@ -109,7 +123,7 @@
                     <p class="desc-text"><b>Descrição:</b> {{ item.descricao }}</p>
                     <p class="desc-text"><b>Coleção:</b> {{ item.drop }}</p>
                     <p class="c-qnt"><b>Peças:</b> {{ item.qnt }}</p>
-                    <div class="nv-prev">
+                    <div class="nv-prev" *ngIf="!isDistribuicao">
                       <nb-alert [ngClass]="item.Situacao!" class="nv-alert">{{
                         item.Situacao }}</nb-alert>
                     </div>
