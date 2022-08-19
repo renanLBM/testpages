@@ -145,6 +145,7 @@ export class DescricaoFaccaoComponent implements OnInit {
                   '/' +
                   op.CD_REFERENCIA.toString() +
                   '-1.jpg',
+                link_ficha_tecnica: '',
                 status: op.Status,
                 status_color: op.Status.toLowerCase().replace(' ', '-'),
                 qnt: op.QT_OP,

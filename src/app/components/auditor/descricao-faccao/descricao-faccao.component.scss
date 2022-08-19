@@ -147,6 +147,45 @@ nb-tag {
   }
 }
 
+.pdf-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 11em;
+  padding: .35em;
+  background-color: nb-theme(background-basic-color-2);
+  border: 1px solid var(--border-basic-color-4);
+  border-radius: 1em;
+  cursor: pointer;
+}
+
+.pdf-wrapper:hover {
+  background-color: nb-theme(background-basic-color-4);
+  border: 1px solid var(--border-basic-color-5);
+
+  .pdf-link {
+    text-transform: uppercase;
+    font-size: .9em;
+  }
+}
+
+.ico-pdf {
+  max-height: 2em;
+  margin-right: .5em;
+}
+
+.pdf-link {
+  text-decoration: none;
+  color: nb-theme(text-basic-color);
+  font-weight: 600;
+}
+
+// .pdf-link:hover {
+//   text-transform: uppercase;
+//   font-size: .9em;
+// }
+
+
 // text-decoration: line-through;
 .c-desc {
   padding: 0 10px 10px;

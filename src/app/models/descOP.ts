@@ -16,6 +16,7 @@ export interface descOP {
   motivo_atraso?: string,
   checked: boolean,
   img?: string,
+  link_ficha_tecnica: string,
   status?: string,
   Situacao?: string,
   status_color?: string,

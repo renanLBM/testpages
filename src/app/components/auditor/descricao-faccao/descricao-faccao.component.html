@@ -38,12 +38,16 @@
             <div class="order-bts" *ngIf="isDistribuicao">
               <span>Ordenar datas:</span>
               <div>
-                <button nbButton nbTooltip="ordenar do menor" shape="round" ghost (click)="ordenarMenor()"><nb-icon icon="arrow-up-outline"></nb-icon></button>
-                <button nbButton nbTooltip="ordenar do maior" shape="round" ghost (click)="ordenarMaior()"><nb-icon icon="arrow-down-outline"></nb-icon></button>
+                <button nbButton nbTooltip="ordenar do menor" shape="round" ghost (click)="ordenarMenor()">
+                  <nb-icon icon="arrow-up-outline"></nb-icon>
+                </button>
+                <button nbButton nbTooltip="ordenar do maior" shape="round" ghost (click)="ordenarMaior()">
+                  <nb-icon icon="arrow-down-outline"></nb-icon>
+                </button>
               </div>
             </div>
           </div>
-          </div>
+        </div>
       </ng-template>
 
       <!-- toolbar -->
@@ -108,7 +112,7 @@
                     <p *ngIf="!isDistribuicao; else entrada" style="font-size: 15px;"><b>Previsão de retorno:</b> {{
                       item.previsao }}</p>
                     <ng-template #entrada>
-                      <p style="font-size: 15px;"><b>Disponibilizado na distribuição:</b> {{ item.entrada |
+                      <p style="font-size: 15px;"><b>Disponibilizado:</b> {{ item.entrada |
                         date:'dd/MM/yyyy' }}</p>
                     </ng-template>
                     <div class="nv-prev" *ngIf="item.checked">
@@ -127,6 +131,13 @@
                       <nb-alert [ngClass]="item.Situacao!" class="nv-alert">{{
                         item.Situacao }}</nb-alert>
                     </div>
+                    <div *ngIf="isDistribuicao" class="pdf-wrapper">
+                      <img class="ico-pdf" src="../../../../assets/pdf.png" alt="download_pdf">
+                      <a class="pdf-link" (click)="openUrl(item.link_ficha_tecnica)">
+                        FichaTécnica
+                      </a>
+                    </div>
+                    <!-- [href]="item.link_ficha_tecnica" target="_blank" -->
                   </div>
                 </div>
               </div>

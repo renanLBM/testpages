@@ -1,3 +1,4 @@
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -44,7 +45,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   counter: number = 0;
   defaultImage = '../../../../assets/not-found.png';
-  imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
+  urlBase = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
   loadingError: boolean = false;
   isEmptyList: boolean = false;
   filtroAtivo: boolean = false;
@@ -89,6 +90,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     private _userService: UserService,
     private _route: ActivatedRoute,
     private _router: Router,
+    private _httpClient: HttpClient,
     private NbDdialogService: NbDialogService,
     private windowService: NbWindowService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -224,7 +226,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
       let newImage = new Image();
       newImage.src =
-        this.imgUrl +
+        this.urlBase +
         op.CD_REFERENCIA.toString() +
         '/' +
         op.CD_REFERENCIA.toString() +
@@ -238,7 +240,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
       for (let j = 1; j <= 13; j++) {
         imgListAll.push(
-          this.imgUrl +
+          this.urlBase +
             op.CD_REFERENCIA.toString() +
             '/' +
             op.CD_REFERENCIA.toString() +
@@ -302,11 +304,12 @@ export class DescricaoFaccaoComponent implements OnInit {
         descricao: op.DS_GRUPO,
         drop: op.DS_DROP,
         img:
-          this.imgUrl +
+          this.urlBase +
           op.CD_REFERENCIA.toString() +
           '/' +
           op.CD_REFERENCIA.toString() +
           '-1.jpg',
+        link_ficha_tecnica: this.urlBase + '_FichasTecnicas/' + op.CD_REFERENCIA.toString() + '.pdf',
         status: op.Status,
         status_color: op.Status.toLowerCase().replace(' ', '-'),
         qnt: op.QT_OP,
@@ -677,6 +680,10 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     this.dataIni = new Date(newDate.getTime() - dataSemana.getDay() * 86400000);
     this.dataFim = new Date(this.dataIni.getTime() + 6 * 86400000);
+  }
+
+  openUrl(link: string) {
+    window.open(link, "_blank");
   }
 
   scrollTop() {
