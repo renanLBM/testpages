@@ -5,6 +5,10 @@ nb-layout-column {
   background-color: rgba(0, 0, 0, 0);
 }
 
+::ng-deep nb-spinner.status-basic{
+  background-color: hsla(0, 0%, 0%, 0.1) !important;
+}
+
 .h4 {
   font-size: 1rem;
   font-family: Open Sans, sans-serif;

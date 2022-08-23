@@ -45,6 +45,7 @@ export class PcpComponent implements OnInit {
   };
   loading = new BehaviorSubject<boolean>(true);
   emptyList = new BehaviorSubject<boolean>(false);
+  loadingApontamento = new BehaviorSubject<boolean>(true);
 
   tipoListOriginal: string[] = [];
   listStatus!: OPs;
@@ -481,6 +482,7 @@ export class PcpComponent implements OnInit {
         nao_industrializado:
           situacaoListObjQntPecas['Não industrializado'] || 0,
       };
+      this.loadingApontamento.next(false);
     });
   }
 

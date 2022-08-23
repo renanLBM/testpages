@@ -21,8 +21,8 @@
       </div>
     </div>
 
-    <div class="apontamento-wrapper" *ngIf="!(loading | async)">
-      <nb-card>
+    <div class="apontamento-wrapper">
+      <nb-card [nbSpinner]="!!(loadingApontamento | async)">
         <nb-card-header>
           <h4>Apontamento de produção</h4>
         </nb-card-header>
