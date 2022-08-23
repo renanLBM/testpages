@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div class="apontamento-wrapper" *ngIf="apontamentoList">
+    <div class="apontamento-wrapper" *ngIf="!(loading | async)">
       <nb-card>
         <nb-card-header>
           <h4>Apontamento de produção</h4>
@@ -58,7 +58,7 @@
       </nb-card>
     </div>
 
-    <div *ngIf="_loadingService.isLoading | async">
+    <div *ngIf="loading | async">
       <div class="card-wrapper">
         <div *ngFor="let i of color">
           <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [qnt_atraso]="0" [c_status]="i" [show_desc]="false">
@@ -66,35 +66,43 @@
         </div>
       </div>
     </div>
-    <div class="card-wrapper status-wrapper">
-      <div *ngFor="let item of OpList$ | async">
-        <fc-card [loading]="false" [title]="item.name" [text_desc]="'Qnt. peças'" [qnt_atraso]="item.qnt_pecas"
-          [qnt_ops]="item.qnt" [c_status]="item.color!" [show_desc]="true"
-          [routerLink]="['/pcp/descricao/', item.name]">
-        </fc-card>
+
+    <ng-container *ngIf="!(emptyList | async); else error">
+      <div class="card-wrapper status-wrapper">
+        <div *ngFor="let item of OpList$ | async">
+          <fc-card [loading]="false" [title]="item.name" [text_desc]="'Qnt. peças'" [qnt_atraso]="item.qnt_pecas"
+            [qnt_ops]="item.qnt" [c_status]="item.color!" [show_desc]="true"
+            [routerLink]="['/pcp/descricao/', item.name]">
+          </fc-card>
+        </div>
       </div>
-    </div>
-    <hr>
+      <hr>
 
-    <div class="card-wrapper">
-      <nb-card class="cards tipo-wrapper" [ngClass]="item.status!" [accent]="item.colorAccent!"
-        *ngFor="let item of statusTipo$ | async">
-        <nb-card-header class="header-tipo">
-          <div class="h6 tipo-title-header">{{ item.status }}</div> | <div>Total OP's:</div> | <div>Total Peças:</div>
-        </nb-card-header>
-        <nb-card-body>
-          <div class="body-tipo-wrapper" *ngFor="let i of item.tipo"
-            [routerLink]="['/pcp/descricao', i.status, i.name]">
-            <div class="body-tipo">
-              <div class="h4 tipo-title-body">{{ i.name }}</div>
-              <div class="body-tipo-desc">{{i.qnt}}</div>
-              <div class="body-tipo-desc">{{i.qnt_pecas | number: '1.0'}}</div>
+      <div class="card-wrapper">
+        <nb-card class="cards tipo-wrapper" [ngClass]="item.status!" [accent]="item.colorAccent!"
+          *ngFor="let item of statusTipo$ | async">
+          <nb-card-header class="header-tipo">
+            <div class="h6 tipo-title-header">{{ item.status }}</div> | <div>Total OP's:</div> | <div>Total Peças:</div>
+          </nb-card-header>
+          <nb-card-body>
+            <div class="body-tipo-wrapper" *ngFor="let i of item.tipo"
+              [routerLink]="['/pcp/descricao', i.status, i.name]">
+              <div class="body-tipo">
+                <div class="h4 tipo-title-body">{{ i.name }}</div>
+                <div class="body-tipo-desc">{{i.qnt}}</div>
+                <div class="body-tipo-desc">{{i.qnt_pecas | number: '1.0'}}</div>
+              </div>
+              <hr>
             </div>
-            <hr>
-          </div>
-        </nb-card-body>
-      </nb-card>
-    </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </ng-container>
 
+    <ng-template #error>
+      <div class="error-msg">
+        <h4>Erro ao carregar os dados</h4>
+      </div>
+    </ng-template>
   </nb-layout-column>
 </nb-layout>
