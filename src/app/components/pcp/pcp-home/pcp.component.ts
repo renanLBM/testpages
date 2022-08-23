@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Apontamentos } from 'src/app/models/apontamento';
-import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
 import { Faccoes } from 'src/app/models/faccao';
 import { OP, OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
@@ -44,6 +43,8 @@ export class PcpComponent implements OnInit {
     colecao: this.selectedColecao,
     apontamentoFilter: '',
   };
+  loading = new BehaviorSubject<boolean>(true);
+  emptyList = new BehaviorSubject<boolean>(false);
 
   tipoListOriginal: string[] = [];
   listStatus!: OPs;
@@ -113,11 +114,15 @@ export class PcpComponent implements OnInit {
     if (!!dataFromSession.length) {
       this.listStatus = dataFromSession;
       this.startData(this.listStatus);
+      this.loading.next(false);
+      this.emptyList.next(!this.listStatus.length);
     } else {
       this._opsService.getAllOPs().subscribe({
         next: (list) => {
           this.listStatus = list;
           this.startData(this.listStatus);
+          this.loading.next(false);
+          this.emptyList.next(!this.listStatus.length);
         },
         error: (err: Error) => console.error(err),
       });

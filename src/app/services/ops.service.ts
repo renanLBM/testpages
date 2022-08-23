@@ -153,13 +153,13 @@ export class OpsService {
   setSessionData(): void {
     this.getOPsData().subscribe((ops) => {
       const msg = this._cryptoService.msgCrypto(JSON.stringify(ops));
-      localStorage.setItem('data', msg);
-      localStorage.setItem('data-time', Date.now().toString());
+      sessionStorage.setItem('data', msg);
+      sessionStorage.setItem('data-time', Date.now().toString());
     });
   }
 
   getSessionData(): OPs {
-    const dataSaved = localStorage.getItem('data');
+    const dataSaved = sessionStorage.getItem('data');
     const msg = !dataSaved ? null : this._cryptoService.msgDecrypto(dataSaved!);
     if(!msg || !this.isDataSessionOk()) {
       return [];
@@ -183,12 +183,12 @@ export class OpsService {
   }
 
   isDataSessionOk(): boolean {
-    const dateTime = parseInt(localStorage.getItem('data-time') || '0');
+    const dateTime = parseInt(sessionStorage.getItem('data-time') || '0');
     let dateNowDif = Date.now() - dateTime;
 
     // se a data está zerada verificar
     // se a última atualização foi a menos de 1,5 minutos retorna "OK"
-    if(dateTime != 0 || dateNowDif > 90000) {
+    if(dateNowDif > 90000) {
       const hourCache = new Date(dateTime).getHours();
       const minutesCache = new Date(dateTime).getMinutes();
       const hourNow = new Date().getHours()

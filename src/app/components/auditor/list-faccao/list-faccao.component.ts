@@ -1,5 +1,4 @@
 import {
-  AfterContentInit,
   ChangeDetectionStrategy,
   Component,
   OnInit,
@@ -8,7 +7,6 @@ import { BehaviorSubject } from 'rxjs';
 import { Pages } from 'src/app/models/enums/enumPages';
 import { Faccao, Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
-import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { UserService } from 'src/app/services/user.service';
@@ -29,7 +27,8 @@ export class ListFaccaoComponent implements OnInit {
     apontamentoFilter: '',
   };
 
-  emptyList: boolean = false;
+  loading = new BehaviorSubject<boolean>(true);
+  emptyList = new BehaviorSubject<boolean>(false);
   filtroAtivo: boolean = false;
   show_desc: boolean = true;
 
@@ -46,7 +45,6 @@ export class ListFaccaoComponent implements OnInit {
     private _opsService: OpsService,
     private _opsFilteredService: OpsFilteredService,
     private _userService: UserService,
-    public _loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
@@ -79,6 +77,8 @@ export class ListFaccaoComponent implements OnInit {
 
       this.faccaoList$.next(this.faccaoList);
       this._setTitle.setTitle(titulo);
+      this.loading.next(false);
+      this.emptyList.next(!this.faccaoList.length);
     } else {
       this._opsService.getAllOPs().subscribe({
         next: (list) => {
@@ -94,8 +94,14 @@ export class ListFaccaoComponent implements OnInit {
 
           this.faccaoList$.next(this.faccaoList);
           this._setTitle.setTitle(titulo);
+          this.loading.next(false);
+          this.emptyList.next(!this.faccaoList.length);
         },
-        error: (err: Error) => console.error(err),
+        error: (err: Error) => {
+          console.error(err);
+          this.loading.next(false);
+          this.emptyList.next(!this.faccaoList.length);
+        },
       });
     }
   }
@@ -167,7 +173,7 @@ export class ListFaccaoComponent implements OnInit {
           _.name.includes(filterValue.toUpperCase())
         )
       );
-      this.faccaoList$.subscribe((x) => (this.emptyList = !x.length));
+      this.faccaoList$.subscribe((x) => this.emptyList.next(!x.length));
     }
   }
 
