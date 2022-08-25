@@ -16,6 +16,7 @@ export interface Pendencia {
   novoStatus?: string;
   MODIFICADO_POR?: string;
   DT_MODIFICACAO?: string;
+  alterado?: boolean;
 }
 
 export type Pendencias = Array<Pendencia>;

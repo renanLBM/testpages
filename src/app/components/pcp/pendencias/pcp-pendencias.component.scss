@@ -2,6 +2,11 @@
 
 $breakpoint-alpha: 480px;
 
+nb-layout-column {
+  padding: 0 !important;
+  background-color: rgba(0, 0, 0, 0);
+}
+
 .body-wrapper {
   margin: 1em;
 }
@@ -55,6 +60,13 @@ option {
 
 .Finalizado {
   background-color: nb-theme(color-success-900);
+}
+
+.alterado-msg {
+  text-align: center;
+  font-size: 0.85em;
+  color: nb-theme(color-danger-900);
+  font-weight: 600;
 }
 
 .table-wrapper {

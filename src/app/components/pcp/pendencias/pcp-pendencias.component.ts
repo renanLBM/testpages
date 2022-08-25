@@ -101,9 +101,11 @@ export class PCPPendenciasComponent implements OnInit {
     pendencia.MODIFICADO_POR = this._userService.getSession().nome;
     pendencia.DT_MODIFICACAO = new Date(Date.now()).toLocaleString('pt-Br');
     this.loadingAtualization.next(true);
-    const novoStatus = (event.target as HTMLSelectElement).value.split('_')[0];
-    (event.target as HTMLSelectElement).style.setProperty('background-color', 'yellow');
-    console.log(pendencia);
+
+    let elementSelect = (event.target as HTMLSelectElement)
+    const novoStatus = elementSelect.value.split('_')[0];
+    console.log(novoStatus);
+    elementSelect.classList.remove(pendencia.STATUS.split(" ")[1]);
     this._pendenciaService.alterarStatus(pendencia, novoStatus).subscribe({
       next: (ret) => {
         if (ret == 1) {
@@ -114,6 +116,8 @@ export class PCPPendenciasComponent implements OnInit {
               preventDuplicates: true,
             }
           );
+          pendencia.alterado = true;
+          elementSelect.classList.add(novoStatus);
           this.loadingAtualization.next(false);
         }
       },
