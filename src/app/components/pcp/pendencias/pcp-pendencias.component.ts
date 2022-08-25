@@ -105,9 +105,6 @@ export class PCPPendenciasComponent implements OnInit {
     let elementSelect = (event.target as HTMLSelectElement)
     const novoStatus = elementSelect.value.split('_')[0];
 
-    let statusAtual = pendencia.STATUS.split(" ").length > 1 ? pendencia.STATUS.split(" ")[1] : pendencia.STATUS;
-    let statusNovo = novoStatus.split(" ").length > 1 ? novoStatus.split(" ")[1] : novoStatus;
-    elementSelect.classList.remove(statusAtual);
     this._pendenciaService.alterarStatus(pendencia, novoStatus).subscribe({
       next: (ret) => {
         if (ret == 1) {
@@ -119,7 +116,6 @@ export class PCPPendenciasComponent implements OnInit {
             }
           );
           pendencia.alterado = true;
-          elementSelect.classList.add(statusNovo);
           this.loadingAtualization.next(false);
         }
       },
