@@ -19,6 +19,14 @@ export class PCPPendenciasComponent implements OnInit {
   // make this an enum to change in Auditor and PCP
   ignoredStatus = ['Finalizado', 'Recusado'];
 
+  statusEnum = ['Em análise', 'Almoxarifado', 'Enviado'];
+  selectedStatus: string[] = [];
+  idSelectedStatus: number[] = [];
+
+  solicitanteEnum: string[] = [];
+  selectedSolicitante: string[] = [];
+  idSelectedSolicitante: number[] = [];
+
   statusPendencia: string[] = [];
   selectedStatusPendencia: string = '';
 
@@ -78,7 +86,15 @@ export class PCPPendenciasComponent implements OnInit {
                 });
               }
             });
+            let tmpSolicitante: string[] = [];
+            this.minhasPendenciasLocal.forEach((_) => {
+              let teste = _.pendencias.flatMap((x) => x.USUARIO);
+              tmpSolicitante.push(...teste);
+            });
+            // set the solicitante dropdown
+            this.solicitanteEnum = Array.from(new Set(tmpSolicitante));
 
+            this.orderByQntPendencia(this.minhasPendenciasLocal);
             this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
           },
           error: (err) => {
@@ -102,7 +118,7 @@ export class PCPPendenciasComponent implements OnInit {
     pendencia.DT_MODIFICACAO = new Date(Date.now()).toLocaleString('pt-Br');
     this.loadingAtualization.next(true);
 
-    let elementSelect = (event.target as HTMLSelectElement)
+    let elementSelect = event.target as HTMLSelectElement;
     const novoStatus = elementSelect.value.split('_')[0];
 
     this._pendenciaService.alterarStatus(pendencia, novoStatus).subscribe({
@@ -125,6 +141,78 @@ export class PCPPendenciasComponent implements OnInit {
         });
         this.loadingAtualization.next(false);
       },
+    });
+  }
+
+  filtroDropdown() {
+    this.selectedSolicitante = [];
+    this.idSelectedSolicitante.forEach((x) => {
+      this.selectedSolicitante.push(this.solicitanteEnum[x]);
+    });
+    this.selectedStatus = [];
+    this.idSelectedStatus.forEach((x) => {
+      this.selectedStatus.push(this.statusEnum[x]);
+    });
+    this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
+    // se filtro status
+    // verificar se o filtro solicitante está ativo e filtrar os dois
+    // caso contrário filtrar somente status
+    if (this.selectedSolicitante.length > 0) {
+      let filteredArray = this.minhasPendenciasLocal.map((_) => {
+        let filtered = {
+          ..._,
+          pendencias: _.pendencias.filter((p) =>
+            this.selectedSolicitante.includes(p.USUARIO)
+          ),
+        };
+        return filtered;
+      });
+      if (this.selectedStatus.length > 0) {
+        filteredArray = filteredArray.map((_) => {
+          let filtered = {
+            ..._,
+            pendencias: _.pendencias.filter((p) =>
+              this.selectedStatus.includes(p.STATUS)
+            ),
+          };
+          return filtered;
+        });
+      }
+      this.orderByQntPendencia(filteredArray);
+      this.minhasPendenciasLocal$.next(filteredArray);
+    } else if (this.selectedStatus.length > 0) {
+      let filteredArray = this.minhasPendenciasLocal.map((_) => {
+        let filtered = {
+          ..._,
+          pendencias: _.pendencias.filter((p) =>
+            this.selectedStatus.includes(p.STATUS)
+          ),
+        };
+        return filtered;
+      });
+      if (this.selectedSolicitante.length > 0) {
+        filteredArray = filteredArray.map((_) => {
+          let filtered = {
+            ..._,
+            pendencias: _.pendencias.filter((p) =>
+              this.selectedSolicitante.includes(p.USUARIO)
+            ),
+          };
+          return filtered;
+        });
+      }
+      this.orderByQntPendencia(filteredArray);
+      this.minhasPendenciasLocal$.next(filteredArray);
+    }
+  }
+
+  orderByQntPendencia(arrayToSort: PendenciaLocal[]) {
+    arrayToSort.sort((a, b) => {
+      return a.pendencias.length < b.pendencias.length
+        ? 1
+        : b.pendencias.length < a.pendencias.length
+        ? -1
+        : 0;
     });
   }
 }

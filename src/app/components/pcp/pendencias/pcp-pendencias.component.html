@@ -7,6 +7,28 @@
         <a href="pcp/hist_pendencias">Histórico</a>
       </div>
 
+      <div class="filter-wrapper">
+        <h6 class="filter-title">Filtros</h6>
+        <div class="filter-menu-wrapper">
+          <div class="filter-dropdown">
+            <nb-select multiple placeholder="Status" [(ngModel)]="idSelectedStatus" status="primary">
+              <nb-option (click)="filtroDropdown()">Limpar filtro</nb-option>
+              <nb-option style="font-size: 12px !important;" (click)="filtroDropdown()"
+                *ngFor="let sPendencia of statusEnum; let i = index" [value]="i">{{ sPendencia }}
+              </nb-option>
+            </nb-select>
+          </div>
+          <div class="filter-dropdown">
+            <nb-select multiple placeholder="Solicitante" [(ngModel)]="idSelectedSolicitante" status="primary">
+              <nb-option (click)="filtroDropdown()">Limpar filtro</nb-option>
+              <nb-option style="font-size: 12px !important;" (click)="filtroDropdown()"
+                *ngFor="let solicitante of solicitanteEnum; let i = index" [value]="i">{{ solicitante }}
+              </nb-option>
+            </nb-select>
+          </div>
+        </div>
+      </div>
+
       <div class="card-wrapper" [nbSpinner]="(loadingAtualization | async)!">
         <div class="table-wrapper">
           <table class="rwd-table">
@@ -60,6 +82,7 @@
                   <th>Classificação</th>
                   <th>Matéria Prima</th>
                   <th>Qtd. Solicitada</th>
+                  <th>Tamanho</th>
                   <th>Usuário Solicitante</th>
                   <th>Data Solicitação</th>
                   <th>Status</th>
@@ -71,6 +94,7 @@
                     <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
                     <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP }}</td>
                     <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
+                    <td data-th="Tamanho">{{pendencia.TAMANHO }}</td>
                     <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
                     <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
                     <td data-th="Status">

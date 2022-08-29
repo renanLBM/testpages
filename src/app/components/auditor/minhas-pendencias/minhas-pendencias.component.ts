@@ -106,10 +106,8 @@ export class MinhasPendenciasComponent implements OnInit {
               pendenciaRemoved.CD_PENDENCIA == pendencia.CD_PENDENCIA;
             }
           );
-          console.log(this.minhasPendenciasLocal);
           this.minhasPendenciasLocal.splice(idxRemoved, 1);
           this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
-          console.log(this.minhasPendenciasLocal);
           this.isEmptyList.next(!!this.minhasPendenciasLocal.length);
           this.loadingSend.next(true);
           this.loading.next(false);
