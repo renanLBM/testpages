@@ -34,12 +34,12 @@ import { SharedComponentsModule } from './shared/shared-components.module';
 
 registerLocaleData(localePt, 'pt-BR');
 const config = {
-  apiKey: 'AIzaSyBE98mwPMC231luRJ8h9Zr_EbvSqe40axA',
-  authDomain: 'lbm-intranet-bi.firebaseapp.com',
-  databaseURL: 'https://lbm-intranet-bi-default-rtdb.firebaseio.com',
-  projectId: 'lbm-intranet-bi',
-  storageBucket: 'lbm-intranet-bi.appspot.com',
-  messagingSenderId: '288124378021',
+  apiKey: "AIzaSyAstO4lxi3_Admq-KWnsgS5TubclccBuNE",
+  authDomain: "faccaocontrol.firebaseapp.com",
+  projectId: "faccaocontrol",
+  storageBucket: "faccaocontrol.appspot.com",
+  messagingSenderId: "943441546924",
+  appId: "1:943441546924:web:c0687efcfdd0b07af99909"
 };
 
 @NgModule({
