@@ -39,7 +39,6 @@ export class LoginComponent implements OnInit {
         if (this.nivel == 4) {
           finalRoute = 'auditor';
         }
-        console.log(this.nivel);
         this._router.navigate([finalRoute]);
       },
       error: (err) => {
