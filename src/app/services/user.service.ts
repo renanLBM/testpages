@@ -1,15 +1,22 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
+import { NbToastrService } from '@nebular/theme';
 import jwt_decode from 'jwt-decode';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user';
 import { CryptoService } from './crypto.service';
 import { TokenService } from './token.service';
 
 const API = environment.API_ENV;
+
+interface RetornoAPI {
+  message: string;
+  token: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -21,12 +28,15 @@ export class UserService {
   });
   private nivel = 0;
   private logged = new BehaviorSubject<boolean>(false);
+  autenticando = new BehaviorSubject<boolean>(false);
 
   constructor(
+    private _auth: AngularFireAuth,
     private _httpClient: HttpClient,
     private _router: Router,
     private _tokenService: TokenService,
-    private _cryptoService: CryptoService
+    private _cryptoService: CryptoService,
+    private _toasterService: NbToastrService
   ) {
     if (this._tokenService.hasToken()) {
       this.decodeJWT();
@@ -55,12 +65,37 @@ export class UserService {
       )
       .pipe(
         tap((res) => {
-          const resBody: { message: string; token: string } = JSON.parse(
-            res.body!
-          );
+          const resBody: RetornoAPI = JSON.parse(res.body!);
           const authToken = resBody.token;
           this.setToken(authToken);
           this.logged.next(true);
+        })
+      );
+  }
+
+  getUserFromDB(user: User): Observable<HttpResponse<any>> {
+    if (!user) throw 'E-mail not found!';
+    const logginUser = JSON.stringify(user);
+
+    this.autenticando.next(true);
+
+    return this._httpClient
+    .post(`${API}/api/user`, { user: logginUser }, { observe: 'response' })
+    .pipe(
+      tap((res) => {
+        const resBody: RetornoAPI = res.body as RetornoAPI;
+        const authToken = resBody.token;
+        this.setToken(authToken);
+        this.logged.next(true);
+        this.autenticando.next(false);
+      }),
+      catchError((err) => {
+        console.log(err);
+        this.autenticando.next(false);
+        this._toasterService.danger('Erro ao acessar o servidor!', 'Erro',{
+          preventDuplicates: true,
+        });
+          return of(err.error);
         })
       );
   }
@@ -71,7 +106,8 @@ export class UserService {
 
   setUser(user: User): void {
     if (user) {
-      this.nivel = user.nivel;
+      this.usuarioSubject.next(user);
+      this.nivel = user.nivel!;
       this.setSession();
     }
   }
@@ -85,6 +121,7 @@ export class UserService {
 
   getSession(): User {
     const loggedUser = sessionStorage.getItem('user') || '';
+
     const msg = this._cryptoService.msgDecrypto(loggedUser!);
     if (!!msg) {
       return JSON.parse(msg);
@@ -106,12 +143,18 @@ export class UserService {
   getNivel(): number {
     try {
       let userS: User = this.getSession();
-      this.nivel = userS.nivel;
+      this.nivel = userS.nivel!;
     } catch (err) {
       this.nivel = 0;
     }
 
     return this.nivel;
+  }
+
+  googleSignOut() {
+    this._auth.signOut().then(() => {
+      this._router.navigate(['login']);
+    });
   }
 
   logout(): void {
@@ -120,9 +163,9 @@ export class UserService {
       nome: '',
     });
     this.logged.next(false);
-    this._tokenService.deleteToken();
     sessionStorage.clear();
     localStorage.clear();
+    this.googleSignOut();
     this._router.navigate(['login']);
   }
 }

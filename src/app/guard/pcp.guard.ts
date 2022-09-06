@@ -8,7 +8,10 @@ import { UserService } from '../services/user.service';
   providedIn: 'root',
 })
 export class PcpGuard implements CanLoad {
-  constructor(private _userService: UserService, private _route: Router) {}
+  constructor(
+    private _userService: UserService,
+    private _route: Router
+  ) {}
   canLoad(
     route: Route,
     segments: UrlSegment[]

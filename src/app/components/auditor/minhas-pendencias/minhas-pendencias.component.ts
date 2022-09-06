@@ -42,7 +42,7 @@ export class MinhasPendenciasComponent implements OnInit {
     this.isEmptyList.next(false);
 
     let usuario = '';
-    this._userService.getUser().subscribe((_) => (usuario = _.nome));
+    this._userService.getUser().subscribe((_) => (usuario = _.nome!));
     this._pendenciaService.listPendencia(usuario).subscribe({
       next: (pendencias) => {
         this.minhasPendencias = pendencias;

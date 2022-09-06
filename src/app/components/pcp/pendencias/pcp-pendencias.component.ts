@@ -58,7 +58,7 @@ export class PCPPendenciasComponent implements OnInit {
     });
 
     let usuario = '';
-    this._userService.getUser().subscribe((_) => (usuario = _.nome));
+    this._userService.getUser().subscribe((_) => (usuario = _.nome!));
     this._pendenciaService.listPendencia().subscribe({
       next: (pendencias) => {
         this.minhasPendencias = pendencias;

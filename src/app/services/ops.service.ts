@@ -31,7 +31,7 @@ export class OpsService {
 
   getAllOPs(): Observable<OPs> {
     const headers = this.getToken();
-    let loggedUser = this._userService.getSession();
+    const loggedUser = this._userService.getSession();
     let regiao = loggedUser.regiao;
     if (regiao && loggedUser.nivel != 0) {
       return this._httpClient

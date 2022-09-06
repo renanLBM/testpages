@@ -67,7 +67,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     this._setTitulo.setTitle('Nova Solicitação');
 
     this._userService.getUser().subscribe((user) => {
-      this.loggedUser = user.nome;
+      this.loggedUser = user.nome!;
     });
 
     this.codOp = this._route.snapshot.paramMap.get('cod')!;

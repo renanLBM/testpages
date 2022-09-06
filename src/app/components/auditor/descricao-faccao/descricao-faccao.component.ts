@@ -102,7 +102,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     // #################--- TEMPORÁRIO ---#################
 
     let usuarioName = this._userService.getSession().nome;
-    if (['Daliani', 'Suellen'].includes(usuarioName)) {
+    if (['Daliani', 'Suellen'].includes(usuarioName!)) {
       this.itemsMenu.push({ title: 'Pendências' });
     }
 

@@ -2,6 +2,10 @@ import { registerLocaleData } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import localePt from '@angular/common/locales/pt';
 import { LOCALE_ID, NgModule } from '@angular/core';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -17,7 +21,8 @@ import {
   NbRouteTabsetModule,
   NbSidebarModule,
   NbTabsetModule,
-  NbThemeModule
+  NbThemeModule,
+  NbToastrModule,
 } from '@nebular/theme';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -28,6 +33,14 @@ import { InterceptorService } from './services/interceptor.service';
 import { SharedComponentsModule } from './shared/shared-components.module';
 
 registerLocaleData(localePt, 'pt-BR');
+const config = {
+  apiKey: 'AIzaSyBE98mwPMC231luRJ8h9Zr_EbvSqe40axA',
+  authDomain: 'lbm-intranet-bi.firebaseapp.com',
+  databaseURL: 'https://lbm-intranet-bi-default-rtdb.firebaseio.com',
+  projectId: 'lbm-intranet-bi',
+  storageBucket: 'lbm-intranet-bi.appspot.com',
+  messagingSenderId: '288124378021',
+};
 
 @NgModule({
   declarations: [AppComponent],
@@ -38,6 +51,8 @@ registerLocaleData(localePt, 'pt-BR');
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
+    AngularFireModule.initializeApp(config),
+    AngularFireAuthModule, // auth
     NbButtonModule,
     NbCardModule,
     NbIconModule,
@@ -46,6 +61,7 @@ registerLocaleData(localePt, 'pt-BR');
     NbRouteTabsetModule,
     NbSidebarModule.forRoot(),
     NbTabsetModule,
+    NbToastrModule.forRoot(),
     NbEvaIconsModule,
     NbThemeModule.forRoot({ name: 'default' }),
     SharedComponentsModule,
@@ -56,6 +72,8 @@ registerLocaleData(localePt, 'pt-BR');
       registrationStrategy: 'registerWhenStable:30000',
     }),
     FontAwesomeModule,
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
   ],
   providers: [
     AppUpdateService,

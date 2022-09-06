@@ -44,7 +44,7 @@ export class HistPendenciasComponent implements OnInit {
     this._setTituloService.setTitle('Carregando...');
 
     let usuario = '';
-    this._userService.getUser().subscribe((_) => (usuario = _.nome));
+    this._userService.getUser().subscribe((_) => (usuario = _.nome!));
     this._pendenciaService.listPendencia(usuario).subscribe({
       next: (pendencias) => {
         this.minhasPendencias = pendencias;

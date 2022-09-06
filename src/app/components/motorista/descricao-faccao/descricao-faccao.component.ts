@@ -61,7 +61,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   ngOnInit(): void {
     this._setTitle.setTitle('Carregando...');
     let id = this._route.snapshot.paramMap.get('id')!;
-    this.user = this._userService.getSession().nome;
+    this.user = this._userService.getSession().nome!;
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(

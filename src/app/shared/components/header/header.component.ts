@@ -86,6 +86,5 @@ export class HeaderComponent implements OnInit {
     this._sidebarService.collapse();
     this.showIcon = false;
     this._userService.logout();
-    this._router.navigateByUrl('');
   }
 }
