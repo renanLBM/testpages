@@ -53,5 +53,6 @@ export class LoginComponent implements OnInit {
 
   onLoginWithGoogle() {
     this._authService.onLoginWithGoogle();
+    this._router.navigate(['auditor']);
   }
 }

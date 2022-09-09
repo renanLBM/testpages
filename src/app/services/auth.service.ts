@@ -140,6 +140,7 @@ export class AuthService {
                     }
                   );
                 }
+                return this._router.navigate(['']);
               });
           }
           return this._router.navigate(['pcp']);
