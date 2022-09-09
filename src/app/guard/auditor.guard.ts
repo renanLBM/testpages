@@ -18,12 +18,10 @@ export class AuditorGuard implements CanLoad {
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree> {
     let nivelLogin = this._userService.getNivel();
-    if (
-      nivelLogin != Pages['auditor'] &&
-      nivelLogin != Pages['fornecedor'] &&
-      nivelLogin != Pages['pcp']
-    ) {
-      this._route.navigate(['login']);
+    const nivel = Pages[nivelLogin] || '';
+    if (!['auditor','fornecedor', 'pcp'].includes(nivel)) {
+      let rota = nivel == 'fornecedor' ? 'auditor' : nivel;
+      this._route.navigate([rota]);
       return false;
     }
     return true;
