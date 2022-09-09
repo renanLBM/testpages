@@ -454,22 +454,24 @@ export class PcpComponent implements OnInit {
 
       let totalPecasPorSituacao = 0;
       for (const key in situacaoListObjQntPecas) {
-        totalPecasPorSituacao += situacaoListObjQntPecas[key];
+        console.log(totalPecasPorSituacao, situacaoListObjQntPecas[key]);
+        totalPecasPorSituacao += +situacaoListObjQntPecas[key];
       }
 
-      this.apontamentoListPercent = {
-        nao_informado: (qntOpsList - totalSituacao) / qntOpsList || 0,
-        em_transporte: situacaoListObj['Em transporte'] / qntOpsList || 0,
-        em_fila: situacaoListObj['Em fila'] / qntOpsList || 0,
-        em_producao: situacaoListObj['Em produção'] / qntOpsList || 0,
-        parado: situacaoListObj['Parado'] / qntOpsList || 0,
-        inspecao: situacaoListObj['Em inspeção'] / qntOpsList || 0,
-        disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
-        coletado: situacaoListObj['Coletado'] / qntOpsList || 0,
-        nao_industrializado:
-          situacaoListObj['Não industrializado'] / qntOpsList || 0,
-      };
+      // this.apontamentoListPercent = {
+      //   nao_informado: (qntOpsList - totalSituacao) / qntOpsList || 0,
+      //   em_transporte: situacaoListObj['Em transporte'] / qntOpsList || 0,
+      //   em_fila: situacaoListObj['Em fila'] / qntOpsList || 0,
+      //   em_producao: situacaoListObj['Em produção'] / qntOpsList || 0,
+      //   parado: situacaoListObj['Parado'] / qntOpsList || 0,
+      //   inspecao: situacaoListObj['Em inspeção'] / qntOpsList || 0,
+      //   disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
+      //   coletado: situacaoListObj['Coletado'] / qntOpsList || 0,
+      //   nao_industrializado:
+      //     situacaoListObj['Não industrializado'] / qntOpsList || 0,
+      // };
 
+      console.log(totalPecasPorSituacao,totalSituacao);
       this.apontamentoList = {
         nao_informado: totalPecasPorSituacao - totalSituacao || 0,
         em_transporte: situacaoListObjQntPecas['Em transporte'] || 0,

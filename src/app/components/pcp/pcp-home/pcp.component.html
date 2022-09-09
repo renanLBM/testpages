@@ -25,35 +25,27 @@
       <nb-card [nbSpinner]="!!(loadingApontamento | async)">
         <nb-card-header>
           <h4>Apontamento de produção</h4>
+          <span class="span_apontamento">(peças por status)</span>
         </nb-card-header>
         <nb-card-body class="apontamento-alert-wrapper">
           <nb-alert status="danger" (click)="filterApontamento('Não informado')">Não informado: {{
-            apontamentoList.nao_informado | number:'1.0':'pt-Br' }} ({{
-            apontamentoListPercent.nao_informado | percent:'1.2':'pt-Br' }})</nb-alert>
+            apontamentoList.nao_informado | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert status="danger" (click)="filterApontamento('Em transporte')">Em transporte: {{
-            apontamentoList.em_transporte | number:'1.0':'pt-Br' }} ({{
-            apontamentoListPercent.em_transporte | percent:'1.2':'pt-Br' }})</nb-alert>
+            apontamentoList.em_transporte | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert status="primary" (click)="filterApontamento('Em fila')">Em fila: {{
-            apontamentoList.em_fila | number:'1.0':'pt-Br' }} ({{ apontamentoListPercent.em_fila | percent:'1.2':'pt-Br'
-            }})</nb-alert>
+            apontamentoList.em_fila | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert status="info" (click)="filterApontamento('Em produção')">Em produção: {{
-            apontamentoList.em_producao | number:'1.0':'pt-Br' }} ({{ apontamentoListPercent.em_producao
-            | percent:'1.2':'pt-Br' }})</nb-alert>
+            apontamentoList.em_producao | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert status="warning" (click)="filterApontamento('Parado')">Parado: {{
-            apontamentoList.parado | number:'1.0':'pt-Br' }} ({{ apontamentoListPercent.parado | percent:'1.2':'pt-Br'
-            }})</nb-alert>
+            apontamentoList.parado | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert class="inspecao" (click)="filterApontamento('Em inspeção')">Em inspeção: {{
-            apontamentoList.inspecao | number:'1.0':'pt-Br' }} ({{ apontamentoListPercent.inspecao
-            | percent:'1.2':'pt-Br' }})</nb-alert>
+            apontamentoList.inspecao | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert status="success" (click)="filterApontamento('Disponível para coleta')">Disponível: {{
-            apontamentoList.disponivel | number:'1.0':'pt-Br' }} ({{
-            apontamentoListPercent.disponivel | percent:'1.2':'pt-Br' }})</nb-alert>
+            apontamentoList.disponivel | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert class="coletado" (click)="filterApontamento('Coletado')">Coletado: {{
-            apontamentoList.coletado | number:'1.0':'pt-Br' }} ({{
-            apontamentoListPercent.coletado | percent:'1.2':'pt-Br' }})</nb-alert>
+            apontamentoList.coletado | number:'1.0':'pt-Br' }}</nb-alert>
           <nb-alert class="industrializado" (click)="filterApontamento('Não industrializado')">Não industrializado: {{
-            apontamentoList.nao_industrializado | number:'1.0':'pt-Br' }} ({{
-            apontamentoListPercent.nao_industrializado | percent:'1.2':'pt-Br' }})</nb-alert>
+            apontamentoList.nao_industrializado | number:'1.0':'pt-Br' }}</nb-alert>
         </nb-card-body>
       </nb-card>
     </div>
