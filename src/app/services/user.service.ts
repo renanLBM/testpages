@@ -90,7 +90,7 @@ export class UserService {
         this.autenticando.next(false);
       }),
       catchError((err) => {
-        console.log(err);
+        console.warn(err);
         this.autenticando.next(false);
         this._toasterService.danger('Erro ao acessar o servidor!', 'Erro',{
           preventDuplicates: true,

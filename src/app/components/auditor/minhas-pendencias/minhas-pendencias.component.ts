@@ -75,7 +75,7 @@ export class MinhasPendenciasComponent implements OnInit {
           },
           error: (err) => {
             this.isEmptyList.next(true);
-            console.log(err);
+            console.warn(err);
           },
         });
 
@@ -114,7 +114,7 @@ export class MinhasPendenciasComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.log(err);
+        console.warn(err);
         this.toastrService.danger('Erro ao enviar a solicitação!', 'Erro!!!', {
           preventDuplicates: true,
         });

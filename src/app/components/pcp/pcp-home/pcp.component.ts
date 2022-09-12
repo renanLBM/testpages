@@ -420,25 +420,10 @@ export class PcpComponent implements OnInit {
       let apontamentoFiltered: Apontamentos = apontamento.filter((op) =>
         codList.includes(op.cod! + op.CD_LOCAL)
       );
-      let qntOpsList = OPs.length;
 
       // filtrar de acordo com as OPs do input
       apontamentoFiltered.forEach((a) => {
         situacaoList.push(a.Situacao!);
-      });
-
-      let situacaoListObj: any | Object = situacaoList.reduce(
-        (prev: { [x: string]: any }, cur: string | number) => {
-          cur = cur.toString().includes('Parado') ? (cur = 'Parado') : cur;
-          prev[cur] = (prev[cur] || 0) + 1;
-          return prev;
-        },
-        {}
-      );
-
-      let totalSituacao = 0;
-      Object.keys(situacaoListObj).forEach(function (key) {
-        totalSituacao += situacaoListObj[key];
       });
 
       // Soma do total de peças por situação
@@ -449,31 +434,16 @@ export class PcpComponent implements OnInit {
         situacaoListObjQntPecas[cur] = !!situacaoListObjQntPecas[cur]
           ? parseInt(_.QT_OP.toString()) +
             parseInt(situacaoListObjQntPecas[cur])
-          : _.QT_OP;
+          : +_.QT_OP;
       });
 
       let totalPecasPorSituacao = 0;
       for (const key in situacaoListObjQntPecas) {
-        console.log(totalPecasPorSituacao, situacaoListObjQntPecas[key]);
-        totalPecasPorSituacao += +situacaoListObjQntPecas[key];
+        totalPecasPorSituacao += parseInt(situacaoListObjQntPecas[key]);
       }
 
-      // this.apontamentoListPercent = {
-      //   nao_informado: (qntOpsList - totalSituacao) / qntOpsList || 0,
-      //   em_transporte: situacaoListObj['Em transporte'] / qntOpsList || 0,
-      //   em_fila: situacaoListObj['Em fila'] / qntOpsList || 0,
-      //   em_producao: situacaoListObj['Em produção'] / qntOpsList || 0,
-      //   parado: situacaoListObj['Parado'] / qntOpsList || 0,
-      //   inspecao: situacaoListObj['Em inspeção'] / qntOpsList || 0,
-      //   disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
-      //   coletado: situacaoListObj['Coletado'] / qntOpsList || 0,
-      //   nao_industrializado:
-      //     situacaoListObj['Não industrializado'] / qntOpsList || 0,
-      // };
-
-      console.log(totalPecasPorSituacao,totalSituacao);
       this.apontamentoList = {
-        nao_informado: totalPecasPorSituacao - totalSituacao || 0,
+        nao_informado: this.OpList[0].qnt_pecas - totalPecasPorSituacao || 0,
         em_transporte: situacaoListObjQntPecas['Em transporte'] || 0,
         em_fila: situacaoListObjQntPecas['Em fila'] || 0,
         em_producao: situacaoListObjQntPecas['Em produção'] || 0,

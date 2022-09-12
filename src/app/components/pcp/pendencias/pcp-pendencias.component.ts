@@ -98,7 +98,7 @@ export class PCPPendenciasComponent implements OnInit {
             this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
           },
           error: (err) => {
-            console.log(err);
+            console.warn(err);
           },
         });
 

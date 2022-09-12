@@ -92,7 +92,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
             this.qntOp = opsData.QT_OP;
           },
           error: (err) => {
-            console.log(err);
+            console.warn(err);
           },
         });
     }else {
@@ -268,7 +268,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
           this.loading.next(false);
         },
         error: (err) => {
-          console.log(err);
+          console.warn(err);
           this.toastrService.danger(
             'Erro ao enviar a solicitação!',
             'Erro!!!',

@@ -107,7 +107,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
       if (this.isTotal && !this.haveOrigem) {
         if (!!dataFromSession.length) {
           this.startDataTotal(dataFromSession);
-        }else {
+        } else {
           this._opsService.getAllOPs().subscribe({
             next: (listOPs) => {
               this.startDataTotal(listOPs);
@@ -121,11 +121,16 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
       } else {
         if (!!dataFromSession.length) {
           let filteredOPs = dataFromSession.filter((ops) => {
-            return ops.Status == this.tituloStatus && ops.DS_TIPO == this.origem;
+            if (this.origem) {
+              return (
+                ops.Status == this.tituloStatus && ops.DS_TIPO == this.origem
+              );
+            }
+            return ops.Status == this.tituloStatus;
           });
 
           this.startDataFiltered(filteredOPs);
-        }else {
+        } else {
           this._opsService
             .getOpByStatus(this.tituloStatus, this.origem)
             .subscribe({
@@ -254,8 +259,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
           motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
         } else {
           motivos = this.motivoList.filter(
-            (m) =>
-              m.CD_LOCAL == id && m.Status_Atual == this.tituloStatus
+            (m) => m.CD_LOCAL == id && m.Status_Atual == this.tituloStatus
           );
         }
       }

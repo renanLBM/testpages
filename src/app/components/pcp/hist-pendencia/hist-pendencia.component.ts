@@ -76,7 +76,7 @@ export class HistPendenciaComponent implements OnInit {
             this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
           },
           error: (err) => {
-            console.log(err);
+            console.warn(err);
           },
         });
 
