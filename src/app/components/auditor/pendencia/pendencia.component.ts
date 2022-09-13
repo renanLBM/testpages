@@ -31,6 +31,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
   loading = new BehaviorSubject<boolean>(true);
   loadingError = false;
+  naoEncontrado = new BehaviorSubject<boolean>(false);;
 
   materiasPrimasList: MateriasPrimas = [];
   materiasPrimasList$: BehaviorSubject<MateriasPrimas> =
@@ -95,30 +96,34 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
             console.warn(err);
           },
         });
-    }else {
+    } else {
       this.titulo = opsData.DS_GRUPO;
       this.qntOp = opsData.QT_OP;
     }
 
-
     this._pendenciaService.listMateriaPrima(this.codOp).subscribe({
       next: (x) => {
-        x.map((_) => {
-          _.mp_list.forEach((y) => {
-            y.DS_TAMANHO = y.DS_TAMANHO?.toString().split(', ');
+        try {
+          x.map((_) => {
+            _.mp_list.forEach((y) => {
+              y.DS_TAMANHO = y.DS_TAMANHO?.toString().split(', ');
+            });
           });
-        });
-        x.filter((_) => {
-          if (_.DS_CLASSIFICACAO == 'EMBALAGEM') {
-            this.tamanhoList = _.mp_list[0].DS_TAMANHO!;
-          }
-        });
-        this.materiasPrimas = x.flatMap((m) => m.mp_list);
+          x.filter((_) => {
+            if (_.DS_CLASSIFICACAO == 'EMBALAGEM') {
+              this.tamanhoList = _.mp_list[0].DS_TAMANHO!;
+            }
+          });
+          this.materiasPrimas = x.flatMap((m) => m.mp_list);
 
-        this.materiasPrimasList = x;
-        this.materiasPrimasList$.next(this.materiasPrimasList);
-        this.loading.next(false);
-        this.cd.detectChanges();
+          this.materiasPrimasList = x;
+          this.materiasPrimasList$.next(this.materiasPrimasList);
+          this.loading.next(false);
+          this.cd.detectChanges();
+        } catch {
+          this.naoEncontrado.next(true);
+          throw 'Peça não encontrada';
+        }
       },
     });
   }

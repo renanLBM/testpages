@@ -261,11 +261,11 @@ export class PcpDescOpsComponent implements OnInit {
       listFilteredOPs = listFilteredOPs.filter(
         (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.DS_CICLO)
       );
-    } else if (hasOrigem && !hasColecao) {
+    } else if (hasOrigem) {
       listFilteredOPs = listFilteredOPs.filter((x) =>
         origem.includes(x.DS_CLASS)
       );
-    } else if (!hasOrigem && hasColecao) {
+    } else if (hasColecao) {
       listFilteredOPs = listFilteredOPs.filter((x) =>
         colecao.includes(x.DS_CICLO)
       );

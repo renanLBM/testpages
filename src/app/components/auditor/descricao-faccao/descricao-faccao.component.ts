@@ -101,20 +101,21 @@ export class DescricaoFaccaoComponent implements OnInit {
   ngOnInit(): void {
     // #################--- TEMPORÁRIO ---#################
 
-    let usuarioName = this._userService.getSession().nome;
-    if (['Daliani', 'Suellen'].includes(usuarioName!)) {
-      this.itemsMenu.push({ title: 'Pendências' });
-    }
-
-    // ####################################################
-
     let userNivel = this._userService.getNivel();
     this.routeId = this._route.snapshot.paramMap.get('id')!;
     this.isDistribuicao = this.routeId == '302';
 
+    let usuarioName = this._userService.getSession().nome;
+    console.log(usuarioName, ['Daliani', 'Suellen', 'Zoe Jeans'].includes(usuarioName!));
+
     if (Pages[userNivel] == 'fornecedor') {
       this.itemsMenu = [{ title: 'Apontamento de Produção' }];
     }
+    if (['Daliani', 'Suellen', 'Zoe Jeans'].includes(usuarioName!)) {
+      this.itemsMenu.push({ title: 'Pendências' });
+    }
+
+    // ####################################################
 
     // pega o filtro setado na página anterior (escolha da facção)
     let filtroColecao: string[] = this._opsFilteredService.getFilter().colecao;

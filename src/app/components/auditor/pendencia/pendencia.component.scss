@@ -106,6 +106,10 @@ nb-select ::ng-deep {
   }
 }
 
+.nao_encontrado {
+  text-align: center;
+}
+
 @media (min-width: $breakpoint-alpha) {
   // .titulo {
   //   min-width: 40em;

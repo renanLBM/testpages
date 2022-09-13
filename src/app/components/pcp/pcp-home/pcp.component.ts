@@ -421,6 +421,8 @@ export class PcpComponent implements OnInit {
         codList.includes(op.cod! + op.CD_LOCAL)
       );
 
+      let opsSemApontamento = apontamentoFiltered.flatMap((a) => a.cod + a.CD_LOCAL);
+
       // filtrar de acordo com as OPs do input
       apontamentoFiltered.forEach((a) => {
         situacaoList.push(a.Situacao!);
@@ -443,6 +445,7 @@ export class PcpComponent implements OnInit {
       }
 
       this.apontamentoList = {
+        // verificar o total de pecas e o total por situação quando filtrado coleçao
         nao_informado: this.OpList[0].qnt_pecas - totalPecasPorSituacao || 0,
         em_transporte: situacaoListObjQntPecas['Em transporte'] || 0,
         em_fila: situacaoListObjQntPecas['Em fila'] || 0,
@@ -459,9 +462,16 @@ export class PcpComponent implements OnInit {
   }
 
   filterApontamento(filtro: string) {
+    let colecaoAjustado = this.selectedColecao.map((x) => {
+      if (x.split('-').length > 0) {
+        return x.split('-')[1];
+      }
+      return x;
+    });
+
     this.selectedFilters = {
       origem: this.selectedOrigem,
-      colecao: this.selectedColecao,
+      colecao: colecaoAjustado,
       apontamentoFilter: filtro,
     };
 
