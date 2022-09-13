@@ -31,7 +31,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
   loading = new BehaviorSubject<boolean>(true);
   loadingError = false;
-  naoEncontrado = new BehaviorSubject<boolean>(false);;
+  naoEncontrado = new BehaviorSubject<boolean>(false);
 
   materiasPrimasList: MateriasPrimas = [];
   materiasPrimasList$: BehaviorSubject<MateriasPrimas> =
@@ -140,7 +140,10 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
         '-' +
         materiaPrima.DS_PRODUTO_MP;
       let inputSelecionado = document.getElementById(cod) as HTMLInputElement;
-      let inputSelecionadoValor = parseInt(inputSelecionado.value);
+      let inputSelecionadoValor =
+        parseInt(inputSelecionado.value) > this.qntOp
+          ? this.qntOp
+          : parseInt(inputSelecionado.value);
 
       if (!!inputSelecionadoValor && cod != '1-corte') {
         this.inputList.push({

@@ -102,7 +102,7 @@
                     <div class="titulo">
                       <h4>Ref: {{ item.ref }}</h4>
                     </div>
-                    <div class="bt-edit" *ngIf="!isDistribuicao">
+                    <div class="bt-edit" *ngIf="showMenu | async">
                       <nb-icon icon="more-vertical-outline" [nbContextMenu]="itemsMenu" (click)="openMenu(item)"
                         nbContextMenuTag="auditor-list" nbContextMenuTrigger="click">
                       </nb-icon>
@@ -182,9 +182,6 @@
           </nb-card>
         </div>
       </div>
-      <!-- <div id="bt-scroll" class="scroll-container">
-        <a (click)="scrollTop()">To Top</a>
-      </div> -->
     </div>
   </nb-layout-column>
 </nb-layout>

@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
         this._userService.getUser().subscribe((userLoggin) => this.nivel = userLoggin.nivel!);
         let finalRoute = Pages[this.nivel];
 
-        if (this.nivel == 4) {
+        if (this.nivel == 4 || this.nivel == 0) {
           finalRoute = 'auditor';
         }
         this._router.navigate([finalRoute]);

@@ -1,4 +1,3 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -42,6 +41,8 @@ export class DescricaoFaccaoComponent implements OnInit {
   menuApontamento: string[] = [];
   title = '';
   isDistribuicao = false;
+  isUsuario = false;
+  showMenu = new BehaviorSubject<boolean>(true);
 
   counter: number = 0;
   defaultImage = '../../../../assets/not-found.png';
@@ -90,7 +91,6 @@ export class DescricaoFaccaoComponent implements OnInit {
     private _userService: UserService,
     private _route: ActivatedRoute,
     private _router: Router,
-    private _httpClient: HttpClient,
     private NbDdialogService: NbDialogService,
     private windowService: NbWindowService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -104,14 +104,21 @@ export class DescricaoFaccaoComponent implements OnInit {
     let userNivel = this._userService.getNivel();
     this.routeId = this._route.snapshot.paramMap.get('id')!;
     this.isDistribuicao = this.routeId == '302';
+    this.isUsuario = userNivel == 0;
 
+    if(this.isDistribuicao || this.isUsuario){
+      this.showMenu.next(false);
+    }
+
+    // isDistribuicao
     let usuarioName = this._userService.getSession().nome;
-    console.log(usuarioName, ['Daliani', 'Suellen', 'Zoe Jeans'].includes(usuarioName!));
 
     if (Pages[userNivel] == 'fornecedor') {
       this.itemsMenu = [{ title: 'Apontamento de Produção' }];
     }
-    if (['Daliani', 'Suellen', 'Zoe Jeans'].includes(usuarioName!)) {
+    if (
+      ['Daliani', 'Suellen', 'Zoe Jeans', 'Pop Jeans'].includes(usuarioName!)
+    ) {
       this.itemsMenu.push({ title: 'Pendências' });
     }
 
@@ -310,7 +317,11 @@ export class DescricaoFaccaoComponent implements OnInit {
           '/' +
           op.CD_REFERENCIA.toString() +
           '-1.jpg',
-        link_ficha_tecnica: this.urlBase + '_FichasTecnicas/' + op.CD_REFERENCIA.toString() + '.pdf',
+        link_ficha_tecnica:
+          this.urlBase +
+          '_FichasTecnicas/' +
+          op.CD_REFERENCIA.toString() +
+          '.pdf',
         status: op.Status,
         status_color: op.Status.toLowerCase().replace(' ', '-'),
         qnt: op.QT_OP,
@@ -684,7 +695,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   openUrl(link: string) {
-    window.open(link, "_blank");
+    window.open(link, '_blank');
   }
 
   scrollTop() {

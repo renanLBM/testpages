@@ -161,7 +161,7 @@ export class OpsService {
   getSessionData(): OPs {
     const dataSaved = sessionStorage.getItem('data');
     const msg = !dataSaved ? null : this._cryptoService.msgDecrypto(dataSaved!);
-    if(!msg || !this.isDataSessionOk()) {
+    if(!msg || !this.isDataSessionOk) {
       localStorage.removeItem('data');
       localStorage.removeItem('data-time');
       sessionStorage.removeItem('data');
@@ -190,7 +190,9 @@ export class OpsService {
     const dateTime = parseInt(sessionStorage.getItem('data-time') || '0');
     let dateNowDif = Date.now() - dateTime;
 
-    // se a data está zerada verificar
+    // se a última atualização for maior que 30min retorna falso
+    if(dateNowDif > 1800000) return false;
+
     // se a última atualização foi a menos de 1,5 minutos retorna "OK"
     if(dateNowDif > 90000) {
       const hourCache = new Date(dateTime).getHours();

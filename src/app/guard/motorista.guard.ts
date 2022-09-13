@@ -20,7 +20,6 @@ export class MotoristaGuard implements CanLoad {
     let nivelLogin = this._userService.getNivel();
     const nivel = Pages[nivelLogin] || '';
     if (!['motorista', 'pcp'].includes(nivel)) {
-      let rota = nivel == 'fornecedor' ? 'auditor' : nivel;
       this._route.navigate(['login']);
       return false;
     }

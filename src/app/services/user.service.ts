@@ -7,6 +7,7 @@ import jwt_decode from 'jwt-decode';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { Pages } from '../models/enums/enumPages';
 import { User } from '../models/user';
 import { CryptoService } from './crypto.service';
 import { TokenService } from './token.service';
