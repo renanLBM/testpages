@@ -14,7 +14,10 @@ import { OpsService } from 'src/app/services/ops.service';
 import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
+import { environment } from 'src/environments/environment';
 
+
+const usuarios_pendencias = environment.usuarios_pendencias
 interface MPList {
   id?: string;
   qnt?: number;
@@ -43,7 +46,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
   inputList: MPList[] = [];
   materiasPrimas: MateriaPrimaList[] = [];
 
-  loggedUser = '';
+  loggedUser: string = '';
   titulo = 'Pendências';
 
   cdLocal = '';
@@ -69,6 +72,10 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
     this._userService.getUser().subscribe((user) => {
       this.loggedUser = user.nome!;
+
+      if(!usuarios_pendencias.includes(this.loggedUser)){
+        this._router.navigate(['login']);
+      }
     });
 
     this.codOp = this._route.snapshot.paramMap.get('cod')!;

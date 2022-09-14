@@ -8,10 +8,7 @@ import { UserService } from '../services/user.service';
   providedIn: 'root',
 })
 export class PcpGuard implements CanLoad {
-  constructor(
-    private _userService: UserService,
-    private _route: Router
-  ) {}
+  constructor(private _userService: UserService, private _route: Router) {}
   canLoad(
     route: Route,
     segments: UrlSegment[]
@@ -24,7 +21,7 @@ export class PcpGuard implements CanLoad {
     const nivel = Pages[nivelLogin] || '';
     console.log(nivel);
     if (!['pcp_analista', 'pcp'].includes(nivel)) {
-      let rota = nivel == 'fornecedor' || nivel == 'usuario' ? 'auditor' : nivel;
+      let rota = ['fornecedor', 'usuario'].includes(nivel) ? 'auditor' : nivel;
       this._route.navigate([rota]);
       return false;
     }

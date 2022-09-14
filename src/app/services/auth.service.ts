@@ -139,7 +139,7 @@ export class AuthService {
                       preventDuplicates: true,
                     }
                   );
-                  return this._router.navigate(['auditor']);
+                  return this._router.navigate(['login']);
                 }
                 return this._router.navigate(['login']);
               });

@@ -27,6 +27,10 @@ import { UserService } from 'src/app/services/user.service';
 import { CarosselComponent } from 'src/app/shared/components/carossel/carossel.component';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
+import { environment } from 'src/environments/environment';
+
+
+const usuarios_pendencias = environment.usuarios_pendencias
 
 @Component({
   selector: 'fc-descricao-faccao',
@@ -104,7 +108,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     let userNivel = this._userService.getNivel();
     this.routeId = this._route.snapshot.paramMap.get('id')!;
     this.isDistribuicao = this.routeId == '302';
-    this.isUsuario = userNivel == 0;
+    this.isUsuario = userNivel == 5;
 
     if(this.isDistribuicao || this.isUsuario){
       this.showMenu.next(false);
@@ -117,7 +121,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.itemsMenu = [{ title: 'Apontamento de Produção' }];
     }
     if (
-      ['Daliani', 'Suellen', 'Zoe Jeans', 'Pop Jeans'].includes(usuarioName!)
+      usuarios_pendencias.includes(usuarioName!)
     ) {
       this.itemsMenu.push({ title: 'Pendências' });
     }
