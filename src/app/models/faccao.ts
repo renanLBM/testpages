@@ -1,5 +1,3 @@
-import { NbComponentStatus } from "@nebular/theme";
-
 export interface Faccao {
   id?: number,
   name: string,

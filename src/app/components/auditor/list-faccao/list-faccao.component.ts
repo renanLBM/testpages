@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Pages } from 'src/app/models/enums/enumPages';
 import { Faccao, Faccoes } from 'src/app/models/faccao';
 import { OPs } from 'src/app/models/ops';
-import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { UserService } from 'src/app/services/user.service';
@@ -13,7 +16,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   selector: 'fc-list-faccao',
   templateUrl: './list-faccao.component.html',
   styleUrls: ['./list-faccao.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListFaccaoComponent implements OnInit {
   selectedColecao: string[] = [];
@@ -24,7 +27,8 @@ export class ListFaccaoComponent implements OnInit {
     apontamentoFilter: '',
   };
 
-  emptyList: boolean = false;
+  loading = new BehaviorSubject<boolean>(true);
+  emptyList = new BehaviorSubject<boolean>(false);
   filtroAtivo: boolean = false;
   show_desc: boolean = true;
 
@@ -32,6 +36,7 @@ export class ListFaccaoComponent implements OnInit {
 
   localList: any[] = [];
   AllOpsList: OPs = [];
+  AllOpsList2: OPs = [];
   faccaoList: Faccoes = [];
   faccaoList$: BehaviorSubject<Faccao[]> = new BehaviorSubject(this.faccaoList);
 
@@ -40,7 +45,6 @@ export class ListFaccaoComponent implements OnInit {
     private _opsService: OpsService,
     private _opsFilteredService: OpsFilteredService,
     private _userService: UserService,
-    public _loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
@@ -50,29 +54,56 @@ export class ListFaccaoComponent implements OnInit {
       apontamentoFilter: '',
     };
 
-    let nivel = this._userService.getNivel() == 99 ? 1 : this._userService.getNivel();
+    let nivel =
+      this._userService.getNivel() == 99 ? 1 : this._userService.getNivel();
     let titulo = Pages[nivel].charAt(0).toUpperCase() + Pages[nivel].slice(1);
 
     this._opsFilteredService.setFilter(this.selectedFilters);
 
     this._setTitle.setTitle('Carregando...');
-    this._opsService.getAllOPs().subscribe({
-      next: (list) => {
-        this.AllOpsList = list;
-        this.setfaccaolist(list);
 
-        this.faccaoList.forEach((x) => {
-          this.menuColecao.push(x.ciclo + '-' + x.colecao!);
-          this.menuColecao = [...new Set(this.menuColecao)];
-        });
+    const dataFromSession = this._opsService.getSessionData();
 
-        this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
+    if (!!dataFromSession.length) {
+      this.AllOpsList = dataFromSession;
+      this.setfaccaolist(this.AllOpsList);
 
-        this.faccaoList$.next(this.faccaoList);
-        this._setTitle.setTitle(titulo);
-      },
-      error: (err: Error) => console.error(err),
-    });
+      this.faccaoList.forEach((x) => {
+        this.menuColecao.push(x.ciclo + '-' + x.colecao!);
+        this.menuColecao = [...new Set(this.menuColecao)];
+      });
+
+      this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
+
+      this.faccaoList$.next(this.faccaoList);
+      this._setTitle.setTitle(titulo);
+      this.loading.next(false);
+      this.emptyList.next(!this.faccaoList.length);
+    } else {
+      this._opsService.getAllOPs().subscribe({
+        next: (list) => {
+          this.AllOpsList = list;
+          this.setfaccaolist(list);
+
+          this.faccaoList.forEach((x) => {
+            this.menuColecao.push(x.ciclo + '-' + x.colecao!);
+            this.menuColecao = [...new Set(this.menuColecao)];
+          });
+
+          this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
+
+          this.faccaoList$.next(this.faccaoList);
+          this._setTitle.setTitle(titulo);
+          this.loading.next(false);
+          this.emptyList.next(!this.faccaoList.length);
+        },
+        error: (err: Error) => {
+          console.error(err);
+          this.loading.next(false);
+          this.emptyList.next(!this.faccaoList.length);
+        },
+      });
+    }
   }
 
   setfaccaolist(listaFaccoes: OPs) {
@@ -123,7 +154,9 @@ export class ListFaccaoComponent implements OnInit {
       );
     });
 
-    this.faccaoList.sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0));
+    this.faccaoList.sort((a, b) =>
+      a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0
+    );
     this.faccaoList$.next(this.faccaoList);
   }
 
@@ -136,9 +169,11 @@ export class ListFaccaoComponent implements OnInit {
     } else {
       this.filtroAtivo = true;
       this.faccaoList$.next(
-        this.faccaoList.filter((_) => _.name.includes(filterValue.toUpperCase()))
+        this.faccaoList.filter((_) =>
+          _.name.includes(filterValue.toUpperCase())
+        )
       );
-      this.faccaoList$.subscribe((x) => (this.emptyList = !x.length));
+      this.faccaoList$.subscribe((x) => this.emptyList.next(!x.length));
     }
   }
 
@@ -149,10 +184,7 @@ export class ListFaccaoComponent implements OnInit {
   }
 
   filtrosDropdown(): void {
-
-    let colecaoFilter = this.selectedColecao.map(
-      (item) => item.split('-')[1]
-    );
+    let colecaoFilter = this.selectedColecao.map((item) => item.split('-')[1]);
 
     this.selectedFilters = {
       origem: '',

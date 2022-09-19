@@ -9,6 +9,7 @@ import {
   NbSidebarService,
   NbThemeService
 } from '@nebular/theme';
+import { Pages } from 'src/app/models/enums/enumPages';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from '../../set-title-service.service';
 
@@ -20,9 +21,12 @@ import { SetTitleServiceService } from '../../set-title-service.service';
 export class HeaderComponent implements OnInit {
   headerTitle: string = 'FacControl';
   showIcon: boolean = false;
+  showMenu: boolean = false;
   isLoggedIn!: boolean;
   adm: boolean = false;
   singleSelectGroupValue = [];
+
+  isMenuOpen!: boolean;
 
   @Input() checked: boolean = true;
 
@@ -38,9 +42,12 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this._setTitle.title.subscribe((t) => {
       let n = this._userService.getNivel() || 0;
-      this.adm = n == 99;
+      this.adm = n == Pages['pcp'];
       this.headerTitle = t;
       this.showIcon = true;
+
+      this.showMenu = n == Pages['motorista'] ? false : true;
+
       if (
         this.headerTitle.includes('Acessar')
       ) {
@@ -68,12 +75,16 @@ export class HeaderComponent implements OnInit {
   }
 
   toggleSidebar(): void {
+    this._setTitle.isMenuOpen.subscribe((_) => this.isMenuOpen = _);
+    this._setTitle.isMenuOpen.next(!this.isMenuOpen);
+
     this._sidebarService.toggle();
   }
 
   sair() {
+    this._setTitle.isMenuOpen.next(false);
+    this._sidebarService.collapse();
     this.showIcon = false;
     this._userService.logout();
-    this._router.navigateByUrl('');
   }
 }

@@ -1,0 +1,234 @@
+@import "../../../../themes.scss";
+
+$breakpoint-alpha: 480px;
+
+nb-layout-column {
+  padding: 0 !important;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.body-wrapper {
+  margin: 1em;
+}
+
+.filter-wrapper {
+  margin: 30px 15px 15px;
+  padding: 10px;
+  border: 1px solid lightblue;
+  border-radius: 5px;
+  background-color: nb-theme(background-basic-color-2);
+
+  .filter-title {
+    font-weight: 600;
+    margin-top: -20px;
+    background: linear-gradient(0deg, nb-theme(background-basic-color-2) 0%, nb-theme(background-basic-color-2) 55%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0) 100%);
+    width: max-content;
+    padding: 0 5px;
+    user-select: none;
+  }
+
+  .filter-menu-wrapper {
+    margin-left: 2em;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-dropdown {
+    margin-right: 15px;
+  }
+
+}
+
+.historico {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0.5em;
+  margin-top: 1.5em;
+  font-size: 1.25em;
+
+  a {
+    color: nb-theme(text-basic-color);
+    font-weight: 600;
+  }
+}
+
+// select custom
+select {
+  border: 1px solid #AAA;
+  border-radius: 0.3em;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+  min-height: 25px;
+  margin: 1px 10px;
+  display: inline-block;
+
+  color: nb-theme(color-basic-100)
+}
+option {
+  background-color: nb-theme(background-basic-color-1);
+  color: nb-theme(text-basic-color);
+  font-weight: 600;
+  font-size: .85em;
+}
+
+.análise {
+  background: nb-theme(color-warning-500);
+}
+
+.Recusado {
+  background: nb-theme(color-danger-500);
+}
+
+.Almoxarifado {
+  background: nb-theme(color-primary-500);
+}
+
+.Enviado {
+  background-color: nb-theme(color-success-500);
+}
+
+.Finalizado {
+  background-color: nb-theme(color-success-900);
+}
+
+.alterado-msg {
+  text-align: center;
+  font-size: 0.85em;
+  color: nb-theme(color-danger-900);
+  font-weight: 600;
+}
+
+.table-wrapper {
+  margin: 0;
+  margin-top: 2em;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+
+  @media (min-width: $breakpoint-alpha) {
+    margin: 0 auto;
+  }
+}
+
+
+// Table
+@import "~compass-mixins/lib/compass/css3";
+
+// More practical CSS...
+// using mobile first method (IE8,7 requires respond.js polyfill https://github.com/scottjehl/Respond)
+
+.rwd-table {
+  margin: 0;
+  min-width: 300px;
+
+  tr {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    font-size: 1em;
+    display: none; // for accessibility, use a visually hidden method here instead! Thanks, reddit!
+  }
+
+  td {
+    font-size: 0.85em;
+    display: block;
+
+    &:first-child {
+      padding-top: .5em;
+    }
+
+    &:last-child {
+      padding-bottom: .5em;
+    }
+
+    &:before {
+      content: attr(data-th)": "; // who knew you could do this? The internet, that's who.
+      font-weight: bold;
+
+      // optional stuff to make it look nicer
+      max-width: 7.5em;
+      display: inline-block;
+      // end options
+
+      @media (min-width: $breakpoint-alpha) {
+        display: none;
+      }
+    }
+
+    input {
+      max-width: 3.75rem;
+    }
+  }
+
+  th,
+  td {
+    text-align: left;
+
+    @media (min-width: $breakpoint-alpha) {
+      display: table-cell;
+      padding: .25em .5em;
+      text-align: center;
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+
+// presentational styling
+body {
+  padding: 0 2em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  color: #444;
+  background: #eee;
+}
+
+h1 {
+  font-weight: normal;
+  letter-spacing: -1px;
+  color: #34495E;
+}
+
+.rwd-table {
+  background: nb-theme(background-basic-color-1);
+  color: nb-theme(text-basic-color);
+  font-weight: 400;
+  border-radius: .4em;
+  overflow: hidden;
+
+  tr {
+    border-color: nb-theme(background-basic-color-1);
+  }
+
+  th,
+  td {
+    margin: .5em 1em;
+
+    @media (min-width: $breakpoint-alpha) {
+      padding: 1em !important;
+
+      input {
+        max-width: 4.75rem;
+      }
+    }
+  }
+
+  th,
+  td:before {
+    color: nb-theme(text-heading-table);
+  }
+}
+
+.error-loading {
+  background-color: nb-theme(background-basic-color-3);
+  text-align: center !important;
+}

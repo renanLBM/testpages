@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Apontamentos } from 'src/app/models/apontamento';
-import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
 import { Faccoes } from 'src/app/models/faccao';
 import { OP, OPs } from 'src/app/models/ops';
 import { AuditorService } from 'src/app/services/auditor.service';
@@ -44,6 +43,9 @@ export class PcpComponent implements OnInit {
     colecao: this.selectedColecao,
     apontamentoFilter: '',
   };
+  loading = new BehaviorSubject<boolean>(true);
+  emptyList = new BehaviorSubject<boolean>(false);
+  loadingApontamento = new BehaviorSubject<boolean>(true);
 
   tipoListOriginal: string[] = [];
   listStatus!: OPs;
@@ -63,7 +65,19 @@ export class PcpComponent implements OnInit {
     inspecao: 0,
     disponivel: 0,
     coletado: 0,
-    nao_industrializado: 0
+    nao_industrializado: 0,
+  };
+
+  apontamentoListPercent = {
+    nao_informado: 0.0,
+    em_transporte: 0.0,
+    em_fila: 0.0,
+    em_producao: 0.0,
+    parado: 0.0,
+    inspecao: 0.0,
+    disponivel: 0.0,
+    coletado: 0.0,
+    nao_industrializado: 0.0,
   };
 
   statusTipo: TipoPorStatus[] = [
@@ -95,33 +109,48 @@ export class PcpComponent implements OnInit {
 
   ngOnInit(): void {
     this._setTitle.setTitle('PCP');
-    this._opsService.getAllOPs().subscribe({
-      next: (list) => {
-        this.listStatus = list;
 
-        this.listStatus.forEach((x) => {
-          this.tipoListOriginal.push(x.DS_TIPO);
-          this.tipoListOriginal = [...new Set(this.tipoListOriginal)];
+    const dataFromSession = this._opsService.getSessionData();
 
-          this.menuOrigem.push(x.DS_CLASS);
-          this.menuOrigem = [...new Set(this.menuOrigem)];
+    if (!!dataFromSession.length) {
+      this.listStatus = dataFromSession;
+      this.startData(this.listStatus);
+      this.loading.next(false);
+      this.emptyList.next(!this.listStatus.length);
+    } else {
+      this._opsService.getAllOPs().subscribe({
+        next: (list) => {
+          this.listStatus = list;
+          this.startData(this.listStatus);
+          this.loading.next(false);
+          this.emptyList.next(!this.listStatus.length);
+        },
+        error: (err: Error) => console.error(err),
+      });
+    }
+  }
 
-          this.menuColecao.push(x.NR_CICLO + '-' + x.DS_CICLO);
-          this.menuColecao = [...new Set(this.menuColecao)];
+  startData(ops: OPs) {
+    ops.forEach((x) => {
+      this.tipoListOriginal.push(x.DS_TIPO);
+      this.tipoListOriginal = [...new Set(this.tipoListOriginal)];
 
-          this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
-        });
+      this.menuOrigem.push(x.DS_CLASS);
+      this.menuOrigem = [...new Set(this.menuOrigem)];
 
-        this.summarize();
+      this.menuColecao.push(x.NR_CICLO + '-' + x.DS_CICLO);
+      this.menuColecao = [...new Set(this.menuColecao)];
 
-        // set the filter service to pass to others components
-        this._opsFilteredService.setFilter(this.selectedFilters);
-
-        this.statusTipo$.next(this.statusTipo);
-        this.OpList$.next(this.OpList);
-      },
-      error: (err: Error) => console.error(err),
+      this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
     });
+
+    this.summarize();
+
+    // set the filter service to pass to others components
+    this._opsFilteredService.setFilter(this.selectedFilters);
+
+    this.statusTipo$.next(this.statusTipo);
+    this.OpList$.next(this.OpList);
   }
 
   summarize(filterSelected?: number): void {
@@ -159,8 +188,8 @@ export class PcpComponent implements OnInit {
         );
         break;
       case 2: // somente origem
-        listFilteredOPs = this.listStatus.filter(
-          (x) => this.selectedOrigem.includes(x.DS_CLASS)
+        listFilteredOPs = this.listStatus.filter((x) =>
+          this.selectedOrigem.includes(x.DS_CLASS)
         );
         break;
       case 3: // somente colecao
@@ -174,12 +203,12 @@ export class PcpComponent implements OnInit {
       this.tipoList.push({
         tipo: x['DS_TIPO'],
         status: x['Status'],
-        qnt: Number(x['QT_OP'].toLocaleString().replace(".","")),
+        qnt: Number(x['QT_OP'].toLocaleString().replace('.', '')),
       });
       this.tipoList.push({
         tipo: 'Total',
         status: x['Status'],
-        qnt: Number(x['QT_OP'].toLocaleString().replace(".","")),
+        qnt: Number(x['QT_OP'].toLocaleString().replace('.', '')),
       });
     });
 
@@ -391,45 +420,58 @@ export class PcpComponent implements OnInit {
       let apontamentoFiltered: Apontamentos = apontamento.filter((op) =>
         codList.includes(op.cod! + op.CD_LOCAL)
       );
-      let qntOpsList = OPs.length;
+
+      let opsSemApontamento = apontamentoFiltered.flatMap((a) => a.cod + a.CD_LOCAL);
 
       // filtrar de acordo com as OPs do input
       apontamentoFiltered.forEach((a) => {
         situacaoList.push(a.Situacao!);
       });
 
-      let situacaoListObj: any | Object = situacaoList.reduce(
-        (prev: { [x: string]: any }, cur: string | number) => {
-          cur = cur.toString().includes("Parado") ? cur = 'Parado' : cur;
-          prev[cur] = (prev[cur] || 0) + 1;
-          return prev;
-        },
-        {}
-      );
-
-      let totalSituacao = 0;
-      Object.keys(situacaoListObj).forEach(function (key) {
-        totalSituacao += situacaoListObj[key];
+      // Soma do total de peças por situação
+      let situacaoListObjQntPecas: any | Object = {};
+      apontamentoFiltered.forEach((_) => {
+        let cur = _.Situacao!;
+        cur = cur.toString().includes('Parado') ? (cur = 'Parado') : cur;
+        situacaoListObjQntPecas[cur] = !!situacaoListObjQntPecas[cur]
+          ? parseInt(_.QT_OP.toString()) +
+            parseInt(situacaoListObjQntPecas[cur])
+          : +_.QT_OP;
       });
 
+      let totalPecasPorSituacao = 0;
+      for (const key in situacaoListObjQntPecas) {
+        totalPecasPorSituacao += parseInt(situacaoListObjQntPecas[key]);
+      }
+
       this.apontamentoList = {
-        nao_informado: (qntOpsList - totalSituacao) / qntOpsList || 0,
-        em_transporte: situacaoListObj['Em transporte'] / qntOpsList || 0,
-        em_fila: situacaoListObj['Em fila'] / qntOpsList || 0,
-        em_producao: situacaoListObj['Em produção'] / qntOpsList || 0,
-        parado: situacaoListObj['Parado'] / qntOpsList || 0,
-        inspecao: situacaoListObj['Em inspeção'] / qntOpsList || 0,
-        disponivel: situacaoListObj['Disponível para coleta'] / qntOpsList || 0,
-        coletado: situacaoListObj['Coletado'] / qntOpsList || 0,
-        nao_industrializado: situacaoListObj['Não industrializado'] / qntOpsList || 0,
+        // verificar o total de pecas e o total por situação quando filtrado coleçao
+        nao_informado: this.OpList[0].qnt_pecas - totalPecasPorSituacao || 0,
+        em_transporte: situacaoListObjQntPecas['Em transporte'] || 0,
+        em_fila: situacaoListObjQntPecas['Em fila'] || 0,
+        em_producao: situacaoListObjQntPecas['Em produção'] || 0,
+        parado: situacaoListObjQntPecas['Parado'] || 0,
+        inspecao: situacaoListObjQntPecas['Em inspeção'] || 0,
+        disponivel: situacaoListObjQntPecas['Disponível para coleta'] || 0,
+        coletado: situacaoListObjQntPecas['Coletado'] || 0,
+        nao_industrializado:
+          situacaoListObjQntPecas['Não industrializado'] || 0,
       };
+      this.loadingApontamento.next(false);
     });
   }
 
   filterApontamento(filtro: string) {
+    let colecaoAjustado = this.selectedColecao.map((x) => {
+      if (x.split('-').length > 0) {
+        return x.split('-')[1];
+      }
+      return x;
+    });
+
     this.selectedFilters = {
       origem: this.selectedOrigem,
-      colecao: this.selectedColecao,
+      colecao: colecaoAjustado,
       apontamentoFilter: filtro,
     };
 
@@ -440,9 +482,7 @@ export class PcpComponent implements OnInit {
   }
 
   filtrosDropdown(): void {
-    let colecaoFilter = this.selectedColecao.map(
-      (item) => item.split('-')[1]
-    );
+    let colecaoFilter = this.selectedColecao.map((item) => item.split('-')[1]);
 
     this.selectedFilters = {
       origem: this.selectedOrigem,

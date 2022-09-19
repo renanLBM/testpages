@@ -1,4 +1,8 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, EMPTY, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -103,6 +107,21 @@ export class AuditorService {
     }
   }
 
+  getApontamentoTotal(): Observable<any> {
+    const headers = this.getToken();
+
+    return this._httpClient
+      .get<any>(`${API}/api/getapontamentoTotal`, {
+        headers,
+      })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status == 401) this.missingToken();
+          return EMPTY;
+        })
+      );
+  }
+
   setApontamento(apontamento: Apontamento): Observable<number> {
     const body = JSON.stringify(apontamento);
     const headers = this.getToken();
@@ -118,13 +137,13 @@ export class AuditorService {
       );
   }
 
-  getToken() {
+  private getToken() {
     const token = this._tokenService.getToken();
     let headerDict = new HttpHeaders().append('x-access-token', token);
     return headerDict;
   }
 
-  missingToken() {
+  private missingToken() {
     alert('Sessão expirada!');
     this._userService.logout();
   }

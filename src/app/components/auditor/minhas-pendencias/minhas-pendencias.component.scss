@@ -1,0 +1,214 @@
+@import "../../../../themes.scss";
+
+$breakpoint-alpha: 480px;
+
+.body-wrapper {
+  margin: 1em;
+}
+
+.historico {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0.5em;
+  margin-top: 1.5em;
+  font-size: 1.25em;
+
+  a {
+    color: nb-theme(text-basic-color);
+    font-weight: 600;
+  }
+}
+
+.aguardando-msg {
+  text-align: center;
+  font-size: 0.85em;
+  color: nb-theme(text-hint-color);
+}
+
+nb-alert {
+  min-height: 25px;
+  font-size: 13px;
+  padding: 1px 10px;
+  display: inline-block;
+  margin: 0;
+  margin-top: 5px;
+  color: nb-theme(color-basic-100);
+  background: nb-theme(color-danger-default);
+  user-select: none;
+  text-align: center;
+}
+
+// STATUS
+.nv-alert {
+  min-height: 25px;
+  font-size: 13px;
+  padding: 1px 10px;
+  display: inline-block;
+  margin: 0;
+  margin-top: 5px;
+  color: nb-theme(color-basic-100);
+  background: nb-theme(color-danger-default);
+  user-select: none;
+  text-align: center;
+
+  border-radius: 7px;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.análise {
+  background: nb-theme(color-warning-500);
+}
+
+.confirmar {
+  padding: 0.5em;
+  border: 1px solid var(color-success-200);
+  box-shadow: 1px 1px 2px #999;
+  background-color: nb-theme(color-success-new);
+}
+.confirmar:hover {
+  background-color: nb-theme(color-success-500);
+  cursor: pointer;
+}
+
+.recebido-row {
+  display: flex !important;
+  align-items: center;
+}
+
+.table-wrapper {
+  margin: 0 auto;
+  margin-top: 2em;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: $breakpoint-alpha) {
+  hr {
+    display: none;
+  }
+}
+
+// Table
+@import "~compass-mixins/lib/compass/css3";
+
+// More practical CSS...
+// using mobile first method (IE8,7 requires respond.js polyfill https://github.com/scottjehl/Respond)
+
+.rwd-table {
+  margin: 0;
+  min-width: 300px;
+
+  tr {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    font-size: 1em;
+    display: none; // for accessibility, use a visually hidden method here instead! Thanks, reddit!
+  }
+
+  td {
+    font-size: 0.85em;
+    display: block;
+
+    &:first-child {
+      padding-top: .5em;
+    }
+
+    &:last-child {
+      padding-bottom: .5em;
+    }
+
+    &:before {
+      content: attr(data-th)": "; // who knew you could do this? The internet, that's who.
+      font-weight: bold;
+
+      // optional stuff to make it look nicer
+      width: 7em;
+      display: inline-block;
+      // end options
+
+      @media (min-width: $breakpoint-alpha) {
+        display: none;
+      }
+    }
+
+    input {
+      max-width: 3.75rem;
+    }
+  }
+
+  th,
+  td {
+    text-align: left;
+
+    @media (min-width: $breakpoint-alpha) {
+      display: table-cell;
+      padding: .25em .5em;
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+
+// presentational styling
+body {
+  padding: 0 2em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  color: #444;
+  background: #eee;
+}
+
+h1 {
+  font-weight: normal;
+  letter-spacing: -1px;
+  color: #34495E;
+}
+
+.rwd-table {
+  background: nb-theme(background-basic-color-1);
+  color: nb-theme(text-basic-color);
+  font-weight: 400;
+  border-radius: .4em;
+  overflow: hidden;
+
+  tr {
+    border-color: nb-theme(background-basic-color-1);
+  }
+
+  th,
+  td {
+    margin: .5em 1em;
+
+    @media (min-width: $breakpoint-alpha) {
+      padding: 1em !important;
+
+      input {
+        max-width: 4.75rem;
+      }
+    }
+  }
+
+  th,
+  td:before {
+    color: nb-theme(text-heading-table);
+  }
+}
+
+.error-loading {
+  background-color: nb-theme(background-basic-color-3);
+  text-align: center !important;
+}

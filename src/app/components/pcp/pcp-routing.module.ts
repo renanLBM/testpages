@@ -4,6 +4,9 @@ import { AlteracoesComponent } from './alteracoes/alteracoes.component';
 import { DescricaoStatusComponent } from './descricao-status/descricao-status.component';
 import { PcpComponent } from './pcp-home/pcp.component';
 import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
+import { PCPPendenciasComponent } from './pendencias/pcp-pendencias.component';
+import { HistPendenciaComponent } from './hist-pendencia/hist-pendencia.component';
+import { PcpGuard } from 'src/app/guard/pcp.guard';
 
 const routes: Routes = [
   {
@@ -29,6 +32,14 @@ const routes: Routes = [
   {
     path: 'alteracoes',
     component: AlteracoesComponent,
+  },
+  {
+    path: 'pendencias',
+    component: PCPPendenciasComponent,
+  },
+  {
+    path: 'hist_pendencias',
+    component: HistPendenciaComponent,
   }
 ];
 

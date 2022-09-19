@@ -1,0 +1,237 @@
+@import "../../../../themes.scss";
+
+$breakpoint-alpha: 560px;
+
+.loading {
+  background-color: nb-theme(background-basic-color-2) !important;
+}
+
+.body-wrapper {
+  margin: 20px;
+}
+
+.bt-voltar-wrapper {
+  margin: 1em 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bt-voltar:hover {
+  background-color: #b3b3b3;
+}
+
+.titulo {
+  min-width: 18em;
+  margin: 0 1em;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif !important;
+  text-align: center;
+
+  h3 {
+    font-weight: 500;
+  }
+}
+
+nb-layout-column {
+  padding: 0 !important;
+}
+
+.toolbar-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  background-color: nb-theme(input-basic-background-color);
+  justify-content: space-around;
+  padding: 0.75rem 1rem 0.50rem;
+  border: 1px solid nb-theme(background-basic-color-3);
+  border-right: none;
+  border-left: none;
+  border-radius: 15px;
+}
+
+.toolbar-info {
+  display: flex;
+  max-width: 25em;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: 10px;
+}
+
+.toolbar-value {
+  margin: 0 10px;
+  text-align: center;
+
+  .h6 {
+    font-size: 1.125rem;
+    font-family: Open Sans, sans-serif;
+    font-weight: 700;
+    line-height: 1.5rem;
+  }
+}
+
+.card-wrapper {
+  margin: auto;
+  margin-top: 20px;
+  max-width: 700px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+nb-card-body {
+  padding: 0.75rem !important;
+}
+
+.bt-send {
+  position: fixed;
+  bottom: 2rem;
+  right: 8rem;
+}
+
+.bt-clear {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+}
+
+.txt-area {
+  margin-bottom: 4rem;
+}
+
+nb-select ::ng-deep {
+  .select-button {
+    min-width: 7em !important;
+  }
+}
+
+.nao_encontrado {
+  text-align: center;
+}
+
+@media (min-width: $breakpoint-alpha) {
+  // .titulo {
+  //   min-width: 40em;
+  // }
+}
+
+// Table
+@import "~compass-mixins/lib/compass/css3";
+
+// More practical CSS...
+// using mobile first method (IE8,7 requires respond.js polyfill https://github.com/scottjehl/Respond)
+
+.rwd-table {
+  margin: 0;
+  min-width: 300px;
+
+  tr {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    display: none; // for accessibility, use a visually hidden method here instead! Thanks, reddit!
+  }
+
+  td {
+    display: block;
+
+    &:first-child {
+      padding-top: .5em;
+    }
+
+    &:last-child {
+      padding-bottom: .5em;
+    }
+
+    &:before {
+      content: attr(data-th)": "; // who knew you could do this? The internet, that's who.
+      font-weight: bold;
+
+      // optional stuff to make it look nicer
+      width: 6.5em;
+      display: inline-block;
+      // end options
+
+      @media (min-width: $breakpoint-alpha) {
+        display: none;
+      }
+    }
+
+    .solicitado-input,
+    .tamanho-input {
+      max-width: 3.75rem;
+    }
+  }
+
+  th,
+  td {
+    text-align: left;
+
+    @media (min-width: $breakpoint-alpha) {
+      display: table-cell;
+      padding: .25em .5em;
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+
+// presentational styling
+body {
+  padding: 0 2em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  color: #444;
+  background: #eee;
+}
+
+h1 {
+  font-weight: normal;
+  letter-spacing: -1px;
+  color: #34495E;
+}
+
+.rwd-table {
+  background: nb-theme(background-basic-color-1);
+  color: nb-theme(text-basic-color);
+  font-weight: 400;
+  border-radius: .4em;
+  overflow: hidden;
+
+  tr {
+    border-color: nb-theme(background-basic-color-1);
+  }
+
+  th,
+  td {
+    margin: .5em 1em;
+
+    @media (min-width: $breakpoint-alpha) {
+      padding: 1em !important;
+
+      .solicitado-input,
+      .tamanho-input {
+        max-width: 4.75rem;
+      }
+
+      .corte-input {
+        max-width: 20em;
+      }
+    }
+  }
+
+  th,
+  td:before {
+    color: nb-theme(text-heading-table);
+  }
+}

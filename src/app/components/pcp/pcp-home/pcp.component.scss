@@ -5,11 +5,20 @@ nb-layout-column {
   background-color: rgba(0, 0, 0, 0);
 }
 
+::ng-deep nb-spinner.status-basic{
+  background-color: hsla(0, 0%, 0%, 0.1) !important;
+}
+
 .h4 {
   font-size: 1rem;
   font-family: Open Sans, sans-serif;
   font-weight: 700;
   line-height: 1.5rem;
+}
+.span_apontamento {
+  color: nb-theme(text-hint-color);
+  font-size: .8rem;
+  font-weight: 100;
 }
 
 .h6 {
@@ -75,7 +84,7 @@ nb-layout-column {
     margin: 2px !important;
     margin-right: 5px;
     cursor: pointer;
-    color: nb-theme(text-alternate-color);
+    color: nb-theme(color-basic-100);
     user-select: none;
   }
 
@@ -204,4 +213,8 @@ nb-layout-column {
     }
   }
 
+}
+
+.error-msg {
+  text-align: center;
 }

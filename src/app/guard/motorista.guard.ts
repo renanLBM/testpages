@@ -18,7 +18,8 @@ export class MotoristaGuard implements CanLoad {
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree> {
     let nivelLogin = this._userService.getNivel();
-    if (nivelLogin != Pages['motorista'] && nivelLogin != Pages['pcp']) {
+    const nivel = Pages[nivelLogin] || '';
+    if (!['motorista', 'pcp'].includes(nivel)) {
       this._route.navigate(['login']);
       return false;
     }

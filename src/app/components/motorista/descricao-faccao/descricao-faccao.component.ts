@@ -61,7 +61,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   ngOnInit(): void {
     this._setTitle.setTitle('Carregando...');
     let id = this._route.snapshot.paramMap.get('id')!;
-    this.user = this._userService.getSession().nome;
+    this.user = this._userService.getSession().nome!;
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -145,6 +145,7 @@ export class DescricaoFaccaoComponent implements OnInit {
                   '/' +
                   op.CD_REFERENCIA.toString() +
                   '-1.jpg',
+                link_ficha_tecnica: '',
                 status: op.Status,
                 status_color: op.Status.toLowerCase().replace(' ', '-'),
                 qnt: op.QT_OP,
@@ -330,7 +331,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       PREV_RETORNO: op.previsao,
       QT_OP: op.qnt!,
       Status: op.status!,
-      Situacao: '07 - Coletado',
+      Situacao: 'Coletado',
       USUARIO: this.user,
       DT_INSERIDO: new Date().toLocaleString('pt-Br'),
       latitude: this.latitude,

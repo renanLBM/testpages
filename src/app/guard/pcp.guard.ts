@@ -18,8 +18,11 @@ export class PcpGuard implements CanLoad {
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree> {
     let nivelLogin = this._userService.getNivel();
-    if (nivelLogin != Pages['pcp_analista'] && nivelLogin != Pages['pcp']) {
-      this._route.navigate(['login']);
+    const nivel = Pages[nivelLogin] || '';
+    console.log(nivel);
+    if (!['pcp_analista', 'pcp'].includes(nivel)) {
+      let rota = ['fornecedor', 'usuario'].includes(nivel) ? 'auditor' : nivel;
+      this._route.navigate([rota]);
       return false;
     }
     return true;

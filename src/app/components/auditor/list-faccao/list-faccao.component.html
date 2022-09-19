@@ -1,7 +1,7 @@
 <nb-layout>
   <nb-layout-column>
-    <div *ngIf="_loadingService.isLoading | async; else allOPs">
-      <div class="card-wrapper">
+    <div *ngIf="loading | async; else allOPs">
+      <div class="card-wrapper loading">
         <div *ngFor="let i of color">
           <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [c_status]="i" [qnt_atraso]="0" [show_desc]="true">
           </fc-card>
@@ -39,7 +39,7 @@
       </div>
     </ng-template>
 
-    <div *ngIf="!emptyList; else listaVazia">
+    <div *ngIf="!(emptyList | async); else listaVazia">
       <cdk-virtual-scroll-viewport [itemSize]="5" class="list-viewport">
         <div class="card-wrapper">
           <div *cdkVirtualFor="let item of faccaoList$ | async">
@@ -51,6 +51,7 @@
         </div>
       </cdk-virtual-scroll-viewport>
     </div>
+
 
     <ng-template #listaVazia>
       <h4 style="text-align: center;">Nenhum item encontrado..</h4>

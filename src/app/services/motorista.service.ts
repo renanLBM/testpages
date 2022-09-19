@@ -51,7 +51,7 @@ export class MotoristaService {
     );
   }
 
-  getToken() {
+  private getToken() {
     const token = this._tokenService.getToken();
     let headerDict = new HttpHeaders().append('x-access-token', token);
     return headerDict;

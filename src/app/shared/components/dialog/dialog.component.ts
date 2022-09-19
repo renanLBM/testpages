@@ -100,7 +100,7 @@ export class DialogComponent implements OnInit {
     this.prev = '';
     this.removed = true;
     this.i_motivo = '';
-    this.user = this._userService.getSession().nome;
+    this.user = this._userService.getSession().nome!;
 
     this.novoMotivo = {
       cod: '',
@@ -177,7 +177,7 @@ export class DialogComponent implements OnInit {
       this.tipo == 'Adiantamento'
         ? this.tipo
         : Object.values(this.motivosAtraso)[motivoSelected];
-    this.user = this._userService.getSession().nome;
+    this.user = this._userService.getSession().nome!;
 
     this.novoMotivo = {
       cod: '',
@@ -252,7 +252,7 @@ export class DialogComponent implements OnInit {
       ? novoApontamentoForm + motivoParado
       : novoApontamentoForm;
 
-    this.user = this._userService.getSession().nome;
+    this.user = this._userService.getSession().nome!;
 
 
     this.novoApontamento = {

@@ -7,18 +7,34 @@
             <div class="img_logo"></div>
             <input nbInput class="form-control login-input" placeholder="Nome do usuário" [(ngModel)]="usuario"
               name="usuario" #campoUsuario="ngModel" required />
-            <input nbInput type="password" class="form-control login-input" placeholder="Senha" [(ngModel)]="senha" name="senha"
-              #campoSenha="ngModel" required />
+            <input nbInput type="password" class="form-control login-input" placeholder="Senha" [(ngModel)]="senha"
+              name="senha" #campoSenha="ngModel" required />
 
             <div class="bt-container bt-login">
-              <button nbButton hero status="primary" type="submit" class="btn btn-primary btn-block" [disabled]="loginForm.invalid">
+              <button nbButton hero status="primary" type="submit" class="btn btn-primary btn-block"
+                [disabled]="loginForm.invalid">
                 Acessar
               </button>
             </div>
           </div>
 
         </form>
-        <hr />
+        <nb-card [nbSpinner]="!!(autenticando | async)" nbSpinnerStatus="primary">
+          <nb-card-body>
+            <div class="google-btn" (click)="onLoginWithGoogle()">
+              <div class="google-icon-wrapper">
+                <img class="google-icon"
+                  src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />
+              </div>
+              <p class="btn-text"><b>Entrar com Google</b></p>
+            </div>
+            <ng-container *ngIf="autenticando | async">
+              <div class="autenticar-span">
+                <span>Autenticando usuário!</span>
+              </div>
+            </ng-container>
+          </nb-card-body>
+        </nb-card>
       </div>
     </div>
   </nb-layout-column>

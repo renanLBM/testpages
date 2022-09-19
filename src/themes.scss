@@ -3,6 +3,8 @@
 @import '~@nebular/theme/styles/themes/dark';
 @import '~@nebular/theme/styles/themes/default';
 
+
+
 $nb-themes: nb-register-theme(( // add your variables here like:
       logo-img: url('/assets/logo_branca.png'),
       color-hero-button-custom: #222B45,
@@ -12,7 +14,10 @@ $nb-themes: nb-register-theme(( // add your variables here like:
       color-primary-900: #091c7a,
       color-danger-new: #fa767b,
       color-success-new: #00b887,
-      color-warning-new: #f3b73e), dark, dark);
+      color-warning-new: #f3b73e,
+      text-heading-table: #d3ba14,
+      new-shadow: #99999940
+      ), dark, dark);
 
 $nb-themes: nb-register-theme(( // add your variables here like:
       logo-img: url('/assets/Logo_preto.png'),
@@ -33,4 +38,6 @@ $nb-themes: nb-register-theme(( // add your variables here like:
       color-danger-new: #db2c66,
       color-success-new: #087f23,
       color-warning-new: #f3b73e,
+      text-heading-table: #b59e00,
+      new-shadow: #00000040
     ), default, default);

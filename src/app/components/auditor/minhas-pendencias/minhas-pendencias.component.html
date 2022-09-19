@@ -1,0 +1,101 @@
+<nb-layout>
+  <nb-layout-column>
+    <div class="body-wrapper">
+      <div class="historico">
+        <nb-icon class="icon-header" icon="book-open-outline" aria-label="historico">
+        </nb-icon>
+        <a href="auditor/hist_pendencias">Histórico</a>
+      </div>
+
+      <ng-container *ngIf="loadingSend | async">
+        <div class="card-wrapper">
+          <ng-container *ngFor="let mp of minhasPendenciasLocal$ | async">
+            <nb-card [nbSpinner]="!(loadingSend | async)!">
+              <nb-card-header>
+                <h4>{{mp.local}}</h4>
+              </nb-card-header>
+              <nb-card-body>
+                <table class="rwd-table">
+                  <tr>
+                    <th>Cód. OP</th>
+                    <th>Classificação</th>
+                    <th>Matéria Prima</th>
+                    <th>Qtd. Solicitada</th>
+                    <th>Data Solicitação</th>
+                    <th>Status</th>
+                    <th>Observações</th>
+                    <th>Confirmar Recebimento</th>
+                  </tr>
+                  <ng-container *ngFor="let pendencia of mp.pendencias; let i = index">
+                    <tr>
+                      <td data-th="Cód. OP">{{pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
+                      <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
+                      <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+"-"+pendencia.DS_PRODUTO_MP }}</td>
+                      <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
+                      <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
+                      <td data-th="Status">
+                        <nb-alert [ngClass]="pendencia.STATUS" class="nv-alert">{{
+                          pendencia.STATUS }}</nb-alert>
+                      </td>
+                      <td data-th="Observações">{{pendencia.Obs }}</td>
+                      <td data-th="Confirmar Recebimento" class="recebido-row">
+                        <div class="nv-alert confirmar" *ngIf="pendencia.STATUS == 'Enviado'; else aguardando"
+                          (click)="confirmarRecebimento(pendencia)">
+                          <a>Marcar como Recebido</a>
+                        </div>
+                        <ng-template #aguardando>
+                          <div class="aguardando-msg">
+                            <span>Aguardando confirmação de envio.</span>
+                          </div>
+                        </ng-template>
+                      </td>
+                    </tr>
+                    <hr>
+                  </ng-container>
+                </table>
+              </nb-card-body>
+            </nb-card>
+          </ng-container>
+        </div>
+      </ng-container>
+
+      <div class="table-wrapper">
+        <table class="rwd-table">
+          <ng-container *ngIf="loading | async; else error">
+            <tr>
+              <th>Cód. OP</th>
+              <th>Classificação</th>
+              <th>Matéria Prima</th>
+              <th>Qtd. Solicitada</th>
+              <th>Usuário Solicitante</th>
+              <th>Data Solicitação</th>
+              <th>Status</th>
+              <th>Observações</th>
+            </tr>
+            <tr>
+              <td data-th="Cód. OP">...</td>
+              <td data-th="Classificação">...</td>
+              <td data-th="Matéria Prima">...</td>
+              <td data-th="Qtd. Solicitada">...</td>
+              <td data-th="Data Solicitação">...</td>
+              <td data-th="Status">...</td>
+              <td data-th="Observações">...</td>
+              <td data-th="Confirmar Recebimento" class="recebido-row">
+                ...
+              </td>
+            </tr>
+            <hr>
+          </ng-container>
+
+          <ng-template #error>
+            <tr *ngIf="isEmptyList | async">
+              <td class="error-loading" colspan="100%">
+                <h4>Nenhum item encontrado!</h4>
+              </td>
+            </tr>
+          </ng-template>
+        </table>
+      </div>
+    </div>
+  </nb-layout-column>
+</nb-layout>
