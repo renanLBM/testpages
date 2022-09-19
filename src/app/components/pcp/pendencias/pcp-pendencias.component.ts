@@ -76,6 +76,8 @@ export class PCPPendenciasComponent implements OnInit {
                 let tmpPendencia: Pendencias = [];
                 // passar por todas as pendencias e incluir em cada local
                 this.minhasPendencias.forEach((pendencia) => {
+                  pendencia.cod = pendencia.NR_CICLO + '-' + pendencia.NR_OP + '-' + pendencia.CD_REFERENCIA;
+
                   if (lcod.CD_LOCAL == pendencia.CD_LOCAL + '') {
                     tmpPendencia.push(pendencia);
                   }
@@ -144,7 +146,33 @@ export class PCPPendenciasComponent implements OnInit {
     });
   }
 
+  filtroOP(event: Event): void {
+    document.getElementById('filtro-op')?.focus();
+    const filterValue = (event.target as HTMLInputElement).value;
+
+    this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
+    let filteredArray = this.minhasPendenciasLocal;
+    // se filtro status
+    // verificar se o filtro solicitante está ativo e filtrar os dois
+    // caso contrário filtrar somente status
+    if (filterValue.length > 0) {
+      filteredArray = this.minhasPendenciasLocal.map((_) => {
+        let filtered = {
+          ..._,
+          pendencias: _.pendencias.filter((p) =>
+            p.cod?.includes(filterValue)
+          ),
+        };
+        return filtered;
+      });
+      filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
+      this.orderByQntPendencia(filteredArray);
+      this.minhasPendenciasLocal$.next(filteredArray);
+    }
+  }
+
   filtroDropdown() {
+    (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
     this.selectedSolicitante = [];
     this.idSelectedSolicitante.forEach((x) => {
       this.selectedSolicitante.push(this.solicitanteEnum[x]);
@@ -178,6 +206,7 @@ export class PCPPendenciasComponent implements OnInit {
           return filtered;
         });
       }
+      filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
       this.orderByQntPendencia(filteredArray);
       this.minhasPendenciasLocal$.next(filteredArray);
     } else if (this.selectedStatus.length > 0) {
@@ -201,6 +230,7 @@ export class PCPPendenciasComponent implements OnInit {
           return filtered;
         });
       }
+      filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
       this.orderByQntPendencia(filteredArray);
       this.minhasPendenciasLocal$.next(filteredArray);
     }

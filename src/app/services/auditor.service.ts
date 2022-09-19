@@ -107,20 +107,20 @@ export class AuditorService {
     }
   }
 
-  getApontamentoTotal(): Observable<any> {
-    const headers = this.getToken();
+  // getApontamentoTotal(): Observable<any> {
+  //   const headers = this.getToken();
 
-    return this._httpClient
-      .get<any>(`${API}/api/getapontamentoTotal`, {
-        headers,
-      })
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          if (error.status == 401) this.missingToken();
-          return EMPTY;
-        })
-      );
-  }
+  //   return this._httpClient
+  //     .get<any>(`${API}/api/getapontamentoTotal`, {
+  //       headers,
+  //     })
+  //     .pipe(
+  //       catchError((error: HttpErrorResponse) => {
+  //         if (error.status == 401) this.missingToken();
+  //         return EMPTY;
+  //       })
+  //     );
+  // }
 
   setApontamento(apontamento: Apontamento): Observable<number> {
     const body = JSON.stringify(apontamento);

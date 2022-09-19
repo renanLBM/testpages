@@ -17,6 +17,7 @@ export interface Pendencia {
   MODIFICADO_POR?: string;
   DT_MODIFICACAO?: string;
   alterado?: boolean;
+  cod?: string;
 }
 
 export type Pendencias = Array<Pendencia>;

@@ -161,9 +161,7 @@ export class OpsService {
   getSessionData(): OPs {
     const dataSaved = sessionStorage.getItem('data');
     const msg = !dataSaved ? null : this._cryptoService.msgDecrypto(dataSaved!);
-    if(!msg || !this.isDataSessionOk) {
-      localStorage.removeItem('data');
-      localStorage.removeItem('data-time');
+    if(!msg || !this.isDataSessionOk()) {
       sessionStorage.removeItem('data');
       sessionStorage.removeItem('data-time');
       return [];

@@ -21,6 +21,10 @@ export class HistPendenciasComponent implements OnInit {
   statusPendencia: string[] = [];
   selectedStatusPendencia: string = '';
 
+  localEnum: string[] = [];
+  selectedLocal: string[] = [];
+  idSelectedLocal: number[] = [];
+
   loading = new BehaviorSubject<boolean>(true);
   loadingError = false;
   isEmptyList = false;
@@ -62,6 +66,12 @@ export class HistPendenciasComponent implements OnInit {
                 let tmpPendencia: Pendencias = [];
                 // passar por todas as pendencias e incluir em cada local
                 this.minhasPendencias.forEach((pendencia) => {
+                  pendencia.cod =
+                    pendencia.NR_CICLO +
+                    '-' +
+                    pendencia.NR_OP +
+                    '-' +
+                    pendencia.CD_REFERENCIA;
                   if (lcod.CD_LOCAL == pendencia.CD_LOCAL + '') {
                     tmpPendencia.push(pendencia);
                   }
@@ -70,6 +80,12 @@ export class HistPendenciasComponent implements OnInit {
                   local: lcod.CD_LOCAL + ' - ' + lcod.DS_LOCAL,
                   pendencias: tmpPendencia,
                 });
+
+                let tmpLocal = this.minhasPendenciasLocal.flatMap(
+                  (x) => x.local
+                );
+                // set the solicitante dropdown
+                this.localEnum = Array.from(new Set(tmpLocal));
               }
             });
 
@@ -87,6 +103,63 @@ export class HistPendenciasComponent implements OnInit {
         this.isEmptyList = true;
         this.loading.next(false);
       },
+    });
+  }
+
+  filtroOP(event: Event): void {
+    this.idSelectedLocal = [];
+    document.getElementById('filtro-op')?.focus();
+    const filterValue = (event.target as HTMLInputElement).value;
+
+    this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
+    let filteredArray = this.minhasPendenciasLocal;
+    // se filtro status
+    // verificar se o filtro solicitante está ativo e filtrar os dois
+    // caso contrário filtrar somente status
+    if (filterValue.length > 0) {
+      filteredArray = this.minhasPendenciasLocal.map((_) => {
+        let filtered = {
+          ..._,
+          pendencias: _.pendencias.filter((p) => p.cod?.includes(filterValue)),
+        };
+        return filtered;
+      });
+
+      filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
+
+      this.orderByQntPendencia(filteredArray);
+      this.minhasPendenciasLocal$.next(filteredArray);
+    }
+  }
+
+  filtroDropdown() {
+    (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
+    this.selectedLocal = [];
+    this.idSelectedLocal.forEach((x) => {
+      this.selectedLocal.push(this.localEnum[x]);
+    });
+
+    this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
+    // se filtro status
+    // verificar se o filtro solicitante está ativo e filtrar os dois
+    // caso contrário filtrar somente status
+    if (this.selectedLocal.length > 0) {
+      let filteredArray = this.minhasPendenciasLocal.filter((_) => {
+        return this.selectedLocal.includes(_.local);
+      });
+      filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
+      this.orderByQntPendencia(filteredArray);
+      this.minhasPendenciasLocal$.next(filteredArray);
+    }
+  }
+
+  orderByQntPendencia(arrayToSort: PendenciaLocal[]) {
+    arrayToSort.sort((a, b) => {
+      return a.pendencias.length < b.pendencias.length
+        ? 1
+        : b.pendencias.length < a.pendencias.length
+        ? -1
+        : 0;
     });
   }
 

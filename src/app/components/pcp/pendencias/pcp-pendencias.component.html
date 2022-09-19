@@ -26,6 +26,16 @@
               </nb-option>
             </nb-select>
           </div>
+          <div class="filter-dropdown">
+            <nb-form-field>
+              <input type="text" id="filtro-op" #filtro nbInput (keyup)="filtroOP($event)"
+                placeholder="Filtrar Ciclo, OP ou Ref">
+              <button nbSuffix nbButton ghost>
+                <nb-icon icon="search-outline" aria-label="pesquisar">
+                </nb-icon>
+              </button>
+            </nb-form-field>
+          </div>
         </div>
       </div>
 

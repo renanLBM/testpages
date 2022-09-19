@@ -7,6 +7,30 @@
         <a href="auditor/hist_pendencias">Histórico</a>
       </div>
 
+      <div class="filter-wrapper">
+        <h6 class="filter-title">Filtros</h6>
+        <div class="filter-menu-wrapper">
+          <div class="filter-dropdown">
+            <nb-select multiple placeholder="Local" [(ngModel)]="idSelectedLocal" status="primary">
+              <nb-option (click)="filtroDropdown()">Limpar filtro</nb-option>
+              <nb-option style="font-size: 12px !important;" (click)="filtroDropdown()"
+                *ngFor="let local of localEnum; let i = index" [value]="i">{{ local }}
+              </nb-option>
+            </nb-select>
+          </div>
+          <div class="filter-dropdown">
+            <nb-form-field>
+              <input type="text" id="filtro-op" #filtro nbInput (keyup)="filtroOP($event)"
+                placeholder="Filtrar Ciclo, OP ou Ref">
+              <button nbSuffix nbButton ghost>
+                <nb-icon icon="search-outline" aria-label="pesquisar">
+                </nb-icon>
+              </button>
+            </nb-form-field>
+          </div>
+        </div>
+      </div>
+
       <ng-container *ngIf="loadingSend | async">
         <div class="card-wrapper">
           <ng-container *ngFor="let mp of minhasPendenciasLocal$ | async">
