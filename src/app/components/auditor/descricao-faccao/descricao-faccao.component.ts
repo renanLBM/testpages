@@ -173,6 +173,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         this.apontamentoList = apontamentos;
         this._auditorService.getMotivos(this.routeId).subscribe((motivo) => {
           this.motivoList = motivo;
+          console.log(motivo);
 
           if (!!getDataFromSession.length) {
             this.listOPs = getDataFromSession.filter((op) => {

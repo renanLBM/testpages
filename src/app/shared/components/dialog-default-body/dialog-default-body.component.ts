@@ -18,6 +18,9 @@ export class DialogDefaultBodyComponent {
   }
 
   submit() {
+    if(this.title == 'Motivo da Pendência') {
+      // enviar pendencia
+    }
     this.dialogRef.close(true);
   }
 }

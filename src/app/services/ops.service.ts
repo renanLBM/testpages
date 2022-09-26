@@ -189,7 +189,7 @@ export class OpsService {
     let dateNowDif = Date.now() - dateTime;
 
     // se a última atualização for maior que 30min retorna falso
-    if(dateNowDif > 1800000) return false;
+    if(dateNowDif > 900000) return false;
 
     // se a última atualização foi a menos de 1,5 minutos retorna "OK"
     if(dateNowDif > 90000) {

@@ -7,6 +7,7 @@ import { OpsService } from 'src/app/services/ops.service';
 import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'fc-hist-pendencia',
@@ -17,6 +18,8 @@ export class HistPendenciaComponent implements OnInit {
   // TODO:
   // make this an enum to change in Auditor and PCP
   ignoredStatus = ['Em análise', 'Almoxarifado', 'Enviado'];
+
+  fileName = 'Pendencias_Historico.xlsx';
 
   statusPendencia: string[] = [];
   selectedStatusPendencia: string = '';
@@ -66,7 +69,12 @@ export class HistPendenciaComponent implements OnInit {
                 let tmpPendencia: Pendencias = [];
                 // passar por todas as pendencias e incluir em cada local
                 this.minhasPendencias.forEach((pendencia) => {
-                  pendencia.cod = pendencia.NR_CICLO + '-' + pendencia.NR_OP + '-' + pendencia.CD_REFERENCIA;
+                  pendencia.cod =
+                    pendencia.NR_CICLO +
+                    '-' +
+                    pendencia.NR_OP +
+                    '-' +
+                    pendencia.CD_REFERENCIA;
                   if (lcod.CD_LOCAL == pendencia.CD_LOCAL + '') {
                     tmpPendencia.push(pendencia);
                   }
@@ -117,9 +125,7 @@ export class HistPendenciaComponent implements OnInit {
       filteredArray = this.minhasPendenciasLocal.map((_) => {
         let filtered = {
           ..._,
-          pendencias: _.pendencias.filter((p) =>
-            p.cod?.includes(filterValue)
-          ),
+          pendencias: _.pendencias.filter((p) => p.cod?.includes(filterValue)),
         };
         return filtered;
       });
@@ -128,7 +134,6 @@ export class HistPendenciaComponent implements OnInit {
       this.minhasPendenciasLocal$.next(filteredArray);
     }
   }
-
 
   filtroDropdown() {
     (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
@@ -165,6 +170,64 @@ export class HistPendenciaComponent implements OnInit {
         ? -1
         : 0;
     });
+  }
+
+  exportexcel(): void {
+    console.log('taertewr');
+    /* table id is passed over here */
+    let testes = [
+      [
+        'CD_PENDENCIA',
+        'cod',
+        'CD_LOCAL',
+        'NR_CICLO',
+        'NR_OP',
+        'CD_REFERENCIA',
+        'DS_CLASSIFICACAO',
+        'CD_PRODUTO_MP',
+        'DS_PRODUTO_MP',
+        'TAMANHO',
+        'QT_SOLICITADO',
+        'USUARIO',
+        'STATUS',
+        'DT_SOLICITACAO',
+        'Obs',
+      ],
+    ];
+    this.minhasPendenciasLocal.forEach((pendenciasLocal) => {
+      pendenciasLocal.pendencias.forEach((pendenciaLocal) => {
+        console.log(pendenciaLocal);
+        let teste = [
+          pendenciaLocal.CD_PENDENCIA + '',
+          pendenciaLocal.cod + '',
+          pendenciaLocal.CD_LOCAL + '',
+          pendenciaLocal.NR_CICLO + '',
+          pendenciaLocal.NR_OP + '',
+          pendenciaLocal.CD_REFERENCIA + '',
+          pendenciaLocal.DS_CLASSIFICACAO + '',
+          pendenciaLocal.CD_PRODUTO_MP + '',
+          pendenciaLocal.DS_PRODUTO_MP + '',
+          pendenciaLocal.TAMANHO + '',
+          pendenciaLocal.QT_SOLICITADO + '',
+          pendenciaLocal.USUARIO + '',
+          pendenciaLocal.STATUS + '',
+          pendenciaLocal.DT_SOLICITACAO + '',
+          pendenciaLocal.Obs + '',
+        ];
+        testes.push(teste);
+      });
+    });
+
+    /* generate workbook and add the worksheet */
+    // const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(testes);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Planilha1');
+    // var fmt = '@';
+    // wb.Sheets['Sheet1']['F'] = fmt;
+
+    /* save to file */
+    XLSX.writeFile(wb, this.fileName);
   }
 
   voltar() {

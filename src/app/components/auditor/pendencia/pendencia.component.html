@@ -75,16 +75,8 @@
                 </nb-card-body>
               </nb-card>
             </ng-container>
-            <h4><b>Observações:</b></h4>
-            <textarea nbInput fullWidth status="warning" type="text" rows="4" class="txt-area"
-              id="observacoes"></textarea>
-            <button [nbSpinner]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="success"
-              class="bt-send" (click)="enviar()" type="submit" id="'bt-send">Enviar</button>
-            <button [nbSpinner]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="warning"
-              class="bt-clear" (click)="limparForm()" type="submit" id="'bt-clear">Limpar</button>
           </div>
         </div>
-
 
         <!-- toolbar -->
         <ng-template #mptemplate>
@@ -132,6 +124,7 @@
                     <tr>
                       <th>Cód. Produto</th>
                       <th>Produto</th>
+                      <th *ngIf="mp.DS_CLASSIFICACAO == 'TECIDO'">Parte do Corte</th>
                       <th>Tamanho da peça</th>
                       <th>Solicitação</th>
                     </tr>
@@ -139,6 +132,10 @@
                       <tr>
                         <td data-th="Cód. Produto">{{ item.CD_PRODUTO_MP }}</td>
                         <td data-th="Produto">{{ item.DS_PRODUTO_MP }}</td>
+                        <td *ngIf="mp.DS_CLASSIFICACAO == 'TECIDO'" data-th="corte">
+                          <input nbInput status="warning" type="text" class="corte-input" id="corte"
+                            placeholder="Parte do corte desejado">
+                        </td>
                         <td data-th="Tamanho da peça">
                           <nb-select placeholder="P/M/G" status="warning" [id]="item.CD_PRODUTO_MP+'_tamanho'">
                             <nb-option [value]="idx" *ngFor="let t of item.DS_TAMANHO; let idx = index">{{ t }}
@@ -147,7 +144,7 @@
                         </td>
                         <td data-th="Solicitação" [id]="i">
                           <input nbInput status="warning" class="solicitado-input" type="number"
-                            [id]="item.CD_PRODUTO_MP+'-'+item.DS_PRODUTO_MP" min="0" [max]="qntOp" placeholder="0">
+                          [id]="item.CD_PRODUTO_MP+'-'+item.DS_PRODUTO_MP" min="0" [max]="qntOp" placeholder="0">
                         </td>
                         <hr>
                       </tr>
@@ -156,41 +153,6 @@
                 </nb-card-body>
               </nb-card>
             </ng-container>
-
-            <!-- CORTE -->
-            <nb-card>
-              <nb-card-header>
-                <h4>CORTE</h4>
-              </nb-card-header>
-              <nb-card-body>
-                <table class="rwd-table">
-                  <tr>
-                    <th>Cód. Produto</th>
-                    <th>Produto</th>
-                    <th>Tamanho da peça</th>
-                    <th>Solicitação</th>
-                  </tr>
-                  <tr>
-                    <td data-th="Cód. Produto">001</td>
-                    <td data-th="Produto">
-                      <input nbInput status="warning" type="text" class="corte-input" id="corte"
-                        placeholder="Parte do corte desejado">
-                    </td>
-                    <td data-th="Tamanho da peça">
-                      <nb-select placeholder="P/M/G" status="warning" id="1_tamanho">
-                        <nb-option [value]="idx" *ngFor="let t of tamanhoList; let idx = index">{{ t }}
-                        </nb-option>
-                      </nb-select>
-                    </td>
-                    <td data-th="Solicitação" id="corte_row">
-                      <input nbInput status="warning" class="solicitado-input" type="number" id="1-corte" min="0"
-                        [max]="qntOp" placeholder="0">
-                    </td>
-                    <hr>
-                  </tr>
-                </table>
-              </nb-card-body>
-            </nb-card>
 
             <h4><b>Observações:</b></h4>
             <textarea nbInput fullWidth status="warning" type="text" rows="4" class="txt-area" id="observacoes"

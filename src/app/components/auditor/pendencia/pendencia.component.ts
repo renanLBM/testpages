@@ -41,6 +41,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     new BehaviorSubject<MateriasPrimas>([]);
 
   obsValue = '';
+  corteValue = '';
   tamanhoList: string[] = [];
   solicitacao: Pendencias = [];
   inputList: MPList[] = [];
@@ -137,20 +138,20 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
   enviar() {
     this.loading.next(true);
-
+    this.corteValue = this.corteValue.replace(this.regSanitizer, '');
     this.obsValue = this.obsValue.replace(this.regSanitizer, '');
 
     // passar por todos os inputs e pegar valor
     this.materiasPrimas.forEach((materiaPrima) => {
       let cod =
-        materiaPrima.CD_PRODUTO_MP.toString() +
-        '-' +
+      materiaPrima.CD_PRODUTO_MP.toString() +
+      '-' +
         materiaPrima.DS_PRODUTO_MP;
-      let inputSelecionado = document.getElementById(cod) as HTMLInputElement;
+        let inputSelecionado = document.getElementById(cod) as HTMLInputElement;
       let inputSelecionadoValor =
-        parseInt(inputSelecionado.value) > this.qntOp
-          ? this.qntOp
-          : parseInt(inputSelecionado.value);
+      parseInt(inputSelecionado.value) > this.qntOp
+      ? this.qntOp
+      : parseInt(inputSelecionado.value);
 
       if (!!inputSelecionadoValor && cod != '1-corte') {
         this.inputList.push({
@@ -162,13 +163,13 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
     let quantidadeCorte = document.getElementById(
       '1-corte'
-    ) as HTMLInputElement;
+      ) as HTMLInputElement;
 
-    // se não teve nenhuma inserção de quantidade retorna erro
-    if (!this.inputList.length && !parseInt(quantidadeCorte.value)) {
-      this.toastrService.warning(
-        'Nenhum campo de matéria prima preenchido!',
-        'Atenção!!!',
+      // se não teve nenhuma inserção de quantidade retorna erro
+      if (!this.inputList.length && !parseInt(quantidadeCorte.value)) {
+        this.toastrService.warning(
+          'Nenhum campo de matéria prima preenchido!',
+          'Atenção!!!',
         {
           preventDuplicates: true,
         }
@@ -270,6 +271,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
       }
     }
 
+    // abrir modal com motivos da solicitação
     if (this.solicitacao.length > 0) {
       this._pendenciaService.setPendencia(this.solicitacao).subscribe({
         next: (res) => {

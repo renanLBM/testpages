@@ -19,7 +19,6 @@ export class PcpGuard implements CanLoad {
     | Promise<boolean | UrlTree> {
     let nivelLogin = this._userService.getNivel();
     const nivel = Pages[nivelLogin] || '';
-    console.log(nivel);
     if (!['pcp_analista', 'pcp'].includes(nivel)) {
       let rota = ['fornecedor', 'usuario'].includes(nivel) ? 'auditor' : nivel;
       this._route.navigate([rota]);

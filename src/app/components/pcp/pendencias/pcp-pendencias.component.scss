@@ -11,6 +11,26 @@ nb-layout-column {
   margin: 1em;
 }
 
+.bt-excel {
+  display: flex;
+  position: absolute;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  right: 3em;
+}
+
+.bt-exportar {
+  padding: 0.2em 0.5em !important;
+}
+
+.ico-excel {
+  padding: 0;
+  margin: 0;
+  max-width: 3em;
+  aspect-ratio: 1;
+}
+
 .filter-wrapper {
   margin: 30px 15px 15px;
   padding: 10px;
@@ -53,6 +73,20 @@ nb-layout-column {
   }
 }
 
+
+@media (max-width: $breakpoint-alpha) {
+  .bt-excel {
+    position: inherit;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .filter-dropdown {
+    margin: 0.75em;
+  }
+}
+
 // select custom
 select {
   border: 1px solid #AAA;
@@ -64,6 +98,7 @@ select {
 
   color: nb-theme(color-basic-100)
 }
+
 option {
   background-color: nb-theme(background-basic-color-1);
   color: nb-theme(text-basic-color);
@@ -181,7 +216,6 @@ option {
     }
   }
 }
-
 
 // presentational styling
 body {
