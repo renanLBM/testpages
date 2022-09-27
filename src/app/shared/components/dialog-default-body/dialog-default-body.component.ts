@@ -1,5 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NbDialogRef } from '@nebular/theme';
+import { Component, Input } from '@angular/core';
+import { NbDialogRef,
+  NbToastrService } from '@nebular/theme';
+import { BehaviorSubject } from 'rxjs';
+import { MotivoPendencia } from 'src/app/models/enums/enumMotivoPendencia';
+import { Pendencias } from 'src/app/models/pendencia';
+import { PendenciasService } from 'src/app/services/pendencias.service';
 
 @Component({
   selector: 'fc-dialog-default-body',
@@ -10,17 +15,48 @@ export class DialogDefaultBodyComponent {
   @Input() title: string = '';
   @Input() bodyText: string = '';
   @Input() buttonName: string = '';
+  @Input() solicitacao: Pendencias = [];
 
-  constructor(protected dialogRef: NbDialogRef<DialogDefaultBodyComponent>) {}
+  selectedMotivo!: number;
+  loading = new BehaviorSubject<boolean>(false);
+
+  constructor(
+    protected dialogRef: NbDialogRef<DialogDefaultBodyComponent>,
+    private toastrService: NbToastrService,
+    private _pendenciaService: PendenciasService
+  ) {}
 
   cancel() {
     this.dialogRef.close();
   }
 
   submit() {
-    if(this.title == 'Motivo da Pendência') {
-      // enviar pendencia
+    this.loading.next(true);
+    if (this.title == 'Motivo da Pendência') {
+      let motivo = MotivoPendencia[this.selectedMotivo];
+      if(!motivo){
+        this.toastrService.warning(
+          'Preencha o motivo!',
+          'Atebção!',
+          {
+            preventDuplicates: true,
+          }
+        );
+        return;
+      }
+      this.solicitacao.forEach((_) => {
+        _.MOTIVO = motivo;
+      });
+      this._pendenciaService.setPendencia(this.solicitacao).subscribe({
+        next: (res) => {
+          this.loading.next(false);
+          return this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.loading.next(false);
+          return this.dialogRef.close(false);
+        },
+      });
     }
-    this.dialogRef.close(true);
   }
 }

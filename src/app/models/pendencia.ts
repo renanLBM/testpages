@@ -20,6 +20,7 @@ export interface Pendencia {
   cod?: string;
   CORTE?: string;
   QT_OP?: number;
+  MOTIVO?: string;
 }
 
 export type Pendencias = Array<Pendencia>;

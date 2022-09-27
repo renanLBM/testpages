@@ -137,7 +137,7 @@
                             placeholder="Parte do corte desejado" required>
                         </td>
                         <td data-th="Tamanho da peça">
-                          <nb-select class="tamanho-input" placeholder="P/M/G" status="warning" [id]="item.CD_PRODUTO_MP+'_tamanho'" required>
+                          <nb-select class="tamanho-input" placeholder="P/M/G" status="warning" [id]="item.CD_PRODUTO_MP+'_tamanho'">
                             <nb-option [value]="idx" *ngFor="let t of item.DS_TAMANHO; let idx = index">{{ t }}
                             </nb-option>
                           </nb-select>
@@ -157,9 +157,9 @@
             <h4><b>Observações:</b></h4>
             <textarea nbInput fullWidth status="warning" type="text" rows="4" class="txt-area" id="observacoes"
               [(ngModel)]="obsValue"></textarea>
-            <button [nbSpinner]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="success"
+            <button [nbSpinner]="loading.getValue()" [disabled]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="success"
               class="bt-send" (click)="enviar()" type="submit" id="'bt-send">Enviar</button>
-            <button [nbSpinner]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="warning"
+            <button [nbSpinner]="loading.getValue()" [disabled]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="warning"
               class="bt-clear" (click)="limparForm()" type="submit" id="'bt-clear">Limpar</button>
           </div>
         </ng-template>

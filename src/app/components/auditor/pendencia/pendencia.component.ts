@@ -6,7 +6,11 @@ import {
   OnInit,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NbGlobalPhysicalPosition, NbToastrService } from '@nebular/theme';
+import {
+  NbGlobalPhysicalPosition,
+  NbDialogService,
+  NbToastrService,
+} from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
 import { MateriaPrimaList, MateriasPrimas } from 'src/app/models/materiaPrima';
 import { Pendencias } from 'src/app/models/pendencia';
@@ -15,6 +19,7 @@ import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 import { environment } from 'src/environments/environment';
+import { DialogDefaultBodyComponent } from 'src/app/shared/components/dialog-default-body/dialog-default-body.component';
 
 const usuarios_pendencias = environment.usuarios_pendencias;
 interface MPList {
@@ -56,6 +61,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
   constructor(
     private cd: ChangeDetectorRef,
+    private NbDdialogService: NbDialogService,
     private toastrService: NbToastrService,
     private _route: ActivatedRoute,
     private _router: Router,
@@ -136,6 +142,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
   enviar() {
     this.loading.next(true);
+
     let descricaoCorte = (document.getElementById('corte') as HTMLInputElement)
       .value;
     descricaoCorte = descricaoCorte.replace(this.regSanitizer, '');
@@ -177,7 +184,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     // listar todos os códigos de matéria prima com valor inserido
     let codMPSelecionado = '';
     let tamanhoSelecionado = '';
-    let qntSelecionado = 0
+    let qntSelecionado = 0;
 
     // criar objeto que será passado para o back
     this.materiasPrimasList.forEach((produto) => {
@@ -188,7 +195,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
         let cod = tmpCD_MP + '-' + materiaPrima.DS_PRODUTO_MP;
         codMPSelecionado = '';
         tamanhoSelecionado = '';
-        qntSelecionado = 0
+        qntSelecionado = 0;
 
         let tamanhoSelecionadoInput = (
           document.getElementById(tmpCD_MP + '_tamanho') as HTMLSelectElement
@@ -202,12 +209,14 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
           return;
         }
 
-        qntSelecionado =
-          this.inputList.find((_) => _.id == cod)?.qnt || 0;
-        codMPSelecionado =
-          this.inputList.find((_) => _.id == cod)?.id || '';
+        qntSelecionado = this.inputList.find((_) => _.id == cod)?.qnt || 0;
+        codMPSelecionado = this.inputList.find((_) => _.id == cod)?.id || '';
 
-        if (qntSelecionado > 0 && tamanhoSelecionado != '' && codMPSelecionado != '') {
+        if (
+          qntSelecionado > 0 &&
+          tamanhoSelecionado != '' &&
+          codMPSelecionado != ''
+        ) {
           this.solicitacao.push({
             CD_LOCAL: parseInt(this.cdLocal),
             NR_CICLO: parseInt(this.codOp.split('-')[0]),
@@ -223,59 +232,47 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
             STATUS: 'Em análise',
             Obs: this.obsValue,
             CORTE: descricaoCorte,
-            QT_OP: this.qntOp
+            QT_OP: this.qntOp,
           });
         }
       });
     });
 
-    // abrir modal com motivos da solicitação
     if (this.solicitacao.length > 0) {
-      this._pendenciaService.setPendencia(this.solicitacao).subscribe({
-        next: (res) => {
-          this.toastrService.success(
-            'Informações salvas!',
-            'Salvo com sucesso!',
-            {
-              preventDuplicates: true,
-            }
-          );
-          this.loading.next(false);
+      // abrir modal com o motivo da solicitação
+      this.NbDdialogService.open(DialogDefaultBodyComponent, {
+        context: {
+          title: 'Motivo da Pendência',
+          bodyText: '',
+          buttonName: 'Enviar',
+          solicitacao: this.solicitacao,
         },
-        error: (err) => {
-          console.warn(err);
-          this.toastrService.danger(
-            'Erro ao enviar a solicitação!',
-            'Erro!!!',
-            {
-              preventDuplicates: true,
-            }
-          );
-          this.loading.next(false);
-        },
+      }).onClose.subscribe((x) => {
+        if (x) {
+          this.toastrService.success('Item enviado com sucesso!', 'Sucesso!', {
+            preventDuplicates: true,
+          });
+          this.limparForm(true);
+          return;
+        }
+        this.toastrService.warning(
+          'Erro ao enviar solicitação!',
+          'Atenção!!!',
+          {
+            preventDuplicates: true,
+          }
+        );
       });
-      this.limparForm(true);
     } else {
       this.toastrService.warning(
-        'Alguns itens não foram enviados!',
+        'Alguns itens estão incorretos!',
         'Atenção!!!',
         {
           preventDuplicates: true,
         }
       );
-      this.loading.next(false);
-      return;
     }
-
-    // caso o tamanho não seja selecionado ele não irá chamar o backend e passara por esse if
-    // para exibir a mensagem de erro para o usuário
-    if (tamanhoSelecionado == '') {
-      this.toastrService.warning('Preencha o tamanho da peça!', 'Atenção!!!', {
-        preventDuplicates: true,
-      });
-      this.loading.next(false);
-      return;
-    }
+    this.loading.next(false);
   }
 
   limparForm(send?: boolean) {
