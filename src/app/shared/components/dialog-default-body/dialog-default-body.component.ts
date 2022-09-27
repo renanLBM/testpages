@@ -18,13 +18,21 @@ export class DialogDefaultBodyComponent {
   @Input() solicitacao: Pendencias = [];
 
   selectedMotivo!: number;
+  motivoList: string[] = [];
   loading = new BehaviorSubject<boolean>(false);
 
   constructor(
     protected dialogRef: NbDialogRef<DialogDefaultBodyComponent>,
     private toastrService: NbToastrService,
     private _pendenciaService: PendenciasService
-  ) {}
+  ) {
+    let situacaoEnum = Object.values(MotivoPendencia).filter(
+      (value) => typeof value === 'string'
+    );
+    for (let [i, item] of situacaoEnum.entries()) {
+      this.motivoList.push((item) as string);
+    }
+  }
 
   cancel() {
     this.dialogRef.close();

@@ -270,6 +270,7 @@ export class PCPPendenciasComponent implements OnInit {
         'DT_SOLICITACAO',
         'Obs',
         'CORTE',
+        'QT_OP',
       ],
     ];
     this.filteredArray.forEach((pendenciasLocal) => {
@@ -291,6 +292,7 @@ export class PCPPendenciasComponent implements OnInit {
           pendenciaLocal.DT_SOLICITACAO + '',
           pendenciaLocal.Obs + '',
           pendenciaLocal.CORTE + '',
+          pendenciaLocal.QT_OP + '',
         ];
         testes.push(teste);
       });

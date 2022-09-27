@@ -3,13 +3,8 @@
   <nb-card-body>
     {{ bodyText}}
     <ng-container *ngIf="title == 'Motivo da Pendência'">
-      <nb-select placeholder="Select Showcase"  [(ngModel)]="selectedMotivo">
-        <nb-option value="">Option empty</nb-option>
-        <nb-option value="0">Option 0</nb-option>
-        <nb-option value="1">Option 1</nb-option>
-        <nb-option value="2">Option 2</nb-option>
-        <nb-option value="3">Option 3</nb-option>
-        <nb-option value="4">Option 4</nb-option>
+      <nb-select placeholder="Selecionar Motivo" [(ngModel)]="selectedMotivo">
+        <nb-option *ngFor="let item of motivoList; let id = index" [value]="id">{{item}}</nb-option>
       </nb-select>
     </ng-container>
   </nb-card-body>
