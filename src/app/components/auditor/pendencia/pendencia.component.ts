@@ -20,6 +20,7 @@ import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 import { environment } from 'src/environments/environment';
 import { DialogDefaultBodyComponent } from 'src/app/shared/components/dialog-default-body/dialog-default-body.component';
+import { Pages } from 'src/app/models/enums/enumPages';
 
 const usuarios_pendencias = environment.usuarios_pendencias;
 interface MPList {
@@ -74,11 +75,12 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
   ngOnInit(): void {
     this._setTitulo.setTitle('Nova Solicitação');
+    let userNivel = this._userService.getNivel();
 
     this._userService.getUser().subscribe((user) => {
       this.loggedUser = user.nome!;
 
-      if (!usuarios_pendencias.includes(this.loggedUser)) {
+      if (!usuarios_pendencias.includes(this.loggedUser) || Pages[userNivel] == 'auditor') {
         this._router.navigate(['login']);
       }
     });

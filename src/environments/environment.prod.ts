@@ -7,7 +7,7 @@ export const environment = {
     authDomain: 'faccaocontrol.firebaseapp.com',
     messagingSenderId: '943441546924',
   },
-  usuarios_pendencias: ['Renan Garcia', 'Zoe Jeans', 'Pop Jeans'],
+  usuarios_pendencias: ['Renan Garcia', 'Alisson', 'Zoe Jeans', 'Pop Jeans'],
   production: true,
   ENCRIPT_KEY: '7PQ9TV&*d@38c0bT',
   API_ENV: 'https://app-controle-ops.herokuapp.com',
