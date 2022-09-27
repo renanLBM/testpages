@@ -252,7 +252,7 @@ export class PCPPendenciasComponent implements OnInit {
 
   exportexcel(): void {
     /* table id is passed over here */
-    let testes = [
+    let excelFile = [
       [
         'CD_PENDENCIA',
         'cod',
@@ -271,9 +271,14 @@ export class PCPPendenciasComponent implements OnInit {
         'Obs',
         'CORTE',
         'QT_OP',
+        'MOTIVO',
       ],
     ];
-    this.filteredArray.forEach((pendenciasLocal) => {
+    let pendenciaExcel = this.filteredArray;
+    if(pendenciaExcel.length == 0) {
+      pendenciaExcel = this.minhasPendenciasLocal;
+    }
+    pendenciaExcel.forEach((pendenciasLocal) => {
       pendenciasLocal.pendencias.forEach((pendenciaLocal) => {
         let teste = [
           pendenciaLocal.CD_PENDENCIA + '',
@@ -293,14 +298,15 @@ export class PCPPendenciasComponent implements OnInit {
           pendenciaLocal.Obs + '',
           pendenciaLocal.CORTE + '',
           pendenciaLocal.QT_OP + '',
+          pendenciaLocal.MOTIVO + '',
         ];
-        testes.push(teste);
+        excelFile.push(teste);
       });
     });
 
     /* generate workbook and add the worksheet */
     // const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
-    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(testes);
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(excelFile);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Planilha1');
     // var fmt = '@';

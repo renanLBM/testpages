@@ -130,7 +130,9 @@ export class HistPendenciaComponent implements OnInit {
         };
         return filtered;
       });
-      this.filteredArray = this.filteredArray.filter((_) => _.pendencias.length > 0);
+      this.filteredArray = this.filteredArray.filter(
+        (_) => _.pendencias.length > 0
+      );
       this.orderByQntPendencia(this.filteredArray);
       this.minhasPendenciasLocal$.next(this.filteredArray);
     }
@@ -157,7 +159,9 @@ export class HistPendenciaComponent implements OnInit {
         };
         return filtered;
       });
-      this.filteredArray = this.filteredArray.filter((_) => _.pendencias.length > 0);
+      this.filteredArray = this.filteredArray.filter(
+        (_) => _.pendencias.length > 0
+      );
       this.orderByQntPendencia(this.filteredArray);
       this.minhasPendenciasLocal$.next(this.filteredArray);
     }
@@ -193,9 +197,15 @@ export class HistPendenciaComponent implements OnInit {
         'DT_SOLICITACAO',
         'Obs',
         'CORTE',
+        'QT_OP',
+        'MOTIVO',
       ],
     ];
-    this.filteredArray.forEach((pendenciasLocal) => {
+    let pendenciaExcel = this.filteredArray;
+    if (pendenciaExcel.length == 0) {
+      pendenciaExcel = this.minhasPendenciasLocal;
+    }
+    pendenciaExcel.forEach((pendenciasLocal) => {
       pendenciasLocal.pendencias.forEach((pendenciaLocal) => {
         let excelFile = [
           pendenciaLocal.CD_PENDENCIA + '',
@@ -214,6 +224,8 @@ export class HistPendenciaComponent implements OnInit {
           pendenciaLocal.DT_SOLICITACAO + '',
           pendenciaLocal.Obs + '',
           pendenciaLocal.CORTE + '',
+          pendenciaLocal.QT_OP + '',
+          pendenciaLocal.MOTIVO + '',
         ];
         excelList.push(excelFile);
       });

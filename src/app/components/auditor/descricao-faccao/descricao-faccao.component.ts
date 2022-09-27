@@ -121,7 +121,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.itemsMenu = [{ title: 'Apontamento de Produção' }];
     }
     if (
-      usuarios_pendencias.includes(usuarioName!)
+      usuarios_pendencias.includes(usuarioName!) || Pages[userNivel] == 'auditor'
     ) {
       this.itemsMenu.push({ title: 'Pendências' });
     }
