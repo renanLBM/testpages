@@ -43,6 +43,8 @@ export class PCPPendenciasComponent implements OnInit {
   minhasPendenciasLocal$: BehaviorSubject<PendenciaLocal[]> =
     new BehaviorSubject<PendenciaLocal[]>([]);
 
+  filteredArray: PendenciaLocal[] = [];
+
   constructor(
     private toastrService: NbToastrService,
     private _setTituloService: SetTitleServiceService,
@@ -159,21 +161,23 @@ export class PCPPendenciasComponent implements OnInit {
     const filterValue = (event.target as HTMLInputElement).value;
 
     this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
-    let filteredArray = this.minhasPendenciasLocal;
+    this.filteredArray = this.minhasPendenciasLocal;
     // se filtro status
     // verificar se o filtro solicitante está ativo e filtrar os dois
     // caso contrário filtrar somente status
     if (filterValue.length > 0) {
-      filteredArray = this.minhasPendenciasLocal.map((_) => {
+      this.filteredArray = this.minhasPendenciasLocal.map((_) => {
         let filtered = {
           ..._,
           pendencias: _.pendencias.filter((p) => p.cod?.includes(filterValue)),
         };
         return filtered;
       });
-      filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
-      this.orderByQntPendencia(filteredArray);
-      this.minhasPendenciasLocal$.next(filteredArray);
+      this.filteredArray = this.filteredArray.filter(
+        (_) => _.pendencias.length > 0
+      );
+      this.orderByQntPendencia(this.filteredArray);
+      this.minhasPendenciasLocal$.next(this.filteredArray);
     }
   }
 
@@ -192,7 +196,7 @@ export class PCPPendenciasComponent implements OnInit {
     // verificar se o filtro solicitante está ativo e filtrar os dois
     // caso contrário filtrar somente status
     if (this.selectedSolicitante.length > 0) {
-      let filteredArray = this.minhasPendenciasLocal.map((_) => {
+      this.filteredArray = this.minhasPendenciasLocal.map((_) => {
         let filtered = {
           ..._,
           pendencias: _.pendencias.filter((p) =>
@@ -202,7 +206,7 @@ export class PCPPendenciasComponent implements OnInit {
         return filtered;
       });
       if (this.selectedStatus.length > 0) {
-        filteredArray = filteredArray.map((_) => {
+        this.filteredArray = this.filteredArray.map((_) => {
           let filtered = {
             ..._,
             pendencias: _.pendencias.filter((p) =>
@@ -212,11 +216,13 @@ export class PCPPendenciasComponent implements OnInit {
           return filtered;
         });
       }
-      filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
-      this.orderByQntPendencia(filteredArray);
-      this.minhasPendenciasLocal$.next(filteredArray);
+      this.filteredArray = this.filteredArray.filter(
+        (_) => _.pendencias.length > 0
+      );
+      this.orderByQntPendencia(this.filteredArray);
+      this.minhasPendenciasLocal$.next(this.filteredArray);
     } else if (this.selectedStatus.length > 0) {
-      let filteredArray = this.minhasPendenciasLocal.map((_) => {
+      this.filteredArray = this.minhasPendenciasLocal.map((_) => {
         let filtered = {
           ..._,
           pendencias: _.pendencias.filter((p) =>
@@ -226,7 +232,7 @@ export class PCPPendenciasComponent implements OnInit {
         return filtered;
       });
       if (this.selectedSolicitante.length > 0) {
-        filteredArray = filteredArray.map((_) => {
+        this.filteredArray = this.filteredArray.map((_) => {
           let filtered = {
             ..._,
             pendencias: _.pendencias.filter((p) =>
@@ -236,42 +242,65 @@ export class PCPPendenciasComponent implements OnInit {
           return filtered;
         });
       }
-      filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
-      this.orderByQntPendencia(filteredArray);
-      this.minhasPendenciasLocal$.next(filteredArray);
+      this.filteredArray = this.filteredArray.filter(
+        (_) => _.pendencias.length > 0
+      );
+      this.orderByQntPendencia(this.filteredArray);
+      this.minhasPendenciasLocal$.next(this.filteredArray);
     }
   }
 
   exportexcel(): void {
     /* table id is passed over here */
-    let testes = [['CD_PENDENCIA', 'cod', 'CD_LOCAL', 'NR_CICLO', 'NR_OP', 'CD_REFERENCIA', 'DS_CLASSIFICACAO', 'CD_PRODUTO_MP', 'DS_PRODUTO_MP', 'TAMANHO', 'QT_SOLICITADO', 'USUARIO', 'STATUS', 'DT_SOLICITACAO', 'Obs']];
-    this.minhasPendenciasLocal.forEach((pendenciasLocal) => {
+    let testes = [
+      [
+        'CD_PENDENCIA',
+        'cod',
+        'CD_LOCAL',
+        'NR_CICLO',
+        'NR_OP',
+        'CD_REFERENCIA',
+        'DS_CLASSIFICACAO',
+        'CD_PRODUTO_MP',
+        'DS_PRODUTO_MP',
+        'TAMANHO',
+        'QT_SOLICITADO',
+        'USUARIO',
+        'STATUS',
+        'DT_SOLICITACAO',
+        'Obs',
+        'CORTE',
+      ],
+    ];
+    this.filteredArray.forEach((pendenciasLocal) => {
       pendenciasLocal.pendencias.forEach((pendenciaLocal) => {
         let teste = [
-          pendenciaLocal.CD_PENDENCIA+'',
-          pendenciaLocal.cod+'',
-          pendenciaLocal.CD_LOCAL+'',
-          pendenciaLocal.NR_CICLO+'',
-          pendenciaLocal.NR_OP+'',
-          pendenciaLocal.CD_REFERENCIA+'',
-          pendenciaLocal.DS_CLASSIFICACAO+'',
-          pendenciaLocal.CD_PRODUTO_MP+'',
-          pendenciaLocal.DS_PRODUTO_MP+'',
-          pendenciaLocal.TAMANHO+'',
-          pendenciaLocal.QT_SOLICITADO+'',
-          pendenciaLocal.USUARIO+'',
-          pendenciaLocal.STATUS+'',
-          pendenciaLocal.DT_SOLICITACAO+'',
-          pendenciaLocal.Obs+'']
-        testes.push(teste)
-      })
-    })
+          pendenciaLocal.CD_PENDENCIA + '',
+          pendenciaLocal.cod + '',
+          pendenciaLocal.CD_LOCAL + '',
+          pendenciaLocal.NR_CICLO + '',
+          pendenciaLocal.NR_OP + '',
+          pendenciaLocal.CD_REFERENCIA + '',
+          pendenciaLocal.DS_CLASSIFICACAO + '',
+          pendenciaLocal.CD_PRODUTO_MP + '',
+          pendenciaLocal.DS_PRODUTO_MP + '',
+          pendenciaLocal.TAMANHO + '',
+          pendenciaLocal.QT_SOLICITADO + '',
+          pendenciaLocal.USUARIO + '',
+          pendenciaLocal.STATUS + '',
+          pendenciaLocal.DT_SOLICITACAO + '',
+          pendenciaLocal.Obs + '',
+          pendenciaLocal.CORTE + '',
+        ];
+        testes.push(teste);
+      });
+    });
 
     /* generate workbook and add the worksheet */
     // const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(testes);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(wb, ws, "Planilha1");
+    XLSX.utils.book_append_sheet(wb, ws, 'Planilha1');
     // var fmt = '@';
     // wb.Sheets['Sheet1']['F'] = fmt;
 

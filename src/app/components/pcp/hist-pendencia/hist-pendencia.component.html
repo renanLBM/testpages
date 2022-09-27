@@ -44,6 +44,7 @@
               <th>Cód. OP</th>
               <th>Classificação</th>
               <th>Matéria Prima</th>
+              <th>Corte</th>
               <th>Qtd. Solicitada</th>
               <th>Usuário Solicitante</th>
               <th>Data Solicitação</th>
@@ -54,8 +55,10 @@
               <tr>
                 <td data-th="Cód. OP">{{pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
                 <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
-                <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP }}</td>
-                <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
+                <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP}}</td>
+                <td data-th="Corte">{{pendencia.CORTE}}</td>
+                <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }} ({{pendencia.QT_SOLICITADO/(pendencia.QT_OP
+                  || 0) | number:'1.0':'pt-Br'}})</td>
                 <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
                 <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
                 <td data-th="Status">
@@ -79,6 +82,7 @@
           <th>Cód. OP</th>
           <th>Classificação</th>
           <th>Matéria Prima</th>
+          <th>Corte</th>
           <th>Qtd. Solicitada</th>
           <th>Usuário Solicitante</th>
           <th>Data Solicitação</th>
@@ -89,6 +93,7 @@
           <td data-th="Cód. OP">...</td>
           <td data-th="Classificação">...</td>
           <td data-th="Matéria Prima">...</td>
+          <td data-th="Corte">...</td>
           <td data-th="Qtd. Solicitada">...</td>
           <td data-th="Data Solicitação">...</td>
           <td data-th="Status">...</td>

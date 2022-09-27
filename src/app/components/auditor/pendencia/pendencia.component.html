@@ -134,17 +134,17 @@
                         <td data-th="Produto">{{ item.DS_PRODUTO_MP }}</td>
                         <td *ngIf="mp.DS_CLASSIFICACAO == 'TECIDO'" data-th="corte">
                           <input nbInput status="warning" type="text" class="corte-input" id="corte"
-                            placeholder="Parte do corte desejado">
+                            placeholder="Parte do corte desejado" required>
                         </td>
                         <td data-th="Tamanho da peça">
-                          <nb-select placeholder="P/M/G" status="warning" [id]="item.CD_PRODUTO_MP+'_tamanho'">
+                          <nb-select class="tamanho-input" placeholder="P/M/G" status="warning" [id]="item.CD_PRODUTO_MP+'_tamanho'" required>
                             <nb-option [value]="idx" *ngFor="let t of item.DS_TAMANHO; let idx = index">{{ t }}
                             </nb-option>
                           </nb-select>
                         </td>
                         <td data-th="Solicitação" [id]="i">
                           <input nbInput status="warning" class="solicitado-input" type="number"
-                          [id]="item.CD_PRODUTO_MP+'-'+item.DS_PRODUTO_MP" min="0" [max]="qntOp" placeholder="0">
+                          [id]="item.CD_PRODUTO_MP+'-'+item.DS_PRODUTO_MP" min="0" [max]="qntOp" placeholder="0" required>
                         </td>
                         <hr>
                       </tr>

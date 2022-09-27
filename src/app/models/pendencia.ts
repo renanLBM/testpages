@@ -18,6 +18,8 @@ export interface Pendencia {
   DT_MODIFICACAO?: string;
   alterado?: boolean;
   cod?: string;
+  CORTE?: string;
+  QT_OP?: number;
 }
 
 export type Pendencias = Array<Pendencia>;

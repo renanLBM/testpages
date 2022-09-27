@@ -16,8 +16,7 @@ import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 import { environment } from 'src/environments/environment';
 
-
-const usuarios_pendencias = environment.usuarios_pendencias
+const usuarios_pendencias = environment.usuarios_pendencias;
 interface MPList {
   id?: string;
   qnt?: number;
@@ -41,7 +40,6 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     new BehaviorSubject<MateriasPrimas>([]);
 
   obsValue = '';
-  corteValue = '';
   tamanhoList: string[] = [];
   solicitacao: Pendencias = [];
   inputList: MPList[] = [];
@@ -74,7 +72,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     this._userService.getUser().subscribe((user) => {
       this.loggedUser = user.nome!;
 
-      if(!usuarios_pendencias.includes(this.loggedUser)){
+      if (!usuarios_pendencias.includes(this.loggedUser)) {
         this._router.navigate(['login']);
       }
     });
@@ -138,22 +136,24 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
   enviar() {
     this.loading.next(true);
-    this.corteValue = this.corteValue.replace(this.regSanitizer, '');
+    let descricaoCorte = (document.getElementById('corte') as HTMLInputElement)
+      .value;
+    descricaoCorte = descricaoCorte.replace(this.regSanitizer, '');
     this.obsValue = this.obsValue.replace(this.regSanitizer, '');
 
     // passar por todos os inputs e pegar valor
     this.materiasPrimas.forEach((materiaPrima) => {
       let cod =
-      materiaPrima.CD_PRODUTO_MP.toString() +
-      '-' +
+        materiaPrima.CD_PRODUTO_MP.toString() +
+        '-' +
         materiaPrima.DS_PRODUTO_MP;
-        let inputSelecionado = document.getElementById(cod) as HTMLInputElement;
+      let inputSelecionado = document.getElementById(cod) as HTMLInputElement;
       let inputSelecionadoValor =
-      parseInt(inputSelecionado.value) > this.qntOp
-      ? this.qntOp
-      : parseInt(inputSelecionado.value);
+        parseInt(inputSelecionado.value) > this.qntOp
+          ? this.qntOp
+          : parseInt(inputSelecionado.value);
 
-      if (!!inputSelecionadoValor && cod != '1-corte') {
+      if (!!inputSelecionadoValor) {
         this.inputList.push({
           id: cod,
           qnt: inputSelecionadoValor,
@@ -161,15 +161,11 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
       }
     });
 
-    let quantidadeCorte = document.getElementById(
-      '1-corte'
-      ) as HTMLInputElement;
-
-      // se não teve nenhuma inserção de quantidade retorna erro
-      if (!this.inputList.length && !parseInt(quantidadeCorte.value)) {
-        this.toastrService.warning(
-          'Nenhum campo de matéria prima preenchido!',
-          'Atenção!!!',
+    // se não teve nenhuma inserção de quantidade retorna erro
+    if (!this.inputList.length) {
+      this.toastrService.warning(
+        'Preencha a quantidade solicitada!',
+        'Atenção!!!',
         {
           preventDuplicates: true,
         }
@@ -179,7 +175,9 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     }
 
     // listar todos os códigos de matéria prima com valor inserido
-    let codMPList = this.inputList.flatMap((mp) => mp.id);
+    let codMPSelecionado = '';
+    let tamanhoSelecionado = '';
+    let qntSelecionado = 0
 
     // criar objeto que será passado para o back
     this.materiasPrimasList.forEach((produto) => {
@@ -188,22 +186,28 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
       produto.mp_list.forEach((materiaPrima) => {
         let tmpCD_MP = materiaPrima.CD_PRODUTO_MP.toString();
         let cod = tmpCD_MP + '-' + materiaPrima.DS_PRODUTO_MP;
+        codMPSelecionado = '';
+        tamanhoSelecionado = '';
+        qntSelecionado = 0
 
         let tamanhoSelecionadoInput = (
           document.getElementById(tmpCD_MP + '_tamanho') as HTMLSelectElement
         ).children[0].children[0];
-        let tamanhoSelecionado = '';
         if (tamanhoSelecionadoInput.innerHTML.substring(0, 5) != 'P/M/G') {
-          tamanhoSelecionado = tamanhoSelecionadoInput.innerHTML.substring(
-            0,
-            2
-          );
+          tamanhoSelecionado = tamanhoSelecionadoInput.innerHTML.split(' ')[0];
         }
 
-        let qntSelecionado: number =
-          this.inputList.find((_) => _.id == cod)?.qnt || 0;
+        // SE NÃO FOR SELECIONADO TAMANHO RETORNA ERRO
+        if (tamanhoSelecionado == '') {
+          return;
+        }
 
-        if (codMPList.includes(cod)) {
+        qntSelecionado =
+          this.inputList.find((_) => _.id == cod)?.qnt || 0;
+        codMPSelecionado =
+          this.inputList.find((_) => _.id == cod)?.id || '';
+
+        if (qntSelecionado > 0 && tamanhoSelecionado != '' && codMPSelecionado != '') {
           this.solicitacao.push({
             CD_LOCAL: parseInt(this.cdLocal),
             NR_CICLO: parseInt(this.codOp.split('-')[0]),
@@ -218,58 +222,12 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
             DT_SOLICITACAO: new Date().toLocaleString('pt-Br'),
             STATUS: 'Em análise',
             Obs: this.obsValue,
+            CORTE: descricaoCorte,
+            QT_OP: this.qntOp
           });
         }
       });
     });
-
-    // corte
-    let descricaoCorte = (document.getElementById('corte') as HTMLInputElement)
-      .value;
-    descricaoCorte = descricaoCorte.replace(this.regSanitizer, '');
-    let corteInput = document.getElementById('1_tamanho') as HTMLSelectElement;
-    let tamanhoCorte = '';
-    if (corteInput.innerHTML.substring(0, 5) != 'P/M/G') {
-      tamanhoCorte =
-        corteInput.children[0].children[0].innerHTML.split('<!--')[0];
-    }
-
-    tamanhoCorte = !!parseInt(tamanhoCorte)
-      ? tamanhoCorte.substring(0, -1)
-      : tamanhoCorte;
-
-    let quantidadeCorteValor = parseInt(quantidadeCorte.value);
-
-    if (!!quantidadeCorteValor) {
-      if (!descricaoCorte && !tamanhoCorte) {
-        this.toastrService.warning(
-          'Preencha todos os campos do CORTE para enviar!',
-          'Atenção!!!',
-          {
-            preventDuplicates: true,
-          }
-        );
-        this.loading.next(false);
-        return;
-      } else {
-        // necessário pois pode ter somente solicitação de aviamento
-        this.solicitacao.push({
-          CD_LOCAL: parseInt(this.cdLocal),
-          NR_CICLO: parseInt(this.codOp.split('-')[0]),
-          NR_OP: parseInt(this.codOp.split('-')[1]),
-          CD_REFERENCIA: parseInt(this.ref),
-          DS_CLASSIFICACAO: 'CORTE',
-          CD_PRODUTO_MP: 1,
-          DS_PRODUTO_MP: descricaoCorte,
-          TAMANHO: tamanhoCorte,
-          QT_SOLICITADO: quantidadeCorteValor,
-          USUARIO: this.loggedUser,
-          DT_SOLICITACAO: new Date().toLocaleString('pt-Br'),
-          STATUS: 'Em análise',
-          Obs: this.obsValue,
-        });
-      }
-    }
 
     // abrir modal com motivos da solicitação
     if (this.solicitacao.length > 0) {
@@ -296,8 +254,28 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
           this.loading.next(false);
         },
       });
+      this.limparForm(true);
+    } else {
+      this.toastrService.warning(
+        'Alguns itens não foram enviados!',
+        'Atenção!!!',
+        {
+          preventDuplicates: true,
+        }
+      );
+      this.loading.next(false);
+      return;
     }
-    this.limparForm(true);
+
+    // caso o tamanho não seja selecionado ele não irá chamar o backend e passara por esse if
+    // para exibir a mensagem de erro para o usuário
+    if (tamanhoSelecionado == '') {
+      this.toastrService.warning('Preencha o tamanho da peça!', 'Atenção!!!', {
+        preventDuplicates: true,
+      });
+      this.loading.next(false);
+      return;
+    }
   }
 
   limparForm(send?: boolean) {

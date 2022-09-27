@@ -14,6 +14,9 @@ $breakpoint-alpha: 480px;
   justify-content: center;
   align-items: center;
   right: 3em;
+  margin-bottom: 0.5em;
+  border: 1px solid rgb(0 0 0 / 15%);
+  border-radius: 0.75em;
 }
 
 .bt-exportar {
@@ -164,12 +167,12 @@ nb-alert {
   }
 
   th {
-    font-size: 1em;
+    font-size: .95em;
     display: none; // for accessibility, use a visually hidden method here instead! Thanks, reddit!
   }
 
   td {
-    font-size: 0.85em;
+    font-size: .8em;
     display: block;
 
     &:first-child {

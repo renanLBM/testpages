@@ -39,6 +39,8 @@ export class HistPendenciaComponent implements OnInit {
   minhasPendenciasLocal$: BehaviorSubject<PendenciaLocal[]> =
     new BehaviorSubject<PendenciaLocal[]>([]);
 
+  filteredArray: PendenciaLocal[] = [];
+
   constructor(
     private _location: Location,
     private _setTituloService: SetTitleServiceService,
@@ -116,22 +118,21 @@ export class HistPendenciaComponent implements OnInit {
     const filterValue = (event.target as HTMLInputElement).value;
 
     this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
-    console.log(this.minhasPendencias);
-    let filteredArray = this.minhasPendenciasLocal;
+    this.filteredArray = this.minhasPendenciasLocal;
     // se filtro status
     // verificar se o filtro solicitante está ativo e filtrar os dois
     // caso contrário filtrar somente status
     if (filterValue.length > 0) {
-      filteredArray = this.minhasPendenciasLocal.map((_) => {
+      this.filteredArray = this.minhasPendenciasLocal.map((_) => {
         let filtered = {
           ..._,
           pendencias: _.pendencias.filter((p) => p.cod?.includes(filterValue)),
         };
         return filtered;
       });
-      filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
-      this.orderByQntPendencia(filteredArray);
-      this.minhasPendenciasLocal$.next(filteredArray);
+      this.filteredArray = this.filteredArray.filter((_) => _.pendencias.length > 0);
+      this.orderByQntPendencia(this.filteredArray);
+      this.minhasPendenciasLocal$.next(this.filteredArray);
     }
   }
 
@@ -147,7 +148,7 @@ export class HistPendenciaComponent implements OnInit {
     // verificar se o filtro solicitante está ativo e filtrar os dois
     // caso contrário filtrar somente status
     if (this.selectedSolicitante.length > 0) {
-      let filteredArray = this.minhasPendenciasLocal.map((_) => {
+      this.filteredArray = this.minhasPendenciasLocal.map((_) => {
         let filtered = {
           ..._,
           pendencias: _.pendencias.filter((p) =>
@@ -156,9 +157,9 @@ export class HistPendenciaComponent implements OnInit {
         };
         return filtered;
       });
-      filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
-      this.orderByQntPendencia(filteredArray);
-      this.minhasPendenciasLocal$.next(filteredArray);
+      this.filteredArray = this.filteredArray.filter((_) => _.pendencias.length > 0);
+      this.orderByQntPendencia(this.filteredArray);
+      this.minhasPendenciasLocal$.next(this.filteredArray);
     }
   }
 
@@ -173,9 +174,8 @@ export class HistPendenciaComponent implements OnInit {
   }
 
   exportexcel(): void {
-    console.log('taertewr');
     /* table id is passed over here */
-    let testes = [
+    let excelList = [
       [
         'CD_PENDENCIA',
         'cod',
@@ -192,12 +192,12 @@ export class HistPendenciaComponent implements OnInit {
         'STATUS',
         'DT_SOLICITACAO',
         'Obs',
+        'CORTE',
       ],
     ];
-    this.minhasPendenciasLocal.forEach((pendenciasLocal) => {
+    this.filteredArray.forEach((pendenciasLocal) => {
       pendenciasLocal.pendencias.forEach((pendenciaLocal) => {
-        console.log(pendenciaLocal);
-        let teste = [
+        let excelFile = [
           pendenciaLocal.CD_PENDENCIA + '',
           pendenciaLocal.cod + '',
           pendenciaLocal.CD_LOCAL + '',
@@ -213,14 +213,15 @@ export class HistPendenciaComponent implements OnInit {
           pendenciaLocal.STATUS + '',
           pendenciaLocal.DT_SOLICITACAO + '',
           pendenciaLocal.Obs + '',
+          pendenciaLocal.CORTE + '',
         ];
-        testes.push(teste);
+        excelList.push(excelFile);
       });
     });
 
     /* generate workbook and add the worksheet */
     // const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
-    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(testes);
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(excelList);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Planilha1');
     // var fmt = '@';
