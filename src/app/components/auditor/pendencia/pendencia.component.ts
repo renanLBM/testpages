@@ -79,7 +79,6 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
     this._userService.getUser().subscribe((user) => {
       this.loggedUser = user.nome!;
-      console.log(Pages[userNivel]);
       if(Pages[userNivel] != 'auditor'){
         if (!usuarios_pendencias.includes(this.loggedUser)) {
           this._router.navigate(['login']);
