@@ -67,6 +67,7 @@ export class DialogDefaultBodyComponent {
       });
     }else{
       this.loading.next(false);
+      this.dialogRef.close(true);
     }
   }
 }
