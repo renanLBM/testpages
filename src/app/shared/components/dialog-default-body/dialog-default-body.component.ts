@@ -65,6 +65,8 @@ export class DialogDefaultBodyComponent {
           return this.dialogRef.close(false);
         },
       });
+    }else{
+      this.loading.next(false);
     }
   }
 }
