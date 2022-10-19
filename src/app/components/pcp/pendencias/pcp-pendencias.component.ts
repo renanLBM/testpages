@@ -105,6 +105,15 @@ export class PCPPendenciasComponent implements OnInit {
             });
             // set the solicitante dropdown
             this.solicitanteEnum = Array.from(new Set(tmpSolicitante));
+            this.solicitanteEnum = this.solicitanteEnum.sort((a, b) => {
+              if (a > b) {
+                return 1;
+              } else if (b > a) {
+                return -1;
+              } else {
+                return 0;
+              }
+            });
 
             this.orderByQntPendencia(this.minhasPendenciasLocal);
             this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
@@ -275,7 +284,7 @@ export class PCPPendenciasComponent implements OnInit {
       ],
     ];
     let pendenciaExcel = this.filteredArray;
-    if(pendenciaExcel.length == 0) {
+    if (pendenciaExcel.length == 0) {
       pendenciaExcel = this.minhasPendenciasLocal;
     }
     pendenciaExcel.forEach((pendenciasLocal) => {

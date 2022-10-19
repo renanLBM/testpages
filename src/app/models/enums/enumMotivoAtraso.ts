@@ -5,7 +5,7 @@ export enum MotivoAtraso {
   complexidade_alta = 'Complexidade alta',
   conserto = 'Conserto',
   modelagem = 'Modelagem',
-  reposicao_corte ='Reposição de corte',
+  reposicao_corte = 'Reposição de corte',
   reprovado_inspecao = 'Reprovado na inspeção',
   sacrificio = 'Sacrifício'
 }
