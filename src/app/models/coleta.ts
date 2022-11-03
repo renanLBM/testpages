@@ -4,7 +4,7 @@ export interface Coleta {
   NR_CICLO: number,
   NR_OP: number,
   CD_REFERENCIA: number,
-  PREV_RETORNO: string,
+  DT_PREVRETORNO: string,
   QT_OP: number,
   Status: string,
   USUARIO: string,

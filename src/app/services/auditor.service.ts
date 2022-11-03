@@ -23,11 +23,11 @@ export class AuditorService {
     private _tokenService: TokenService
   ) {}
 
-  getMotivos(id?: string): Observable<Motivos> {
+  getMotivos(id?: string): Observable<any> {
     const headers = this.getToken();
     if (!id) {
       return this._httpClient
-        .get<Motivos>(`${API}/api/getmotivo`, {
+        .get<any>(`${API}/api/atraso/all`, {
           headers,
         })
         .pipe(
@@ -38,7 +38,7 @@ export class AuditorService {
         );
     } else {
       return this._httpClient
-        .get<Motivos>(`${API}/api/getmotivo/${id}`, {
+        .get<any>(`${API}/api/atraso/${id}`, {
           headers,
         })
         .pipe(
@@ -80,11 +80,11 @@ export class AuditorService {
       );
   }
 
-  getApontamento(id?: string): Observable<Apontamentos> {
+  getApontamento(id?: string): Observable<any> {
     const headers = this.getToken();
     if (!id) {
       return this._httpClient
-        .get<Apontamentos>(`${API}/api/getapontamento`, {
+        .get<any>(`${API}/api/apontamento/all`, {
           headers,
         })
         .pipe(
@@ -95,7 +95,7 @@ export class AuditorService {
         );
     } else {
       return this._httpClient
-        .get<Apontamentos>(`${API}/api/getapontamento/${id}`, {
+        .get<any>(`${API}/api/apontamento/${id}`, {
           headers,
         })
         .pipe(

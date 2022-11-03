@@ -160,8 +160,8 @@ export class DescricaoFaccaoComponent implements OnInit {
     this._auditorService
       .getApontamento(this.routeId)
       .subscribe((apontamentos) => {
-        apontamentos = apontamentos.filter(
-          (apontamentoBase) => apontamentoBase.CD_LOCAL + '' == this.routeId
+        apontamentos = JSON.parse(apontamentos.data).filter(
+          (apontamentoBase: { CD_LOCAL: string; }) => apontamentoBase.CD_LOCAL + '' == this.routeId
         );
         let situacaoEnum = Object.values(ApontamentoList).filter(
           (value) => typeof value === 'string'
@@ -211,11 +211,11 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
 
     ops.sort((a, b) => {
-      let dtPrevRetornoA: string[] = a.PREV_RETORNO.split(' ')[0].split('/');
+      let dtPrevRetornoA: string[] = a.DT_PREVRETORNO.split(' ')[0].split('/');
       let dataRetornoA: Date = new Date(
         `${dtPrevRetornoA[2]}-${dtPrevRetornoA[1]}-${dtPrevRetornoA[0]} 04:00:00`
       );
-      let dtPrevRetornoB: string[] = b.PREV_RETORNO.split(' ')[0].split('/');
+      let dtPrevRetornoB: string[] = b.DT_PREVRETORNO.split(' ')[0].split('/');
       let dataRetornoB: Date = new Date(
         `${dtPrevRetornoB[2]}-${dtPrevRetornoB[1]}-${dtPrevRetornoB[0]} 04:00:00`
       );
@@ -233,8 +233,8 @@ export class DescricaoFaccaoComponent implements OnInit {
     ops.forEach((op: OP) => {
       let dtEntrada = op.DT_ENTRADA.split(' ')[0].split('/');
       op.DT_ENTRADA = `${dtEntrada[2]}-${dtEntrada[1]}-${dtEntrada[0]} 04:00:00`;
-      let dtPrevRetorno = op.PREV_RETORNO.split(' ')[0].split('/');
-      op.PREV_RETORNO = `${dtPrevRetorno[2]}-${dtPrevRetorno[1]}-${dtPrevRetorno[0]} 04:00:00`;
+      let dtPrevRetorno = op.DT_PREVRETORNO.split(' ')[0].split('/');
+      op.DT_PREVRETORNO = `${dtPrevRetorno[2]}-${dtPrevRetorno[1]}-${dtPrevRetorno[0]} 04:00:00`;
 
       let newImage = new Image();
       newImage.src =
@@ -268,7 +268,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         op.cod! + '-' + op.CD_LOCAL
       );
 
-      let prevdate = new Date(op.PREV_RETORNO);
+      let prevdate = new Date(op.DT_PREVRETORNO);
       let prev = prevdate
         ? prevdate.toLocaleString('pt-br').substring(0, 10)
         : '01/01/2001';

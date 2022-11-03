@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { Faccoes } from 'src/app/models/faccao';
+import { OPDescricoes } from 'src/app/models/opdescricao';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
@@ -41,7 +41,7 @@ export class PcpDescOpsComponent implements OnInit {
   apontamento!: Apontamento;
   faccaoList: OPs = [];
   motivoList: Motivos = [];
-  faccao: Faccoes = [];
+  faccao: OPDescricoes = [];
   listOPs$: BehaviorSubject<OPs> = new BehaviorSubject(this.faccaoList);
 
   dtHoje = new Date();
@@ -62,9 +62,9 @@ export class PcpDescOpsComponent implements OnInit {
     this.selectedFilters = this._opsFilteredService.getFilter();
 
     this._auditorService.getApontamento().subscribe((a) => {
-      this.apontamentoList = this.filterApontamento(a);
+      this.apontamentoList = this.filterApontamento(JSON.parse(a.data));
       this._auditorService.getMotivos().subscribe((m) => {
-        this.motivoList = m;
+        this.motivoList = JSON.parse(m.data);
 
         this.dtOptions = {
           language: LanguagePtBr.ptBr_datatable,
@@ -104,7 +104,7 @@ export class PcpDescOpsComponent implements OnInit {
           }else {
             this._opsService.getAllOPs().subscribe({
               next: (list) => {
-                let opsList = this.filterOPs(list);
+                let opsList = this.filterOPs(JSON.parse(list.data));
                 this.getOPS(opsList);
 
                 this.listOPs$.next(this.faccaoList);
@@ -128,7 +128,7 @@ export class PcpDescOpsComponent implements OnInit {
           }else {
             this._opsService.getOpByStatus(this.tituloStatus).subscribe({
               next: (list) => {
-                let opsList = this.filterOPs(list);
+                let opsList = this.filterOPs(JSON.parse(list.data));
                 this.getOPS(opsList);
 
                 this.listOPs$.next(this.faccaoList);
@@ -160,21 +160,13 @@ export class PcpDescOpsComponent implements OnInit {
       this.tituloLocal = this.faccaoList[0].DS_LOCAL;
     }
     this.faccaoList.map((x) => {
-      if (!x.PREV_RETORNO) {
-        x.PREV_RETORNO = '01/01/2001 00:00:00';
+      if (!x.DT_PREVRETORNO) {
+        x.DT_PREVRETORNO = '01/01/2001 00:00:00';
+      }else {
+        x.DT_PREVRETORNO = new Date(+x.DT_PREVRETORNO).toLocaleString('pb-Br');
       }
 
-      let newDtEntrada = x.DT_ENTRADA.split(' ')[0].split('/');
-      let dataEntrada = new Date(
-        +newDtEntrada[2],
-        +newDtEntrada[1] - 1,
-        +newDtEntrada[0]
-      );
-      let newDtPrev = x.PREV_RETORNO.split(' ')[0].split('/');
-      x.PREV_RETORNO = newDtPrev[2] + '-' + newDtPrev[1] + '-' + newDtPrev[0];
-      let dtPrev = new Date(+newDtPrev[2], +newDtPrev[1] - 1, +newDtPrev[0]);
-
-      x.css_class = dtPrev < this.dtHoje ? 'atraso' : 'andamento';
+      x.css_class = x.Status == 'Em atraso' ? 'atraso' : 'andamento';
 
       let atraso!: Motivo;
       if (this.motivoList.toString() != 'error') {
@@ -193,8 +185,9 @@ export class PcpDescOpsComponent implements OnInit {
       if (!x.DS_COORDENADO) {
         x.DS_COORDENADO = x.DS_GRUPO;
       }
+      let dt_entrada = new Date(+x.DT_ENTRADA);
       x['dias_faccao'] = Math.floor(
-        (this.dtHoje.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
+        (this.dtHoje.getTime() - dt_entrada.getTime()) / (24 * 3600 * 1000)
       );
 
       x['motivo_atraso'] = '-';
@@ -202,12 +195,7 @@ export class PcpDescOpsComponent implements OnInit {
 
       //  verifica se teve atraso para essa OP
       if (atraso) {
-        let newDtNovaPrev = atraso.NOVA_PREVISAO.split('/');
-        let dtNovaPrev = new Date(
-          +newDtNovaPrev[2],
-          +newDtNovaPrev[1] - 1,
-          +newDtNovaPrev[0]
-        );
+        let dtNovaPrev = new Date(+atraso.DT_PREV_RETORNO_NOVA);
 
         if (dtNovaPrev >= this.dtHoje) {
           x['motivo_atraso'] = atraso.MOTIVO;
@@ -217,7 +205,7 @@ export class PcpDescOpsComponent implements OnInit {
 
       //  verifica se teve apontamento para essa OP
       let apontamentoShowed: string;
-      apontamentoShowed = apontamento ? apontamento.Situacao! : '-';
+      apontamentoShowed = apontamento ? apontamento.DS_APONTAMENTO_DS! : '-';
       apontamentoShowed = apontamentoShowed.includes('Parado')
         ? 'Parado'
         : apontamentoShowed;
@@ -226,7 +214,7 @@ export class PcpDescOpsComponent implements OnInit {
           '0' +
           ApontamentoList[apontamentoShowed as keyof typeof ApontamentoList] +
           ' - ' +
-          apontamento.Situacao;
+          apontamento.DS_APONTAMENTO_DS;
       } else {
         x['apontamento'] = '-';
       }
@@ -259,7 +247,7 @@ export class PcpDescOpsComponent implements OnInit {
 
     if (hasOrigem && hasColecao) {
       listFilteredOPs = listFilteredOPs.filter(
-        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.DS_CICLO)
+        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.NR_CICLO+'')
       );
     } else if (hasOrigem) {
       listFilteredOPs = listFilteredOPs.filter((x) =>
@@ -267,7 +255,7 @@ export class PcpDescOpsComponent implements OnInit {
       );
     } else if (hasColecao) {
       listFilteredOPs = listFilteredOPs.filter((x) =>
-        colecao.includes(x.DS_CICLO)
+        colecao.includes(x.NR_CICLO+'')
       );
     }
     return listFilteredOPs;

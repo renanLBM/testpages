@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Faccoes } from 'src/app/models/faccao';
-import { OPs } from 'src/app/models/ops';
+import { OPDescricoes } from 'src/app/models/opdescricao';
+import { OP, OPs } from 'src/app/models/ops';
 import { MotoristaService } from 'src/app/services/motorista.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
@@ -23,8 +23,8 @@ export class ListFaccoesComponent implements OnInit {
   listOPsDisponiveis: OPs = [];
 
   localList: any[] = [];
-  faccaoList: Faccoes = [];
-  faccaoList$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.faccaoList);
+  faccaoList: OPDescricoes = [];
+  faccaoList$: BehaviorSubject<OPDescricoes> = new BehaviorSubject(this.faccaoList);
 
   constructor(
     private _setTitle: SetTitleServiceService,
@@ -45,8 +45,9 @@ export class ListFaccoesComponent implements OnInit {
         // listagem de todas as facções que possuem ops com status de apontamento "Disponível para coleta"
         this._opsService.getAllOPs().subscribe({
           next: (ops) => {
+            let listOPs = JSON.parse(ops.data);
 
-            this.listOPsDisponiveis = ops.filter((op) => {
+            this.listOPsDisponiveis = listOPs.filter((op: OP) => {
               return this.listCodOPsDisponiveis.includes(
                 op.cod + '-' + op.CD_LOCAL.toString()
               );

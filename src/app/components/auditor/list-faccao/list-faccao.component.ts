@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Pages } from 'src/app/models/enums/enumPages';
-import { Faccao, Faccoes } from 'src/app/models/faccao';
+import { OPDescricao, OPDescricoes } from 'src/app/models/opdescricao';
 import { OPs } from 'src/app/models/ops';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -37,8 +37,8 @@ export class ListFaccaoComponent implements OnInit {
   localList: any[] = [];
   AllOpsList: OPs = [];
   AllOpsList2: OPs = [];
-  faccaoList: Faccoes = [];
-  faccaoList$: BehaviorSubject<Faccao[]> = new BehaviorSubject(this.faccaoList);
+  faccaoList: OPDescricoes = [];
+  faccaoList$: BehaviorSubject<OPDescricoes> = new BehaviorSubject(this.faccaoList);
 
   constructor(
     private _setTitle: SetTitleServiceService,

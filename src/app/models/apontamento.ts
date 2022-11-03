@@ -4,7 +4,7 @@ export interface Apontamento {
   NR_CICLO: number,
   NR_OP: number,
   CD_REFERENCIA: number,
-  PREV_RETORNO: string,
+  DT_PREVRETORNO: string,
   QT_OP: number,
   Status: string,
   Situacao?: string,
@@ -13,6 +13,27 @@ export interface Apontamento {
   cod: string,
   latitude?: number,
   longitude?: number,
+
+  DS_APONTAMENTO_DS?: string
 }
 
 export type Apontamentos = Array<Apontamento>;
+
+export interface ApontamentoResumido {
+  DS_CLASS: string,
+  NR_CICLO: number,
+  DS_APONTAMENTO_DS: string,
+  sum: number,
+  count: number,
+}
+
+export type ApontamentosResumidos = Array<ApontamentoResumido>;
+
+export interface ApontamentoTotal {
+  DS_APONTAMENTO_DS: string,
+  cor: string,
+  qnt: number,
+  pecas: number,
+}
+
+export type ApontamentosTotal = Array<ApontamentoTotal>;

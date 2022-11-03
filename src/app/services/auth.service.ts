@@ -92,25 +92,24 @@ export class AuthService {
       .pipe(take(1))
       .subscribe({
         next: (x) => {
-          if (x.body.message != 'User logged!') {
-            // inserir UID no banco
-
-            const displayNameUser =
-              user.displayName == null ? user.email : user.displayName;
-            const data: User = {
-              uid: user.uid,
-              email: user.email,
-              displayName: displayNameUser,
-              role: 'Auditor',
-              active: '1',
-              nome: displayNameUser?.toString().replace(' ', '.'),
-              nivel: 1,
-            };
-          }
+          // if (x.body.message != 'User logged!') {
+          //   // inserir UID no banco
+          //   const displayNameUser =
+          //     user.displayName == null ? user.email : user.displayName;
+          //   const data: User = {
+          //     uid: user.uid,
+          //     email: user.email,
+          //     displayName: displayNameUser,
+          //     role: 'Auditor',
+          //     active: '1',
+          //     nome: displayNameUser?.toString().replace(' ', '.'),
+          //     nivel: 1,
+          //   };
+          // }
 
           if (!this._userService.isLogged()) {
             this.toastrService.danger(
-              'Erro ao enviar ao efetuar login!',
+              'Erro ao efetuar login!',
               'Erro!',
               {
                 preventDuplicates: true,
@@ -122,7 +121,7 @@ export class AuthService {
               .getUser()
               .pipe(take(1))
               .subscribe((_) => {
-                if (_.active != '1') {
+                if (_.nivel! < 1) {
                   this.logout(true);
                   this.toastrService.danger(
                     'Erro ao enviar ao efetuar login!',

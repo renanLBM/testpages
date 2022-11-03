@@ -88,15 +88,15 @@ nb-layout-column {
     user-select: none;
   }
 
-  .inspecao {
+  .status-inspecao {
     background: nb-theme(color-warning-new);
   }
 
-  .coletado {
+  .status-coletado {
     background: nb-theme(color-success-500);
   }
 
-  .industrializado {
+  .status-industrializado {
     background: nb-theme(color-danger-800);
   }
 }

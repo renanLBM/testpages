@@ -88,17 +88,17 @@ export class DescricaoFaccaoComponent implements OnInit {
               this.listCodOPsDisponiveis.includes(op.cod + '-' + op.CD_LOCAL)
             );
             ops.sort((a, b) => {
-              let dataRetornoA = `${a.PREV_RETORNO.substring(
+              let dataRetornoA = `${a.DT_PREVRETORNO.substring(
                 6,
                 10
-              )}-${a.PREV_RETORNO.substring(3, 5)}-${a.PREV_RETORNO.substring(
+              )}-${a.DT_PREVRETORNO.substring(3, 5)}-${a.DT_PREVRETORNO.substring(
                 0,
                 2
               )}`;
-              let dataRetornoB = `${b.PREV_RETORNO.substring(
+              let dataRetornoB = `${b.DT_PREVRETORNO.substring(
                 6,
                 10
-              )}-${b.PREV_RETORNO.substring(3, 5)}-${b.PREV_RETORNO.substring(
+              )}-${b.DT_PREVRETORNO.substring(3, 5)}-${b.DT_PREVRETORNO.substring(
                 0,
                 2
               )}`;
@@ -134,7 +134,7 @@ export class DescricaoFaccaoComponent implements OnInit {
                 ciclo: op.NR_CICLO,
                 op: op.NR_OP,
                 ref: op.CD_REFERENCIA,
-                previsao: op.PREV_RETORNO.substring(0, 10),
+                previsao: op.DT_PREVRETORNO.substring(0, 10),
                 Situacao: maiorApontamento.situacao,
                 checked: foiColetado,
                 descricao: op.DS_GRUPO,
@@ -250,7 +250,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       NR_CICLO: op.ciclo!,
       NR_OP: op.op!,
       CD_REFERENCIA: op.ref,
-      PREV_RETORNO: op.previsao,
+      DT_PREVRETORNO: op.previsao,
       QT_OP: op.qnt!,
       Status: op.status!,
       USUARIO: this.user,
@@ -298,7 +298,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       NR_CICLO: op.ciclo!,
       NR_OP: op.op!,
       CD_REFERENCIA: op.ref,
-      PREV_RETORNO: op.previsao,
+      DT_PREVRETORNO: op.previsao,
       QT_OP: op.qnt!,
       Status: op.status!,
       USUARIO: this.user,
@@ -328,7 +328,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       NR_CICLO: op.ciclo!,
       NR_OP: op.op!,
       CD_REFERENCIA: op.ref,
-      PREV_RETORNO: op.previsao,
+      DT_PREVRETORNO: op.previsao,
       QT_OP: op.qnt!,
       Status: op.status!,
       Situacao: 'Coletado',
