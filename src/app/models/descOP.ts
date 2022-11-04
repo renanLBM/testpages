@@ -6,7 +6,7 @@ export interface descOP {
   cod: string,
   ciclo?: number,
   op?: number,
-  ref: number,
+  ref: string,
   previsao: string,
   entrada?: string,
   semana?: number,

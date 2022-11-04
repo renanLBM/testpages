@@ -58,12 +58,12 @@
                       <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
                       <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
                       <td data-th="Status">
-                        <nb-alert [ngClass]="pendencia.STATUS" class="nv-alert">{{
-                          pendencia.STATUS }}</nb-alert>
+                        <nb-alert [ngClass]="pendencia.DS_STATUS_PENDENCIA" class="nv-alert">{{
+                          pendencia.DS_STATUS_PENDENCIA }}</nb-alert>
                       </td>
                       <td data-th="Observações">{{pendencia.Obs }}</td>
                       <td data-th="Confirmar Recebimento" class="recebido-row">
-                        <div class="nv-alert confirmar" *ngIf="pendencia.STATUS == 'Enviado'; else aguardando"
+                        <div class="nv-alert confirmar" *ngIf="pendencia.DS_STATUS_PENDENCIA == 'Enviado'; else aguardando"
                           (click)="confirmarRecebimento(pendencia)">
                           <a>Marcar como Recebido</a>
                         </div>

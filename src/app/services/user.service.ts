@@ -24,6 +24,7 @@ interface RetornoAPI {
 })
 export class UserService {
   private usuarioSubject = new BehaviorSubject<User>({
+    CD_USUARIO: 0,
     nivel: 0,
     nome: '',
   });
@@ -130,6 +131,7 @@ export class UserService {
       return JSON.parse(msg);
     }
     return {
+      CD_USUARIO: 0,
       nivel: 0,
       nome: '',
     };
@@ -162,6 +164,7 @@ export class UserService {
 
   logout(): void {
     this.usuarioSubject.next({
+      CD_USUARIO: 0,
       nivel: 0,
       nome: '',
     });

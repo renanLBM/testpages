@@ -45,55 +45,58 @@ export class MinhasPendenciasComponent implements OnInit {
     this._setTituloService.setTitle('Carregando...');
     this.isEmptyList.next(false);
 
-    let usuario = '';
-    this._userService.getUser().subscribe((_) => (usuario = _.nome!));
-    this._pendenciaService.listPendencia(usuario).subscribe({
+    let usuario = 0;
+    this._userService.getUser().subscribe((_) => (usuario = _.CD_USUARIO!));
+    this._pendenciaService.listPendencia(usuario,1).subscribe({
       next: (pendencias) => {
-        this.minhasPendencias = pendencias;
+        this.minhasPendencias = JSON.parse(pendencias.data);
         this.minhasPendencias = this.minhasPendencias.filter(
-          (pendencia) => !this.ignoredStatus.includes(pendencia.STATUS)
+          (pendencia) =>
+            !this.ignoredStatus.includes(pendencia.DS_STATUS_PENDENCIA)
         );
 
-        let flatCdLocal = this.minhasPendencias.flatMap((_) => _.CD_LOCAL + '');
+        this.minhasPendencias.forEach((pendencia) => {
+          pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br');
+          pendencia.cod =
+            pendencia.NR_CICLO +
+            '-' +
+            pendencia.NR_OP +
+            '-' +
+            pendencia.CD_REFERENCIA;
 
-        this._opsService.getLocalFaccao().subscribe({
-          next: (local) => {
-            // passar por todos os locais e adicionar na variavel minhasPendenciasLocal os que forem encontrados no flatCdLocal
-            local.forEach((lcod) => {
-              if (flatCdLocal.includes(lcod.CD_LOCAL)) {
-                let tmpPendencia: Pendencias = [];
-                // passar por todas as pendencias e incluir em cada local
-                this.minhasPendencias.forEach((pendencia) => {
-                  pendencia.cod =
-                    pendencia.NR_CICLO +
-                    '-' +
-                    pendencia.NR_OP +
-                    '-' +
-                    pendencia.CD_REFERENCIA;
-                  if (lcod.CD_LOCAL == pendencia.CD_LOCAL + '') {
-                    tmpPendencia.push(pendencia);
-                  }
-                });
-                this.minhasPendenciasLocal.push({
-                  local: lcod.CD_LOCAL + ' - ' + lcod.DS_LOCAL,
-                  pendencias: tmpPendencia,
-                });
-
-                let tmpLocal = this.minhasPendenciasLocal.flatMap(
-                  (x) => x.local
-                );
-                // set the solicitante dropdown
-                this.localEnum = Array.from(new Set(tmpLocal));
-              }
+          if (this.minhasPendenciasLocal.length > 0) {
+            if (
+              this.minhasPendenciasLocal.filter(
+                (l) =>
+                  l.local == pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL
+              ).length
+            ) {
+              this.minhasPendenciasLocal
+                .filter(
+                  (l) =>
+                    l.local == pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL
+                )[0]
+                .pendencias.push(pendencia);
+            } else {
+              this.minhasPendenciasLocal.push({
+                local: pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL,
+                pendencias: [pendencia],
+              });
+            }
+          } else {
+            this.minhasPendenciasLocal.push({
+              local: pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL,
+              pendencias: [pendencia],
             });
-            this.isEmptyList.next(!this.minhasPendenciasLocal.length);
-            this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
-          },
-          error: (err) => {
-            this.isEmptyList.next(true);
-            console.warn(err);
-          },
+          }
         });
+
+        let tmpLocal = this.minhasPendenciasLocal.flatMap((x) => x.local);
+        // set the solicitante dropdown
+        this.localEnum = Array.from(new Set(tmpLocal));
+
+        this.isEmptyList.next(!this.minhasPendenciasLocal.length);
+        this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
 
         this._setTituloService.setTitle('Minhas Pendências');
         this.loading.next(false);
@@ -142,7 +145,7 @@ export class MinhasPendenciasComponent implements OnInit {
     // caso contrário filtrar somente status
     if (this.selectedLocal.length > 0) {
       let filteredArray = this.minhasPendenciasLocal.filter((_) => {
-        return this.selectedLocal.includes(_.local)
+        return this.selectedLocal.includes(_.local);
       });
       filteredArray = filteredArray.filter((_) => _.pendencias.length > 0);
       this.orderByQntPendencia(filteredArray);

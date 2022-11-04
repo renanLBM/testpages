@@ -80,88 +80,89 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     this._motoristaService.listDisponivel().subscribe({
       next: (coletados) => {
-        this.apontamentoList = coletados.filter((x) => x.CD_LOCAL == +id);
-        this.listCodOPsDisponiveis = this.apontamentoList.flatMap((x) => x.cod + '-' + x.CD_LOCAL);
+        let listColetados = JSON.parse(coletados.data);
+        this.apontamentoList = listColetados.filter(
+          (x: { CD_LOCAL: number }) => x.CD_LOCAL == +id
+        );
+        this.listCodOPsDisponiveis = this.apontamentoList.flatMap(
+          (x) => x.NR_REDUZIDOOP + '-' + x.CD_LOCAL
+        );
+        console.log(this.listCodOPsDisponiveis);
         this._opsService.getOpById(id).subscribe({
-          next: (ops: OPs) => {
-            ops = ops.filter((op: OP) =>
-              this.listCodOPsDisponiveis.includes(op.cod + '-' + op.CD_LOCAL)
+          next: (ops: any) => {
+            ops = JSON.parse(ops.data).filter((op: OP) =>
+              this.listCodOPsDisponiveis.includes(op.NR_REDUZIDOOP + '-' + op.CD_LOCAL)
             );
-            ops.sort((a, b) => {
-              let dataRetornoA = `${a.DT_PREVRETORNO.substring(
-                6,
-                10
-              )}-${a.DT_PREVRETORNO.substring(3, 5)}-${a.DT_PREVRETORNO.substring(
-                0,
-                2
-              )}`;
-              let dataRetornoB = `${b.DT_PREVRETORNO.substring(
-                6,
-                10
-              )}-${b.DT_PREVRETORNO.substring(3, 5)}-${b.DT_PREVRETORNO.substring(
-                0,
-                2
-              )}`;
-
-              let x = new Date(dataRetornoA);
-              let y = new Date(dataRetornoB);
-
-              if (x > y) {
-                return 1;
-              } else if (y > x) {
-                return -1;
-              } else {
-                return 0;
+            ops.sort(
+              (
+                a: { DT_PREVRETORNO: string },
+                b: { DT_PREVRETORNO: string }
+              ) => {
+                return a > b ? 1 : -1;
               }
-            });
+            );
 
             let maiorApontamento;
             let foiColetado: boolean = false;
 
-            ops.map((op) => {
-              maiorApontamento = this.filtraMaiorApontamento(op.cod!);
-              foiColetado = maiorApontamento.situacao == 'Coletado';
+            ops.map(
+              (op: {
+                cod: string;
+                CD_LOCAL: any;
+                DS_LOCAL: any;
+                NR_CICLO: { toString: () => string };
+                NR_OP: { toString: () => string };
+                CD_REFERENCIA: string;
+                DT_PREVRETORNO: string;
+                DS_GRUPO: any;
+                DS_DROP: any;
+                Status: string;
+                QT_OP: any;
+              }) => {
+                maiorApontamento = this.filtraMaiorApontamento(op.cod!);
+                foiColetado = maiorApontamento.situacao == 'Coletado';
 
-              this.descOP.push({
-                cd_local: op.CD_LOCAL,
-                local: op.DS_LOCAL,
-                cod:
-                  op.NR_CICLO.toString() +
-                  '-' +
-                  op.NR_OP.toString() +
-                  '-' +
-                  op.CD_REFERENCIA.toString(),
-                ciclo: op.NR_CICLO,
-                op: op.NR_OP,
-                ref: op.CD_REFERENCIA,
-                previsao: op.DT_PREVRETORNO.substring(0, 10),
-                Situacao: maiorApontamento.situacao,
-                checked: foiColetado,
-                descricao: op.DS_GRUPO,
-                drop: op.DS_DROP,
-                img:
-                  this.imgUrl +
-                  op.CD_REFERENCIA.toString() +
-                  '/' +
-                  op.CD_REFERENCIA.toString() +
-                  '-1.jpg',
-                link_ficha_tecnica: '',
-                status: op.Status,
-                status_color: op.Status.toLowerCase().replace(' ', '-'),
-                qnt: op.QT_OP,
-              });
-              this.descOP.map((desc) => {
-                if (desc.status == 'Em andamento') {
-                  desc.accent = 'success';
-                } else if (desc.status == 'Pendente') {
-                  desc.accent = 'warning';
-                } else if (desc.status == 'Em atraso') {
-                  desc.accent = 'danger';
-                } else {
-                  desc.accent = 'basic';
-                }
-              });
-            });
+                this.descOP.push({
+                  cd_local: op.CD_LOCAL,
+                  local: op.DS_LOCAL,
+                  cod:
+                    op.NR_CICLO.toString() +
+                    '-' +
+                    op.NR_OP.toString() +
+                    '-' +
+                    op.CD_REFERENCIA.toString(),
+                  ciclo: +op.NR_CICLO,
+                  op: +op.NR_OP,
+                  ref: op.CD_REFERENCIA,
+                  previsao: new Date(+op.DT_PREVRETORNO).toLocaleString('pt-Br').substring(0, 10),
+                  Situacao: maiorApontamento.situacao,
+                  checked: foiColetado,
+                  descricao: op.DS_GRUPO,
+                  drop: op.DS_DROP,
+                  img:
+                    this.imgUrl +
+                    op.CD_REFERENCIA.toString() +
+                    '/' +
+                    op.CD_REFERENCIA.toString() +
+                    '-1.jpg',
+                  link_ficha_tecnica: '',
+                  status: op.Status,
+                  status_color: op.Status.toLowerCase().replace(' ', '-'),
+                  qnt: op.QT_OP,
+                });
+                this.descOP.map((desc) => {
+                  if (desc.status == 'Em andamento') {
+                    desc.accent = 'success';
+                  } else if (desc.status == 'Pendente') {
+                    desc.accent = 'warning';
+                  } else if (desc.status == 'Em atraso') {
+                    desc.accent = 'danger';
+                  } else {
+                    desc.accent = 'basic';
+                  }
+                });
+              }
+            );
 
             let title = this.descOP[0].local
               .replace('COSTURA', '')

@@ -66,62 +66,57 @@ export class PCPPendenciasComponent implements OnInit {
     this._userService.getUser().subscribe((_) => (usuario = _.nome!));
     this._pendenciaService.listPendencia().subscribe({
       next: (pendencias) => {
-        this.minhasPendencias = pendencias;
+        this.minhasPendencias = JSON.parse(pendencias.data);
         this.minhasPendencias = this.minhasPendencias.filter(
-          (pendencia) => !this.ignoredStatus.includes(pendencia.STATUS)
+          (pendencia) =>
+            !this.ignoredStatus.includes(pendencia.DS_STATUS_PENDENCIA)
         );
 
-        let flatCdLocal = this.minhasPendencias.flatMap((_) => _.CD_LOCAL + '');
+        this.minhasPendencias.forEach((pendencia) => {
+          pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br');
+          pendencia.cod =
+            pendencia.NR_CICLO +
+            '-' +
+            pendencia.NR_OP +
+            '-' +
+            pendencia.CD_REFERENCIA;
 
-        this._opsService.getLocalFaccao().subscribe({
-          next: (local) => {
-            // passar por todos os locais e adicionar na variavel minhasPendenciasLocal os que forem encontrados no flatCdLocal
-            local.forEach((lcod) => {
-              if (flatCdLocal.includes(lcod.CD_LOCAL)) {
-                let tmpPendencia: Pendencias = [];
-                // passar por todas as pendencias e incluir em cada local
-                this.minhasPendencias.forEach((pendencia) => {
-                  pendencia.cod =
-                    pendencia.NR_CICLO +
-                    '-' +
-                    pendencia.NR_OP +
-                    '-' +
-                    pendencia.CD_REFERENCIA;
-
-                  if (lcod.CD_LOCAL == pendencia.CD_LOCAL + '') {
-                    tmpPendencia.push(pendencia);
-                  }
-                });
-                this.minhasPendenciasLocal.push({
-                  local: lcod.CD_LOCAL + ' - ' + lcod.DS_LOCAL,
-                  pendencias: tmpPendencia,
-                });
-              }
+          if (this.minhasPendenciasLocal.length > 0) {
+            if (this.minhasPendenciasLocal.filter((l) => l.local == pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL).length){
+              this.minhasPendenciasLocal.filter((l) => l.local == pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL)[0].pendencias.push(pendencia);
+            }else{
+              this.minhasPendenciasLocal.push({
+                local: pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL,
+                pendencias: [pendencia],
+              });
+            }
+          } else {
+            this.minhasPendenciasLocal.push({
+              local: pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL,
+              pendencias: [pendencia],
             });
-            let tmpSolicitante: string[] = [];
-            this.minhasPendenciasLocal.forEach((_) => {
-              let teste = _.pendencias.flatMap((x) => x.USUARIO);
-              tmpSolicitante.push(...teste);
-            });
-            // set the solicitante dropdown
-            this.solicitanteEnum = Array.from(new Set(tmpSolicitante));
-            this.solicitanteEnum = this.solicitanteEnum.sort((a, b) => {
-              if (a > b) {
-                return 1;
-              } else if (b > a) {
-                return -1;
-              } else {
-                return 0;
-              }
-            });
-
-            this.orderByQntPendencia(this.minhasPendenciasLocal);
-            this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
-          },
-          error: (err) => {
-            console.warn(err);
-          },
+          }
         });
+
+        let tmpSolicitante: string[] = [];
+        this.minhasPendenciasLocal.forEach((_) => {
+          let teste = _.pendencias.flatMap((x) => x.USUARIO);
+          tmpSolicitante.push(...teste);
+        });
+        // set the solicitante dropdown
+        this.solicitanteEnum = Array.from(new Set(tmpSolicitante));
+        this.solicitanteEnum = this.solicitanteEnum.sort((a, b) => {
+          if (a > b) {
+            return 1;
+          } else if (b > a) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+
+        this.orderByQntPendencia(this.minhasPendenciasLocal);
+        this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
 
         this._setTituloService.setTitle('Pendências');
         this.loading.next(false);
@@ -219,7 +214,7 @@ export class PCPPendenciasComponent implements OnInit {
           let filtered = {
             ..._,
             pendencias: _.pendencias.filter((p) =>
-              this.selectedStatus.includes(p.STATUS)
+              this.selectedStatus.includes(p.DS_STATUS_PENDENCIA)
             ),
           };
           return filtered;
@@ -235,7 +230,7 @@ export class PCPPendenciasComponent implements OnInit {
         let filtered = {
           ..._,
           pendencias: _.pendencias.filter((p) =>
-            this.selectedStatus.includes(p.STATUS)
+            this.selectedStatus.includes(p.DS_STATUS_PENDENCIA)
           ),
         };
         return filtered;
@@ -302,7 +297,7 @@ export class PCPPendenciasComponent implements OnInit {
           pendenciaLocal.TAMANHO + '',
           pendenciaLocal.QT_SOLICITADO + '',
           pendenciaLocal.USUARIO + '',
-          pendenciaLocal.STATUS + '',
+          pendenciaLocal.DS_STATUS_PENDENCIA + '',
           pendenciaLocal.DT_SOLICITACAO + '',
           pendenciaLocal.Obs + '',
           pendenciaLocal.CORTE + '',

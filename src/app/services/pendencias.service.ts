@@ -28,18 +28,18 @@ export class PendenciasService {
     );
   }
 
-  listPendencia(user?: string): Observable<Pendencias> {
+  listPendencia(user?: number, ativo?: number): Observable<any> {
     const headers = this.getToken();
 
     if (!!user) {
-      return this._httpClient.get<Pendencias>(
-        `${API}/api/getpendencia/${user}`,
+      return this._httpClient.get<any>(
+        `${API}/api/pendencia/${user}/${ativo}`,
         {
           headers,
         }
       );
     }
-    return this._httpClient.get<Pendencias>(`${API}/api/getpendencia`, {
+    return this._httpClient.get<any>(`${API}/api/pendencia/all`, {
       headers,
     });
   }

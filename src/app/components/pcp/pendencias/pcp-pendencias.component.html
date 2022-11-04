@@ -115,8 +115,8 @@
                     <td data-th="Motivo">{{pendencia.MOTIVO }}</td>
                     <td data-th="Status">
                       <select (change)="alterarStatus($event, pendencia)" class="select-status"
-                        [ngClass]="pendencia.STATUS" name="status" [selectedIndex]="">
-                        <option *ngFor="let sPendencia of statusPendencia" [selected]="pendencia.STATUS == sPendencia"
+                        [ngClass]="pendencia.DS_STATUS_PENDENCIA" name="status" [selectedIndex]="">
+                        <option *ngFor="let sPendencia of statusPendencia" [selected]="pendencia.DS_STATUS_PENDENCIA == sPendencia"
                           [value]="sPendencia+'_'+pendencia.CD_PENDENCIA">
                           {{sPendencia}}
                         </option>

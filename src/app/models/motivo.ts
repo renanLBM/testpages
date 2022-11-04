@@ -3,7 +3,7 @@ export interface Motivo {
   CD_LOCAL: number,
   NR_CICLO: number,
   NR_OP: number,
-  CD_REFERENCIA: number,
+  CD_REFERENCIA: string,
   DT_PREV_RETORNO_HIST: string,
   DT_PREV_RETORNO_NOVA: number,
   QT_OP: number,

@@ -50,7 +50,7 @@ export class OpsService {
         );
     }
     return this._httpClient
-      .get<OPs>(`${API}/api/op/all`, {
+      .get<any>(`${API}/api/op/all`, {
         headers,
       })
       .pipe(
@@ -84,11 +84,11 @@ export class OpsService {
       );
   }
 
-  getOpById(local: string, cod?: string): Observable<OPs> {
+  getOpById(local: string, cod?: string): Observable<any> {
     const headers = this.getToken();
     if (!!cod) {
       return this._httpClient
-        .get<OPs>(`${API}/api/getop/${local}/${cod}`, {
+        .get<any>(`${API}/api/getop/${local}/${cod}`, {
           headers,
         })
         .pipe(
@@ -99,7 +99,7 @@ export class OpsService {
         );
     } else {
       return this._httpClient
-        .get<OPs>(`${API}/api/getop/${local}/`, {
+        .get<any>(`${API}/api/op/local/${local}`, {
           headers,
         })
         .pipe(
@@ -142,7 +142,7 @@ export class OpsService {
     const headers = this.getToken();
     if (!!local) {
       return this._httpClient
-        .get<LocalFaccoes>(`${API}/api/getlocal/${local}`, {
+        .get<any>(`${API}/api/local/${local}`, {
           headers,
         })
         .pipe(
@@ -153,7 +153,7 @@ export class OpsService {
         );
     } else {
       return this._httpClient
-        .get<LocalFaccoes>(`${API}/api/getlocal`, {
+        .get<any>(`${API}/api/local/all`, {
           headers,
         })
         .pipe(

@@ -2,7 +2,7 @@ export interface OP {
   NR_CICLO: number,
   NR_OP: number,
   DS_MARCA: string,
-  CD_REFERENCIA: number,
+  CD_REFERENCIA: string,
   DS_GRUPO: string,
   DS_CLASS: string,
   DS_TIPO: string,

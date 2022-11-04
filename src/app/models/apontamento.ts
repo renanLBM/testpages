@@ -3,7 +3,7 @@ export interface Apontamento {
   CD_LOCAL: number,
   NR_CICLO: number,
   NR_OP: number,
-  CD_REFERENCIA: number,
+  CD_REFERENCIA: string,
   DT_PREVRETORNO: string,
   QT_OP: number,
   Status: string,
@@ -14,7 +14,8 @@ export interface Apontamento {
   latitude?: number,
   longitude?: number,
 
-  DS_APONTAMENTO_DS?: string
+  DS_APONTAMENTO_DS?: string,
+  NR_REDUZIDOOP?: string
 }
 
 export type Apontamentos = Array<Apontamento>;

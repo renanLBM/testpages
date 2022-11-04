@@ -10,5 +10,5 @@ export const environment = {
   usuarios_pendencias: ['Renan Garcia', 'Agatha', 'Alisson', 'Zoe Jeans', 'Pop Jeans', 'Evelin'],
   production: true,
   ENCRIPT_KEY: '7PQ9TV&*d@38c0bT',
-  API_ENV: 'http://app-controle-ops.labellamafia.com.br',
+  API_ENV: 'http://api_controle_op.labellamafia.com.br:5000/',
 };

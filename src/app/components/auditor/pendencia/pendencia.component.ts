@@ -232,7 +232,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
             QT_SOLICITADO: qntSelecionado,
             USUARIO: this.loggedUser,
             DT_SOLICITACAO: new Date().toLocaleString('pt-Br'),
-            STATUS: 'Em análise',
+            DS_STATUS_PENDENCIA: 'Em análise',
             Obs: this.obsValue,
             CORTE: descricaoCorte,
             QT_OP: this.qntOp,

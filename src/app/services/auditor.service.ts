@@ -6,8 +6,8 @@ import {
 import { Injectable } from '@angular/core';
 import { catchError, EMPTY, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Apontamento, Apontamentos } from '../models/apontamento';
-import { Motivo, Motivos } from '../models/motivo';
+import { Apontamento } from '../models/apontamento';
+import { Motivo } from '../models/motivo';
 import { TokenService } from './token.service';
 import { UserService } from './user.service';
 
@@ -95,7 +95,7 @@ export class AuditorService {
         );
     } else {
       return this._httpClient
-        .get<any>(`${API}/api/apontamento/${id}`, {
+        .get<any>(`${API}/api/apontamento/local/${id}`, {
           headers,
         })
         .pipe(

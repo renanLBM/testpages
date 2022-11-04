@@ -29,8 +29,7 @@ import { DialogComponent } from 'src/app/shared/components/dialog/dialog.compone
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 import { environment } from 'src/environments/environment';
 
-
-const usuarios_pendencias = environment.usuarios_pendencias
+const usuarios_pendencias = environment.usuarios_pendencias;
 
 @Component({
   selector: 'fc-descricao-faccao',
@@ -110,10 +109,6 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.isDistribuicao = this.routeId == '302';
     this.isUsuario = userNivel == 5;
 
-    if(this.isDistribuicao || this.isUsuario){
-      this.showMenu.next(false);
-    }
-
     // isDistribuicao
     let usuarioName = this._userService.getSession().nome;
 
@@ -121,7 +116,8 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.itemsMenu = [{ title: 'Apontamento de Produção' }];
     }
     if (
-      usuarios_pendencias.includes(usuarioName!) || Pages[userNivel] == 'auditor'
+      usuarios_pendencias.includes(usuarioName!) ||
+      Pages[userNivel] == 'auditor'
     ) {
       this.itemsMenu.push({ title: 'Pendências' });
     }
@@ -161,8 +157,10 @@ export class DescricaoFaccaoComponent implements OnInit {
       .getApontamento(this.routeId)
       .subscribe((apontamentos) => {
         apontamentos = JSON.parse(apontamentos.data).filter(
-          (apontamentoBase: { CD_LOCAL: string; }) => apontamentoBase.CD_LOCAL + '' == this.routeId
+          (apontamentoBase: { CD_LOCAL: string }) =>
+            apontamentoBase.CD_LOCAL + '' == this.routeId
         );
+
         let situacaoEnum = Object.values(ApontamentoList).filter(
           (value) => typeof value === 'string'
         );
@@ -172,7 +170,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
         this.apontamentoList = apontamentos;
         this._auditorService.getMotivos(this.routeId).subscribe((motivo) => {
-          this.motivoList = motivo;
+          this.motivoList = JSON.parse(motivo.data);
 
           if (!!getDataFromSession.length) {
             this.listOPs = getDataFromSession.filter((op) => {
@@ -181,7 +179,13 @@ export class DescricaoFaccaoComponent implements OnInit {
             this.ajusteDosDados(filtroColecao, this.listOPs);
           } else {
             this._opsService.getOpById(this.routeId).subscribe({
-              next: (ops: OPs) => {
+              next: (ops) => {
+                ops = JSON.parse(ops.data);
+                this.isDistribuicao = ops[0].DS_LOCAL.split('. ')[0] == 'INT';
+                if (this.isDistribuicao || this.isUsuario) {
+                  this.showMenu.next(false);
+                }
+
                 this.ajusteDosDados(filtroColecao, ops);
               },
               error: (e) => {
@@ -206,36 +210,23 @@ export class DescricaoFaccaoComponent implements OnInit {
   ajusteDosDados(filtroColecao: string[], ops: OPs): void {
     if (filtroColecao.length > 0) {
       ops = ops.filter((op) => {
-        return filtroColecao.includes(op.DS_CICLO);
+        return filtroColecao.includes(op.NR_CICLO+'');
       });
     }
 
-    ops.sort((a, b) => {
-      let dtPrevRetornoA: string[] = a.DT_PREVRETORNO.split(' ')[0].split('/');
-      let dataRetornoA: Date = new Date(
-        `${dtPrevRetornoA[2]}-${dtPrevRetornoA[1]}-${dtPrevRetornoA[0]} 04:00:00`
-      );
-      let dtPrevRetornoB: string[] = b.DT_PREVRETORNO.split(' ')[0].split('/');
-      let dataRetornoB: Date = new Date(
-        `${dtPrevRetornoB[2]}-${dtPrevRetornoB[1]}-${dtPrevRetornoB[0]} 04:00:00`
-      );
-
-      let result =
-        dataRetornoA > dataRetornoB ? 1 : dataRetornoB > dataRetornoA ? -1 : 0;
-
-      return result;
-    });
+    ops.sort((a, b) =>
+      a.DT_PREVRETORNO > b.DT_PREVRETORNO
+        ? 1
+        : b.DT_PREVRETORNO > a.DT_PREVRETORNO
+        ? -1
+        : 0
+    );
 
     let imgListAll: string[] = [];
     let maiorMotivo;
     let maiorApontamento;
 
     ops.forEach((op: OP) => {
-      let dtEntrada = op.DT_ENTRADA.split(' ')[0].split('/');
-      op.DT_ENTRADA = `${dtEntrada[2]}-${dtEntrada[1]}-${dtEntrada[0]} 04:00:00`;
-      let dtPrevRetorno = op.DT_PREVRETORNO.split(' ')[0].split('/');
-      op.DT_PREVRETORNO = `${dtPrevRetorno[2]}-${dtPrevRetorno[1]}-${dtPrevRetorno[0]} 04:00:00`;
-
       let newImage = new Image();
       newImage.src =
         this.urlBase +
@@ -268,8 +259,9 @@ export class DescricaoFaccaoComponent implements OnInit {
         op.cod! + '-' + op.CD_LOCAL
       );
 
-      let prevdate = new Date(op.DT_PREVRETORNO);
-      let prev = prevdate
+      let prevdate = new Date(op.DT_PREVRETORNO || '01/01/2001');
+      prevdate = prevdate.toLocaleString() == 'Invalid Date' ? new Date('01/01/2001') : prevdate;
+      let prev = prevdate.toLocaleString() != 'Invalid Date'
         ? prevdate.toLocaleString('pt-br').substring(0, 10)
         : '01/01/2001';
 
@@ -280,9 +272,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       );
       let prevSemana = 0;
 
-      if (prevdate.toLocaleString('pt-br').substring(0, 10) == '01/01/2001') {
-        prevSemana = 0;
-      } else {
+      if (prevdate.toLocaleString('pt-br').substring(0, 10) != '01/01/2001') {
         if (prevdate.getDay() === 0) {
           prevSemana =
             Math.floor((prevdate.getDay() + 1 + numberOfDays) / 7) + 2;
@@ -306,7 +296,7 @@ export class DescricaoFaccaoComponent implements OnInit {
           op.CD_REFERENCIA.toString(),
         ciclo: op.NR_CICLO,
         op: op.NR_OP,
-        ref: op.CD_REFERENCIA,
+        ref: op.CD_REFERENCIA+'',
         previsao: prev,
         entrada: op.DT_ENTRADA,
         Situacao: maiorApontamento.situacao || 'Não informado',
@@ -330,6 +320,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         status_color: op.Status.toLowerCase().replace(' ', '-'),
         qnt: op.QT_OP,
       });
+
       this.descOP.map((desc) => {
         switch (desc.status) {
           case 'Em andamento':
@@ -355,9 +346,11 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.semanaListAtraso = this.semanaList.filter(
         (_) => _ < this.semanaAtualNumber
       );
+      this.semanaListAtraso.sort((a, b) => (a > b ? 1 : -1));
       this.semanaListFuturo = this.semanaList.filter(
         (_) => _ > this.semanaAtualNumber
       );
+      this.semanaListFuturo.sort((a, b) => (a > b ? 1 : -1));
     });
 
     // verifica a semana mais proxima

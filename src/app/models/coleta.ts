@@ -3,7 +3,7 @@ export interface Coleta {
   CD_LOCAL: number,
   NR_CICLO: number,
   NR_OP: number,
-  CD_REFERENCIA: number,
+  CD_REFERENCIA: string,
   DT_PREVRETORNO: string,
   QT_OP: number,
   Status: string,
