@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { NbToastrService } from '@nebular/theme';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, zip } from 'rxjs';
 import { StatusPendencia } from 'src/app/models/enums/enumStatusPendencia';
 import { PendenciaLocal } from 'src/app/models/localFacao';
 import { Pendencia, Pendencias } from 'src/app/models/pendencia';
-import { OpsService } from 'src/app/services/ops.service';
 import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
@@ -16,6 +15,7 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./pcp-pendencias.component.scss'],
 })
 export class PCPPendenciasComponent implements OnInit {
+
   // TODO:
   // make this an enum to change in Auditor and PCP
   ignoredStatus = ['Finalizado', 'Recusado'];
@@ -49,8 +49,7 @@ export class PCPPendenciasComponent implements OnInit {
     private toastrService: NbToastrService,
     private _setTituloService: SetTitleServiceService,
     private _userService: UserService,
-    private _pendenciaService: PendenciasService,
-    private _opsService: OpsService
+    private _pendenciaService: PendenciasService
   ) {}
 
   ngOnInit(): void {
@@ -136,8 +135,39 @@ export class PCPPendenciasComponent implements OnInit {
 
     let elementSelect = event.target as HTMLSelectElement;
     const novoStatus = elementSelect.value.split('_')[0];
+    const cd_novoStatus = StatusPendencia[novoStatus as keyof typeof StatusPendencia] +1;
 
-    this._pendenciaService.alterarStatus(pendencia, novoStatus).subscribe({
+    pendencia.CD_NovoStatus = !!cd_novoStatus ? cd_novoStatus : 0;
+    pendencia.DS_NovoStatus = !!novoStatus ? StatusPendencia[cd_novoStatus-1] : '';
+    let data_ajustada = pendencia.DT_MODIFICACAO?.split(' ');
+    pendencia.DT_MODIFICACAO = data_ajustada![0].split("/").reverse().join('-') + ' ' + data_ajustada![1];
+
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //  ARRUMAR O ARRAY
+    this._pendenciaService.setPendencia([]).subscribe({
       next: (ret) => {
         if (ret == 1) {
           this.toastrService.success(

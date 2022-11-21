@@ -23,11 +23,11 @@ export class MotoristaService {
   setColeta(coleta: Coleta): Observable<number> {
     const headers = this.getToken();
     const body = JSON.stringify(coleta);
-    return this._httpClient.post<any>(`${API}/api/setcoleta`, body, {
+    return this._httpClient.post<any>(`${API}/api/add/coleta`, body, {
       headers,
     }).pipe(
       map((res) => {
-        if (res == 'ok') {
+        if (res.data == 'OK') {
           return 1;
         }
         return 0;
@@ -38,11 +38,11 @@ export class MotoristaService {
   removeColeta(coleta: Coleta): Observable<number> {
     const headers = this.getToken();
     const body = JSON.stringify(coleta);
-    return this._httpClient.post<any>(`${API}/api/removecoleta`, body, {
+    return this._httpClient.post<any>(`${API}/api/remove/coleta`, body, {
       headers,
     }).pipe(
       map((res) => {
-        if (res == 'ok') {
+        if (res.data == 'OK') {
           return 1;
         }
         return 0;

@@ -9,3 +9,17 @@ export enum MotivoAtraso {
   reprovado_inspecao = 'Reprovado na inspeção',
   sacrificio = 'Sacrifício'
 }
+
+export enum MotivoAtrasoCD {
+  'Alterado sequencia de produção',
+  'Atraso de aviamento',
+  'Atraso da facção',
+  'Complexidade alta',
+  'Conserto',
+  'Modelagem',
+  'Reposição de corte',
+  'Reprovado na inspeção',
+  'Sacrifício',
+  'Adiantamento',
+  'Removido'
+}

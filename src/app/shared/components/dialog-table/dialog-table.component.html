@@ -19,10 +19,10 @@
         <tr *ngFor="let item of motivoList$ | async">
           <td>{{ item.NR_CICLO + '-' + item.NR_OP + '-' + item.CD_REFERENCIA }}</td>
           <!-- <td>{{ item.QT_OP }}</td> -->
-          <td>{{ item.NOVA_PREVISAO }}</td>
-          <td>{{ item.MOTIVO }}</td>
-          <td>{{ item.USUARIO }}</td>
-          <td>{{ item.DT_INSERIDO }}</td>
+          <td>{{ item.DT_PREV_RETORNO_NOVA | date: 'dd/MM/yyyy' : 'pt-Br' }}</td>
+          <td>{{ item.DS_ATRASO_DS }}</td>
+          <td>{{ item.DS_USUARIO }}</td>
+          <td>{{ item.DT_INSERIDO | date: 'dd/MM/yyyy' : 'pt-Br' }}</td>
         </tr>
       </tbody>
       <tbody *ngIf="emptyList">

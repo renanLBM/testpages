@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { MateriasPrimas } from '../models/materiaPrima';
 import { Pendencia, Pendencias } from '../models/pendencia';
 import { TokenService } from './token.service';
+import { StatusPendencia } from 'src/app/models/enums/enumStatusPendencia';
 
 const API = environment.API_ENV;
 
@@ -44,34 +45,18 @@ export class PendenciasService {
     });
   }
 
-  setPendencia(pendencias: Pendencias): Observable<number> {
+  setPendencia(pendencias: Pendencias): Observable<number>{
     const headers = this.getToken();
+
     const body = JSON.stringify(pendencias);
     return this._httpClient
-      .post<any>(`${API}/api/setpendencia`, body, {
+      .post<any>(`${API}/api/add/pendencia`, body, {
         headers,
       })
       .pipe(
         map((res) => {
-          if (res == 'ok') {
-            return 1;
-          }
-          return 0;
-        })
-      );
-  }
-
-  alterarStatus(pendencia: Pendencia, novoStatus?: string) {
-    const headers = this.getToken();
-    pendencia['novoStatus'] = !!novoStatus ? novoStatus : '';
-    const body = JSON.stringify(pendencia);
-    return this._httpClient
-      .post<any>(`${API}/api/editpendencia`, body, {
-        headers,
-      })
-      .pipe(
-        map((res) => {
-          if (res == 'ok') {
+          let x = res['data'];
+          if (x == 'OK') {
             return 1;
           }
           return 0;

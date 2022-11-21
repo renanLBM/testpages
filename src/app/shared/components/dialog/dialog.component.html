@@ -11,8 +11,8 @@
     <form [formGroup]="dialogForm">
       <div class="body-wrapper" *ngIf="!apontamento, else apontamentoBody">
         <input inputmode="none" autocomplete="off" style="text-align: center;" nbInput formControlName="dtControl"
-          id="dateInput" [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev ">
-        <nb-datepicker #datepicker format="dd/MM/yyyy" [min]="min"></nb-datepicker>
+          id="dateInput" [nbDatepicker]="datepicker" placeholder="Nova data" [value]="prev">
+        <nb-datepicker #datepicker format="dd/MM/yyyy" [min]="min" [max]="max"></nb-datepicker>
         <br>
         <nb-select placeholder="Motivo da alteração" formControlName="motivoControl" *ngIf="tipo == 'Atraso'">
           <nb-option value="">Selecionar</nb-option>
@@ -22,11 +22,11 @@
       </div>
       <ng-template #apontamentoBody>
         <div class="body-wrapper">
-          <nb-select placeholder="Apontamento" formControlName="situacaoControl" [(selected)]="selected">
+          <nb-select placeholder="Apontamento" formControlName="DS_APONTAMENTO_DSControl" [(selected)]="selected">
             <nb-option value="">Selecionar</nb-option>
-            <nb-option *ngFor="let situacao of situacaoList; let i = index" [value]="i">{{ situacao }}</nb-option>
+            <nb-option *ngFor="let DS_APONTAMENTO_DS of DS_APONTAMENTO_DSList; let i = index" [value]="i">{{ DS_APONTAMENTO_DS }}</nb-option>
           </nb-select>
-          <div *ngIf="situacaoList[selected] == '04 - Parado'" class="motivo-parado">
+          <div *ngIf="DS_APONTAMENTO_DSList[selected] == '04 - Parado'" class="motivo-parado">
             <nb-select placeholder="Apontamento" formControlName="motivoParadoControl" [(selected)]="selectedParado">
               <nb-option *ngFor="let motivo of paradoList | keyvalue; let i = index" [value]="i">{{ motivo.value }}</nb-option>
             </nb-select>

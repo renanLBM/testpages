@@ -13,7 +13,7 @@ import { OPDescricao, OPDescricoes } from 'src/app/models/opdescricao';
 import { Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
-import { AuditorService } from 'src/app/services/auditor.service';
+import { AtrasoService } from 'src/app/services/atraso.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -59,7 +59,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
     private _opsFilteredService: OpsFilteredService,
-    private _auditorService: AuditorService,
+    private _atrasolService: AtrasoService,
     private _route: ActivatedRoute,
     private _location: Location,
     private _dialogService: NbDialogService,
@@ -70,7 +70,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     this._setTitle.setTitle('Carregando...');
     this.selectedFilters = this._opsFilteredService.getFilter();
 
-    this._auditorService.getMotivos().subscribe((m) => {
+    this._atrasolService.getMotivos().subscribe((m) => {
       this.motivoList = JSON.parse(m.data);
 
       this.dtOptions = {
@@ -151,13 +151,12 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     this.listFaccoes = this.filterOPs(listOPs);
 
     // transforma o cod em uma lista
-    this.codigoList = this.listFaccoes.flatMap((x) => x.cod + '-' + x.CD_LOCAL);
+    this.codigoList = this.listFaccoes.flatMap((x) => x.CD_PRODUCAO);
 
     this.motivoList = this.motivoList.filter((m) => {
       let dataAjustada = new Date(m.DT_PREV_RETORNO_NOVA);
       return (
-        this.codigoList.includes(m.cod + '-' + m.CD_LOCAL) &&
-        dataAjustada >= this.dtHoje
+        this.codigoList.includes(m.CD_PRODUCAO) && dataAjustada >= this.dtHoje
       );
     });
 
@@ -175,7 +174,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     } = this.contabilizaTotais();
 
     let id = 0;
-    let motivos = [];
+    let motivos: string | any[] = [];
 
     nomesUnicos.map((f: string, index: number) => {
       id = this.faccaoList.find((x) => x.local == f)?.id_local!;
@@ -238,11 +237,14 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
       pecasAtrasoTotal,
     } = this.contabilizaTotais();
 
-    this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
+    this.codigoList = this.listFaccoes.flatMap((x) => x.CD_PRODUCAO);
 
-    this.motivoList = this.motivoList.filter((m) =>
-      this.codigoList.includes(m.cod)
-    );
+    this.motivoList = this.motivoList.filter((m) => {
+      let dataAjustada = new Date(m.DT_PREV_RETORNO_NOVA);
+      return (
+        this.codigoList.includes(m.CD_PRODUCAO) && dataAjustada >= this.dtHoje
+      );
+    });
 
     let id = 0;
     let motivos: Motivos = [];
@@ -439,12 +441,12 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
 
     if (hasOrigem && hasColecao) {
       listFilteredOPs = OPList.filter(
-        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.NR_CICLO+'')
+        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.NR_CICLO + '')
       );
     } else if (hasOrigem && !hasColecao) {
       listFilteredOPs = OPList.filter((x) => origem.includes(x.DS_CLASS));
     } else if (!hasOrigem && hasColecao) {
-      listFilteredOPs = OPList.filter((x) => colecao.includes(x.NR_CICLO+''));
+      listFilteredOPs = OPList.filter((x) => colecao.includes(x.NR_CICLO + ''));
     }
     return listFilteredOPs;
   }

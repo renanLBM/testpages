@@ -16,18 +16,20 @@ export interface OP {
   CD_LOCAL: number,
   DS_LOCAL: string,
   DT_ENTRADA: string,
-  DT_PREVRETORNO: string,
+  DT_PREVRETORNO: number,
   QT_OP: number,
   Status: string,
 
+  CD_PRODUCAO: string,
   NR_REDUZIDOOP?: number,
+  DS_APONTAMENTO_DS?: string
   qnt?: number,
   pecas?: number,
+  dt_ajustada?: Date,
 
   cod?: string,
   semana?: string,
   dias_faccao?: number,
-  apontamento?: string,
   motivo_atraso?: string,
   nova_previsao?: string,
   Situacao?: string,

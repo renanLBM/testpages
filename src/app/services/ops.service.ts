@@ -31,9 +31,42 @@ export class OpsService {
 
   getAllOPs(): Observable<any> {
     const headers = this.getToken();
+    return this._httpClient
+      .get<any>(`${API}/api/op/all`, {
+        headers,
+      })
+      .pipe(
+        tap((res) => {
+          this.opsData$.next(res);
+          this.setSessionData();
+        }),
+        catchError((error: HttpErrorResponse) => {
+          if (error.status == 401) this.missingToken();
+          return EMPTY;
+        })
+      );
+  }
+
+  getOPsRegiao(): Observable<any> {
+    const headers = this.getToken();
     const loggedUser = this._userService.getSession();
     let regiao = loggedUser.regiao;
-    if (regiao && loggedUser.nivel != 0) {
+    if(regiao == '99999'){
+      return this._httpClient
+        .get<any>(`${API}/api/op/all`, {
+          headers,
+        })
+        .pipe(
+          tap((res) => {
+            this.opsData$.next(res);
+            this.setSessionData();
+          }),
+          catchError((error: HttpErrorResponse) => {
+            if (error.status == 401) this.missingToken();
+            return EMPTY;
+          })
+        );
+    }else{
       return this._httpClient
         .get<any>(`${API}/api/op/regiao/${regiao}`, {
           headers,
@@ -49,20 +82,6 @@ export class OpsService {
           })
         );
     }
-    return this._httpClient
-      .get<any>(`${API}/api/op/all`, {
-        headers,
-      })
-      .pipe(
-        tap((res) => {
-          this.opsData$.next(res);
-          this.setSessionData();
-        }),
-        catchError((error: HttpErrorResponse) => {
-          if (error.status == 401) this.missingToken();
-          return EMPTY;
-        })
-      );
   }
 
   getAllOPsResumido(): Observable<any> {

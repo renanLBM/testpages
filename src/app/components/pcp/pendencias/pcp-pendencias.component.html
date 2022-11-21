@@ -108,7 +108,7 @@
                     <td data-th="Cód. OP">{{pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
                     <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
                     <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP+" - "+pendencia.CORTE }}</td>
-                    <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }} ({{+pendencia.QT_SOLICITADO/(+pendencia.QT_OP! || 0)  | percent:'1.0':'pt-Br'}})</td>
+                    <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }} ({{+pendencia.QT_SOLICITADO/(+pendencia.QT_OP_HIST! || 1)  | percent:'1.0':'pt-Br'}})</td>
                     <td data-th="Tamanho">{{pendencia.TAMANHO }}</td>
                     <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
                     <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>

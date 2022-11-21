@@ -1,21 +1,24 @@
 export interface Apontamento {
   ID_NOVA_SITUACAO?: number,
   CD_LOCAL: number,
-  NR_CICLO: number,
-  NR_OP: number,
-  CD_REFERENCIA: string,
+  NR_CICLO?: number,
+  NR_OP?: number,
+  CD_REFERENCIA?: string,
   DT_PREVRETORNO: string,
   QT_OP: number,
   Status: string,
   Situacao?: string,
   USUARIO: string,
-  DT_INSERIDO: string,
-  cod: string,
+  DT_MODIFICACAO: string,
   latitude?: number,
   longitude?: number,
+  cod?: string,
 
+  CD_APONTAMENTO_DS?: number,
   DS_APONTAMENTO_DS?: string,
-  NR_REDUZIDOOP?: string
+  NR_REDUZIDOOP?: number,
+  CD_USUARIO?: number,
+  GEOLOCALIZACAO?: string
 }
 
 export type Apontamentos = Array<Apontamento>;

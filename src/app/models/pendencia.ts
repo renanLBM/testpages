@@ -14,13 +14,15 @@ export interface Pendencia {
   DT_SOLICITACAO: string;
   DS_STATUS_PENDENCIA: string;
   Obs?: string;
-  novoStatus?: string;
+  CD_NovoStatus?: number;
+  DS_NovoStatus?: string;
   MODIFICADO_POR?: string;
   DT_MODIFICACAO?: string;
   alterado?: boolean;
   cod?: string;
   CORTE?: string;
   QT_OP?: number;
+  QT_OP_HIST?: number;
   MOTIVO?: string;
 }
 

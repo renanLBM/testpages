@@ -69,6 +69,7 @@ export class ListFaccaoComponent implements OnInit {
       this.faccaoList.forEach((x) => {
         this.menuColecao.push(x.ciclo + '-' + x.colecao!);
         this.menuColecao = [...new Set(this.menuColecao)];
+        x['name'] = x['name'].replace('EXT. ', '');
       });
 
       this.menuColecao.sort((a, b) =>
@@ -84,7 +85,7 @@ export class ListFaccaoComponent implements OnInit {
       this.loading.next(false);
       this.emptyList.next(!this.faccaoList.length);
     } else {
-      this._opsService.getAllOPs().subscribe({
+      this._opsService.getOPsRegiao().subscribe({
         next: (list) => {
           this.AllOpsList = JSON.parse(list.data);
           this.setfaccaolist(this.AllOpsList);
@@ -92,6 +93,7 @@ export class ListFaccaoComponent implements OnInit {
           this.faccaoList.forEach((x) => {
             this.menuColecao.push(x.ciclo + '-' + x.colecao!);
             this.menuColecao = [...new Set(this.menuColecao)];
+            x['name'] = x['name'].replace('EXT. ', '');
           });
 
           this.menuColecao.sort((a, b) =>

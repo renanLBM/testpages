@@ -1,9 +1,9 @@
 import { NbComponentStatus } from "@nebular/theme";
 
 export interface descOP {
+  cod?: string,
   cd_local: number,
   local: string,
-  cod: string,
   ciclo?: number,
   op?: number,
   ref: string,
@@ -22,6 +22,10 @@ export interface descOP {
   status_color?: string,
   accent?: NbComponentStatus,
   qnt?: number,
+
+  DS_APONTAMENTO_DS?: string,
+  NR_REDUZIDOOP: number,
+  CD_ATRASO?: number
 }
 
 export type descOPs = Array<descOP>;

@@ -16,7 +16,7 @@ const API = environment.API_ENV;
 @Injectable({
   providedIn: 'root',
 })
-export class AuditorService {
+export class AtrasoService {
   constructor(
     private _httpClient: HttpClient,
     private _userService: UserService,
@@ -38,7 +38,7 @@ export class AuditorService {
         );
     } else {
       return this._httpClient
-        .get<any>(`${API}/api/atraso/${id}`, {
+        .get<any>(`${API}/api/atraso/local/${id}`, {
           headers,
         })
         .pipe(
@@ -51,12 +51,13 @@ export class AuditorService {
   }
 
   setMotivo(motivo: Motivo): Observable<number> {
-    const body = JSON.stringify(motivo);
     const headers = this.getToken();
+    const body = JSON.stringify(motivo);
     return this._httpClient
-      .post<any>(`${API}/api/setmotivo`, body, { headers })
+      .post<any>(`${API}/api/add/atraso`, body, { headers })
       .pipe(
         map((res) => {
+          let x = res['data'];
           if (res == 'ok') {
             return 1;
           }
@@ -69,7 +70,7 @@ export class AuditorService {
     const body = JSON.stringify(motivo);
     const headers = this.getToken();
     return this._httpClient
-      .post<any>(`${API}/api/removemotivo`, body, { headers })
+      .post<any>(`${API}/api/remove/atraso`, body, { headers })
       .pipe(
         map((res) => {
           if (res == 'ok') {
@@ -80,62 +81,6 @@ export class AuditorService {
       );
   }
 
-  getApontamento(id?: string): Observable<any> {
-    const headers = this.getToken();
-    if (!id) {
-      return this._httpClient
-        .get<any>(`${API}/api/apontamento/all`, {
-          headers,
-        })
-        .pipe(
-          catchError((error: HttpErrorResponse) => {
-            if (error.status == 401) this.missingToken();
-            return EMPTY;
-          })
-        );
-    } else {
-      return this._httpClient
-        .get<any>(`${API}/api/apontamento/local/${id}`, {
-          headers,
-        })
-        .pipe(
-          catchError((error: HttpErrorResponse) => {
-            if (error.status == 401) this.missingToken();
-            return EMPTY;
-          })
-        );
-    }
-  }
-
-  // getApontamentoTotal(): Observable<any> {
-  //   const headers = this.getToken();
-
-  //   return this._httpClient
-  //     .get<any>(`${API}/api/getapontamentoTotal`, {
-  //       headers,
-  //     })
-  //     .pipe(
-  //       catchError((error: HttpErrorResponse) => {
-  //         if (error.status == 401) this.missingToken();
-  //         return EMPTY;
-  //       })
-  //     );
-  // }
-
-  setApontamento(apontamento: Apontamento): Observable<number> {
-    const body = JSON.stringify(apontamento);
-    const headers = this.getToken();
-    return this._httpClient
-      .post<any>(`${API}/api/setapontamento`, body, { headers })
-      .pipe(
-        map((res) => {
-          if (res == 'ok') {
-            return 1;
-          }
-          return 0;
-        })
-      );
-  }
 
   private getToken() {
     const token = this._tokenService.getToken();
