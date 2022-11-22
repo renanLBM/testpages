@@ -1,4 +1,5 @@
 export interface Pendencia {
+  NR_REDUZIDOOP?: number;
   CD_LOCAL?: number;
   DS_LOCAL?: number;
   CD_PENDENCIA?: number;
@@ -10,10 +11,12 @@ export interface Pendencia {
   DS_PRODUTO_MP: string;
   TAMANHO: string;
   QT_SOLICITADO: number;
+  CD_USUARIO: number;
   USUARIO: string;
   DT_SOLICITACAO: string;
+  CD_STATUS_PENDENCIA?: number;
   DS_STATUS_PENDENCIA: string;
-  Obs?: string;
+  OBS?: string;
   CD_NovoStatus?: number;
   DS_NovoStatus?: string;
   MODIFICADO_POR?: string;
@@ -24,6 +27,8 @@ export interface Pendencia {
   QT_OP?: number;
   QT_OP_HIST?: number;
   MOTIVO?: string;
+  CD_MOTIVO?: number;
+  display_name?: string;
 }
 
 export type Pendencias = Array<Pendencia>;

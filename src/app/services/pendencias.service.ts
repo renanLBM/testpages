@@ -19,9 +19,9 @@ export class PendenciasService {
     private _tokenService: TokenService
   ) {}
 
-  listMateriaPrima(cod_op: string): Observable<MateriasPrimas> {
+  listMateriaPrima(cod_op: string): Observable<any> {
     const headers = this.getToken();
-    return this._httpClient.get<MateriasPrimas>(
+    return this._httpClient.get<any>(
       `${API}/api/materiaprima/${cod_op}`,
       {
         headers,
@@ -51,6 +51,25 @@ export class PendenciasService {
     const body = JSON.stringify(pendencias);
     return this._httpClient
       .post<any>(`${API}/api/add/pendencia`, body, {
+        headers,
+      })
+      .pipe(
+        map((res) => {
+          let x = res['data'];
+          if (x == 'OK') {
+            return 1;
+          }
+          return 0;
+        })
+      );
+  }
+
+  editPendencia(pendencia: Pendencia): Observable<number>{
+    const headers = this.getToken();
+
+    const body = JSON.stringify(pendencia);
+    return this._httpClient
+      .post<any>(`${API}/api/edit/pendencia`, body, {
         headers,
       })
       .pipe(

@@ -182,7 +182,7 @@ export class DescricaoFaccaoComponent implements OnInit {
             });
             this.ajusteDosDados(filtroColecao, this.listOPs);
           } else {
-            this._opsService.getOpById(this.routeId).subscribe({
+            this._opsService.getOpByLocal(this.routeId).subscribe({
               next: (ops) => {
                 ops = JSON.parse(ops.data);
                 ops[0].DS_LOCAL = ops[0].DS_LOCAL.replace('EXT. ', '');
@@ -647,13 +647,8 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     if (ehPendencia) {
       let codOp =
-        this.tempOP.ciclo +
-        '-' +
-        this.tempOP.op +
-        '-' +
-        this.tempOP.ref +
-        '-' +
-        this.tempOP.cd_local;
+      this.tempOP.NR_REDUZIDOOP +'-'+
+      this.tempOP.cd_local;
       this._router.navigate(['auditor/pendencias', codOp]);
       return;
     }

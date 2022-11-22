@@ -51,7 +51,7 @@ export class OpsService {
     const headers = this.getToken();
     const loggedUser = this._userService.getSession();
     let regiao = loggedUser.regiao;
-    if(regiao == '99999'){
+    if (regiao == '99999') {
       return this._httpClient
         .get<any>(`${API}/api/op/all`, {
           headers,
@@ -66,7 +66,7 @@ export class OpsService {
             return EMPTY;
           })
         );
-    }else{
+    } else {
       return this._httpClient
         .get<any>(`${API}/api/op/regiao/${regiao}`, {
           headers,
@@ -103,11 +103,11 @@ export class OpsService {
       );
   }
 
-  getOpById(local: string, cod?: string): Observable<any> {
+  getOpById(cod: string, local?: string): Observable<any> {
     const headers = this.getToken();
-    if (!!cod) {
+    if (!!local) {
       return this._httpClient
-        .get<any>(`${API}/api/getop/${local}/${cod}`, {
+        .get<any>(`${API}/api/op/id/${cod + '-' + local}`, {
           headers,
         })
         .pipe(
@@ -118,7 +118,7 @@ export class OpsService {
         );
     } else {
       return this._httpClient
-        .get<any>(`${API}/api/op/local/${local}`, {
+        .get<any>(`${API}/api/op/id/${cod}`, {
           headers,
         })
         .pipe(
@@ -128,6 +128,19 @@ export class OpsService {
           })
         );
     }
+  }
+  getOpByLocal(local: string): Observable<any> {
+    const headers = this.getToken();
+    return this._httpClient
+      .get<any>(`${API}/api/op/local/${local}`, {
+        headers,
+      })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status == 401) this.missingToken();
+          return EMPTY;
+        })
+      );
   }
 
   getOpByStatus(status: string, origem?: string): Observable<any> {

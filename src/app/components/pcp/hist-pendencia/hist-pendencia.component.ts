@@ -227,7 +227,7 @@ export class HistPendenciaComponent implements OnInit {
           pendenciaLocal.USUARIO + '',
           pendenciaLocal.DS_STATUS_PENDENCIA + '',
           pendenciaLocal.DT_SOLICITACAO + '',
-          pendenciaLocal.Obs + '',
+          pendenciaLocal.OBS + '',
           pendenciaLocal.CORTE + '',
           pendenciaLocal.QT_OP + '',
           pendenciaLocal.MOTIVO + '',

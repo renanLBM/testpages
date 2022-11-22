@@ -72,6 +72,7 @@ export class PCPPendenciasComponent implements OnInit {
         );
 
         this.minhasPendencias.forEach((pendencia) => {
+          pendencia.display_name = !!pendencia.CORTE ? pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP+" - "+pendencia.CORTE : pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP;
           pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br');
           pendencia.cod =
             pendencia.NR_CICLO +
@@ -142,32 +143,8 @@ export class PCPPendenciasComponent implements OnInit {
     let data_ajustada = pendencia.DT_MODIFICACAO?.split(' ');
     pendencia.DT_MODIFICACAO = data_ajustada![0].split("/").reverse().join('-') + ' ' + data_ajustada![1];
 
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //  ARRUMAR O ARRAY
-    this._pendenciaService.setPendencia([]).subscribe({
+
+    this._pendenciaService.editPendencia(pendencia).subscribe({
       next: (ret) => {
         if (ret == 1) {
           this.toastrService.success(
@@ -329,7 +306,7 @@ export class PCPPendenciasComponent implements OnInit {
           pendenciaLocal.USUARIO + '',
           pendenciaLocal.DS_STATUS_PENDENCIA + '',
           pendenciaLocal.DT_SOLICITACAO + '',
-          pendenciaLocal.Obs + '',
+          pendenciaLocal.OBS + '',
           pendenciaLocal.CORTE + '',
           pendenciaLocal.QT_OP + '',
           pendenciaLocal.MOTIVO + '',

@@ -45,7 +45,7 @@ export class DialogDefaultBodyComponent {
       if(!motivo){
         this.toastrService.warning(
           'Preencha o motivo!',
-          'Atebção!',
+          'Atenção!',
           {
             preventDuplicates: true,
           }
@@ -54,6 +54,7 @@ export class DialogDefaultBodyComponent {
       }
       this.solicitacao.forEach((_) => {
         _.MOTIVO = motivo;
+        _.CD_MOTIVO = this.selectedMotivo+1;
       });
       this._pendenciaService.setPendencia(this.solicitacao).subscribe({
         next: (res) => {

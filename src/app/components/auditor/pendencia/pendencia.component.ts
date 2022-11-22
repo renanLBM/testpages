@@ -21,6 +21,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
 import { environment } from 'src/environments/environment';
 import { DialogDefaultBodyComponent } from 'src/app/shared/components/dialog-default-body/dialog-default-body.component';
 import { Pages } from 'src/app/models/enums/enumPages';
+import { OP } from 'src/app/models/ops';
 
 const usuarios_pendencias = environment.usuarios_pendencias;
 interface MPList {
@@ -52,13 +53,14 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
   materiasPrimas: MateriaPrimaList[] = [];
 
   loggedUser: string = '';
+  cd_user: number = 0;
   titulo = 'Pendências';
 
+  opsData!: OP;
   cdLocal = '';
   codOp = '0';
-  cicloOP = '';
-  ref = '';
-  qntOp = 0;
+  cicloOP = '0';
+  nr_reduzido = '0';
 
   constructor(
     private cd: ChangeDetectorRef,
@@ -75,11 +77,13 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
   ngOnInit(): void {
     this._setTitulo.setTitle('Nova Solicitação');
+
+    this.cd_user = this._userService.getSession().CD_USUARIO!;
     let userNivel = this._userService.getNivel();
 
     this._userService.getUser().subscribe((user) => {
       this.loggedUser = user.nome!;
-      if(Pages[userNivel] != 'auditor'){
+      if (Pages[userNivel] != 'auditor') {
         if (!usuarios_pendencias.includes(this.loggedUser)) {
           this._router.navigate(['login']);
         }
@@ -87,51 +91,47 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     });
 
     this.codOp = this._route.snapshot.paramMap.get('cod')!;
-    this.ref = this.codOp.split('-')[2];
-    this.cicloOP = this.codOp.split('-')[0] + '-' + this.codOp.split('-')[1];
-    this.cdLocal = this.codOp.split('-')[3];
+    this.nr_reduzido = this.codOp.split('-')[0];
+    this.cdLocal = this.codOp.split('-')[1];
   }
 
   ngAfterContentInit(): void {
-    let opsData = this._opService
-      .getSessionData()
-      .filter((_) => _.cod == this.cicloOP + '-' + this.ref)[0];
-
     // se erro ao buscar dados no localstorage
-    if (!opsData) {
-      this._opService
-        .getOpById(this.cdLocal, this.cicloOP + '-' + this.ref)
-        .subscribe({
-          next: (op) => {
-            opsData = op[0];
-            this.titulo = opsData.DS_GRUPO;
-            this.qntOp = opsData.QT_OP;
-          },
-          error: (err) => {
-            console.warn(err);
-          },
-        });
-    } else {
-      this.titulo = opsData.DS_GRUPO;
-      this.qntOp = opsData.QT_OP;
-    }
+    this._opService.getOpById(this.nr_reduzido, this.cdLocal).subscribe({
+      next: (op) => {
+        this.opsData = JSON.parse(op.data)[0];
+        this.cicloOP = this.opsData.NR_CICLO + '-' + this.opsData.NR_OP;
+      },
+      error: (err) => {
+        console.warn(err);
+      },
+    });
 
     this._pendenciaService.listMateriaPrima(this.codOp).subscribe({
       next: (x) => {
+        let materialData = JSON.parse(x.data);
         try {
-          x.map((_) => {
+          materialData.map((_: { mp_list: any[] }) => {
             _.mp_list.forEach((y) => {
-              y.DS_TAMANHO = y.DS_TAMANHO?.toString().split(', ');
+              y.DS_TAMANHO = y.DS_MATERIAL_SIZE?.toString().split(', ');
             });
           });
-          x.filter((_) => {
-            if (_.DS_CLASSIFICACAO == 'EMBALAGEM') {
-              this.tamanhoList = _.mp_list[0].DS_TAMANHO!;
-            }
-          });
-          this.materiasPrimas = x.flatMap((m) => m.mp_list);
 
-          this.materiasPrimasList = x;
+          materialData.filter(
+            (_: {
+              DS_PRODUCT_CLASSIFICATION: string;
+              mp_list: { DS_TAMANHO: string[] }[];
+            }) => {
+              if (_.DS_PRODUCT_CLASSIFICATION == 'EMBALAGEM') {
+                this.tamanhoList = _.mp_list[0].DS_TAMANHO!;
+              }
+            }
+          );
+          this.materiasPrimas = materialData.flatMap(
+            (m: { mp_list: any }) => m.mp_list
+          );
+
+          this.materiasPrimasList = materialData;
           this.materiasPrimasList$.next(this.materiasPrimasList);
           this.loading.next(false);
           this.cd.detectChanges();
@@ -154,13 +154,11 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     // passar por todos os inputs e pegar valor
     this.materiasPrimas.forEach((materiaPrima) => {
       let cod =
-        materiaPrima.CD_PRODUTO_MP.toString() +
-        '-' +
-        materiaPrima.DS_PRODUTO_MP;
+        materiaPrima.CD_MATERIAL.toString() + '-' + materiaPrima.DS_MATERIAL;
       let inputSelecionado = document.getElementById(cod) as HTMLInputElement;
       let inputSelecionadoValor =
-        parseInt(inputSelecionado.value) > this.qntOp
-          ? this.qntOp
+        parseInt(inputSelecionado.value) > this.opsData.QT_OP
+          ? this.opsData.QT_OP
           : parseInt(inputSelecionado.value);
 
       if (!!inputSelecionadoValor) {
@@ -191,11 +189,16 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
     // criar objeto que será passado para o back
     this.materiasPrimasList.forEach((produto) => {
-      let tmpClas = produto.DS_CLASSIFICACAO;
+      let tmpClas = produto.DS_PRODUCT_CLASSIFICATION;
+      let data_ajustada = new Date().toLocaleString('pt-Br').split(' ');
+      let dt_modificacao =
+        data_ajustada![0].split('/').reverse().join('-') +
+        ' ' +
+        data_ajustada![1];
 
       produto.mp_list.forEach((materiaPrima) => {
-        let tmpCD_MP = materiaPrima.CD_PRODUTO_MP.toString();
-        let cod = tmpCD_MP + '-' + materiaPrima.DS_PRODUTO_MP;
+        let tmpCD_MP = materiaPrima.CD_MATERIAL.toString();
+        let cod = tmpCD_MP + '-' + materiaPrima.DS_MATERIAL;
         codMPSelecionado = '';
         tamanhoSelecionado = '';
         qntSelecionado = 0;
@@ -221,27 +224,31 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
           codMPSelecionado != ''
         ) {
           this.solicitacao.push({
+            NR_REDUZIDOOP: this.opsData.NR_REDUZIDOOP,
             CD_LOCAL: parseInt(this.cdLocal),
-            NR_CICLO: parseInt(this.codOp.split('-')[0]),
-            NR_OP: parseInt(this.codOp.split('-')[1]),
-            CD_REFERENCIA: parseInt(this.ref),
+            NR_CICLO: this.opsData.NR_CICLO,
+            NR_OP: this.opsData.NR_OP,
+            CD_REFERENCIA: parseInt(this.opsData.CD_REFERENCIA),
             DS_CLASSIFICACAO: tmpClas,
             CD_PRODUTO_MP: parseInt(tmpCD_MP),
-            DS_PRODUTO_MP: materiaPrima.DS_PRODUTO_MP,
+            DS_PRODUTO_MP: materiaPrima.DS_MATERIAL,
             TAMANHO: tamanhoSelecionado,
             QT_SOLICITADO: qntSelecionado,
+            CD_USUARIO: this.cd_user,
             USUARIO: this.loggedUser,
-            DT_SOLICITACAO: new Date().toLocaleString('pt-Br'),
+            DT_SOLICITACAO: dt_modificacao,
+            CD_STATUS_PENDENCIA: 1,
             DS_STATUS_PENDENCIA: 'Em análise',
-            Obs: this.obsValue,
+            OBS: this.obsValue,
             CORTE: descricaoCorte,
-            QT_OP: this.qntOp,
+            QT_OP: this.opsData.QT_OP
           });
         }
       });
     });
 
     if (this.solicitacao.length > 0) {
+      console.log(this.solicitacao);
       // abrir modal com o motivo da solicitação
       this.NbDdialogService.open(DialogDefaultBodyComponent, {
         context: {
@@ -284,9 +291,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     // passar por todos os inputs e pegar valor
     this.materiasPrimas.forEach((materiaPrima) => {
       let cod =
-        materiaPrima.CD_PRODUTO_MP.toString() +
-        '-' +
-        materiaPrima.DS_PRODUTO_MP;
+        materiaPrima.CD_MATERIAL.toString() + '-' + materiaPrima.DS_MATERIAL;
       (document.getElementById(cod) as HTMLInputElement).value = '';
     });
 
