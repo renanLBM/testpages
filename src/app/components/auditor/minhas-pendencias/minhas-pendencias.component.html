@@ -52,18 +52,19 @@
                   </tr>
                   <ng-container *ngFor="let pendencia of mp.pendencias; let i = index">
                     <tr>
-                      <td data-th="Cód. OP">{{pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
-                      <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
-                      <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+"-"+pendencia.DS_PRODUTO_MP }}</td>
-                      <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
-                      <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
+                      <td data-th="Cód. OP">{{ pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
+                      <td data-th="Classificação">{{ pendencia.DS_CLASSIFICACAO }}</td>
+                      <td data-th="Matéria Prima">{{ pendencia.display_name }}</td>
+                      <td data-th="Qtd. Solicitada">{{ pendencia.QT_SOLICITADO }}</td>
+                      <td data-th="Data Solicitação">{{ pendencia.DT_SOLICITACAO }}</td>
                       <td data-th="Status">
                         <nb-alert [ngClass]="pendencia.DS_STATUS_PENDENCIA" class="nv-alert">{{
                           pendencia.DS_STATUS_PENDENCIA }}</nb-alert>
                       </td>
-                      <td data-th="Observações">{{pendencia.OBS }}</td>
+                      <td data-th="Observações">{{ pendencia.OBS }}</td>
                       <td data-th="Confirmar Recebimento" class="recebido-row">
-                        <div class="nv-alert confirmar" *ngIf="pendencia.DS_STATUS_PENDENCIA == 'Enviado'; else aguardando"
+                        <div class="nv-alert confirmar"
+                          *ngIf="pendencia.DS_STATUS_PENDENCIA == 'Enviado'; else aguardando"
                           (click)="confirmarRecebimento(pendencia)">
                           <a>Marcar como Recebido</a>
                         </div>

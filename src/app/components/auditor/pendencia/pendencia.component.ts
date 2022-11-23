@@ -248,7 +248,6 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     });
 
     if (this.solicitacao.length > 0) {
-      console.log(this.solicitacao);
       // abrir modal com o motivo da solicitação
       this.NbDdialogService.open(DialogDefaultBodyComponent, {
         context: {

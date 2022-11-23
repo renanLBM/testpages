@@ -56,6 +56,7 @@ export class MinhasPendenciasComponent implements OnInit {
         );
 
         this.minhasPendencias.forEach((pendencia) => {
+          pendencia.display_name = !!pendencia.CORTE ? pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP+" - "+pendencia.CORTE : pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP;
           pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br');
           pendencia.cod =
             pendencia.NR_CICLO +
@@ -102,6 +103,7 @@ export class MinhasPendenciasComponent implements OnInit {
         this.loading.next(false);
       },
       error: (err) => {
+        console.error(err);
         this.isEmptyList.next(true);
         this.loading.next(false);
       },
@@ -169,7 +171,12 @@ export class MinhasPendenciasComponent implements OnInit {
     this.loading.next(true);
     pendencia.MODIFICADO_POR = this._userService.getSession().nome;
     pendencia.DT_MODIFICACAO = new Date(Date.now()).toLocaleString('pt-Br');
-    this._pendenciaService.confirmarRecebimento(pendencia).subscribe({
+
+    pendencia.CD_NovoStatus = 4;
+    pendencia.DS_NovoStatus = 'Finalizado';
+    let data_ajustada = pendencia.DT_MODIFICACAO?.split(' ');
+    pendencia.DT_MODIFICACAO = data_ajustada![0].split("/").reverse().join('-') + ' ' + data_ajustada![1];
+    this._pendenciaService.editPendencia(pendencia).subscribe({
       next: (ret) => {
         if (ret == 1) {
           this.toastrService.success('Status atualizado!', 'Sucesso!!!', {
@@ -177,12 +184,13 @@ export class MinhasPendenciasComponent implements OnInit {
           });
           let idxRemoved = this.minhasPendencias.findIndex(
             (pendenciaRemoved) => {
-              pendenciaRemoved.CD_PENDENCIA == pendencia.CD_PENDENCIA;
+              return pendenciaRemoved.CD_PENDENCIA == pendencia.CD_PENDENCIA;
             }
           );
-          this.minhasPendenciasLocal.splice(idxRemoved, 1);
+
+          this.minhasPendenciasLocal.find((local) => local.local.includes(pendencia.CD_LOCAL+''))?.pendencias.splice(idxRemoved, 1);
           this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
-          this.isEmptyList.next(!!this.minhasPendenciasLocal.length);
+          this.isEmptyList.next(!this.minhasPendenciasLocal.length);
           this.loadingSend.next(true);
           this.loading.next(false);
         }
