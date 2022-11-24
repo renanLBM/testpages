@@ -146,9 +146,6 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
   enviar() {
     this.loading.next(true);
 
-    let descricaoCorte = (document.getElementById('corte') as HTMLInputElement)
-      .value;
-    descricaoCorte = descricaoCorte.replace(this.regSanitizer, '');
     this.obsValue = this.obsValue.replace(this.regSanitizer, '');
 
     // passar por todos os inputs e pegar valor
@@ -198,10 +195,23 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
 
       produto.mp_list.forEach((materiaPrima) => {
         let tmpCD_MP = materiaPrima.CD_MATERIAL.toString();
+
         let cod = tmpCD_MP + '-' + materiaPrima.DS_MATERIAL;
         codMPSelecionado = '';
         tamanhoSelecionado = '';
         qntSelecionado = 0;
+
+        let getCorte = document.getElementById(tmpCD_MP + '_corte') as HTMLInputElement;
+        console.log(getCorte);
+
+        let descricaoCorte = '';
+        if(!!getCorte){
+          console.log(getCorte.value);
+          descricaoCorte = (
+            document.getElementById(tmpCD_MP + '_corte') as HTMLInputElement
+          ).value;
+          descricaoCorte = descricaoCorte.replace(this.regSanitizer, '');
+        }
 
         let tamanhoSelecionadoInput = (
           document.getElementById(tmpCD_MP + '_tamanho') as HTMLSelectElement
@@ -241,7 +251,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
             DS_STATUS_PENDENCIA: 'Em análise',
             OBS: this.obsValue,
             CORTE: descricaoCorte,
-            QT_OP: this.opsData.QT_OP
+            QT_OP: this.opsData.QT_OP,
           });
         }
       });
@@ -287,15 +297,6 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
   limparForm(send?: boolean) {
     this.loading.next(true);
     this.obsValue = '';
-    // passar por todos os inputs e pegar valor
-    this.materiasPrimas.forEach((materiaPrima) => {
-      let cod =
-        materiaPrima.CD_MATERIAL.toString() + '-' + materiaPrima.DS_MATERIAL;
-      (document.getElementById(cod) as HTMLInputElement).value = '';
-    });
-
-    (document.getElementById('corte') as HTMLInputElement).value = '';
-    (document.getElementById('observacoes') as HTMLInputElement).value = '';
 
     if (!send) {
       this.toastrService.warning('Formulário limpo!', 'Atenção!', {
@@ -305,8 +306,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     this.inputList = [];
     this.solicitacao = [];
 
-    setTimeout(() => this.loading.next(false), 300);
-    this.cd.detectChanges();
+    setTimeout(() => this.loading.next(false), 100);
   }
 
   voltar() {

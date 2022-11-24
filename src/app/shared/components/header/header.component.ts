@@ -58,6 +58,7 @@ export class HeaderComponent implements OnInit {
     });
     this.isLoggedIn = this._userService.isLogged();
     const theme = localStorage.getItem('theme') || 'default';
+    this.checked = theme == 'default';
     this._themeService.changeTheme(theme);
 
   }

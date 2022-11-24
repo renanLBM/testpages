@@ -47,7 +47,7 @@ export class MinhasPendenciasComponent implements OnInit {
 
     let usuario = 0;
     this._userService.getUser().subscribe((_) => (usuario = _.CD_USUARIO!));
-    this._pendenciaService.listPendencia(usuario,1).subscribe({
+    this._pendenciaService.listPendencia(usuario, 1).subscribe({
       next: (pendencias) => {
         this.minhasPendencias = JSON.parse(pendencias.data);
         this.minhasPendencias = this.minhasPendencias.filter(
@@ -56,8 +56,16 @@ export class MinhasPendenciasComponent implements OnInit {
         );
 
         this.minhasPendencias.forEach((pendencia) => {
-          pendencia.display_name = !!pendencia.CORTE ? pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP+" - "+pendencia.CORTE : pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP;
-          pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br');
+          pendencia.display_name = !!pendencia.CORTE
+            ? pendencia.CD_PRODUTO_MP +
+              ' - ' +
+              pendencia.DS_PRODUTO_MP +
+              ' - ' +
+              pendencia.CORTE
+            : pendencia.CD_PRODUTO_MP + ' - ' + pendencia.DS_PRODUTO_MP;
+          pendencia.DT_SOLICITACAO = new Date(
+            pendencia.DT_SOLICITACAO
+          ).toLocaleString('pt-Br');
           pendencia.cod =
             pendencia.NR_CICLO +
             '-' +
@@ -175,20 +183,41 @@ export class MinhasPendenciasComponent implements OnInit {
     pendencia.CD_NovoStatus = 4;
     pendencia.DS_NovoStatus = 'Finalizado';
     let data_ajustada = pendencia.DT_MODIFICACAO?.split(' ');
-    pendencia.DT_MODIFICACAO = data_ajustada![0].split("/").reverse().join('-') + ' ' + data_ajustada![1];
+    pendencia.DT_MODIFICACAO =
+      data_ajustada![0].split('/').reverse().join('-') +
+      ' ' +
+      data_ajustada![1];
     this._pendenciaService.editPendencia(pendencia).subscribe({
       next: (ret) => {
         if (ret == 1) {
           this.toastrService.success('Status atualizado!', 'Sucesso!!!', {
             preventDuplicates: true,
           });
-          let idxRemoved = this.minhasPendencias.findIndex(
-            (pendenciaRemoved) => {
-              return pendenciaRemoved.CD_PENDENCIA == pendencia.CD_PENDENCIA;
-            }
+
+          let local = this.minhasPendenciasLocal.find((local) =>
+            local.local.includes(pendencia.CD_LOCAL + '')
           );
 
-          this.minhasPendenciasLocal.find((local) => local.local.includes(pendencia.CD_LOCAL+''))?.pendencias.splice(idxRemoved, 1);
+          let idxRemoved = local?.pendencias.findIndex(
+            (pendenciaRemoved) =>
+              pendenciaRemoved.CD_PENDENCIA == pendencia.CD_PENDENCIA
+          );
+
+          // remove o item da lista de pendencias do local
+          local?.pendencias.splice(idxRemoved!, 1);
+
+          // verifica se a lista de pendencias da facção está vazia
+          let has_pendencia = local?.pendencias.length! > 0;
+
+          // se estiver zerado remover o local da lista
+          if (!has_pendencia) {
+            let idxLocalRemoved = this.minhasPendenciasLocal.findIndex(
+              (localRemoved) =>
+                localRemoved.local.includes(pendencia.CD_LOCAL + '')
+            );
+            this.minhasPendenciasLocal.splice(idxLocalRemoved, 1);
+          }
+
           this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
           this.isEmptyList.next(!this.minhasPendenciasLocal.length);
           this.loadingSend.next(true);

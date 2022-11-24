@@ -112,7 +112,7 @@
                     <td data-th="Tamanho">{{pendencia.TAMANHO }}</td>
                     <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
                     <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
-                    <td data-th="Motivo">{{pendencia.MOTIVO }}</td>
+                    <td data-th="Motivo">{{pendencia.DS_MOTIVO_PENDENCIA }}</td>
                     <td data-th="Status">
                       <select (change)="alterarStatus($event, pendencia)" class="select-status"
                         [ngClass]="pendencia.DS_STATUS_PENDENCIA" name="status" [selectedIndex]="">

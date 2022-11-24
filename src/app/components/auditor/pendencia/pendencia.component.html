@@ -133,7 +133,7 @@
                         <td data-th="Cód. Produto">{{ item.CD_MATERIAL }}</td>
                         <td data-th="Produto">{{ item.DS_MATERIAL }}</td>
                         <td *ngIf="mp.DS_PRODUCT_CLASSIFICATION == 'TECIDO'" data-th="corte">
-                          <input nbInput status="warning" type="text" class="corte-input" id="corte"
+                          <input nbInput status="warning" type="text" class="corte-input" [id]="item.CD_MATERIAL+'_corte'"
                             placeholder="Parte do corte desejado" required>
                         </td>
                         <td data-th="Tamanho da peça">
@@ -160,7 +160,7 @@
             <button [nbSpinner]="loading.getValue()" [disabled]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="success"
               class="bt-send" (click)="enviar()" type="submit" id="'bt-send">Enviar</button>
             <button [nbSpinner]="loading.getValue()" [disabled]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="warning"
-              class="bt-clear" (click)="limparForm()" type="submit" id="'bt-clear">Limpar</button>
+              class="bt-clear" (click)="limparForm()" type="reset" id="'bt-clear">Limpar</button>
           </div>
         </ng-template>
       </ng-template>

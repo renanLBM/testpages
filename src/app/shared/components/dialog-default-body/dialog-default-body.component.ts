@@ -53,7 +53,7 @@ export class DialogDefaultBodyComponent {
         return;
       }
       this.solicitacao.forEach((_) => {
-        _.MOTIVO = motivo;
+        _.DS_MOTIVO_PENDENCIA = motivo;
         _.CD_MOTIVO = this.selectedMotivo+1;
       });
       this._pendenciaService.setPendencia(this.solicitacao).subscribe({

@@ -26,7 +26,7 @@ export interface Pendencia {
   CORTE?: string;
   QT_OP?: number;
   QT_OP_HIST?: number;
-  MOTIVO?: string;
+  DS_MOTIVO_PENDENCIA?: string;
   CD_MOTIVO?: number;
   display_name?: string;
 }

@@ -214,7 +214,6 @@ export class HistPendenciaComponent implements OnInit {
       pendenciasLocal.pendencias.forEach((pendenciaLocal) => {
         let excelFile = [
           pendenciaLocal.CD_PENDENCIA + '',
-          pendenciaLocal.cod + '',
           pendenciaLocal.CD_LOCAL + '',
           pendenciaLocal.NR_CICLO + '',
           pendenciaLocal.NR_OP + '',
@@ -227,10 +226,10 @@ export class HistPendenciaComponent implements OnInit {
           pendenciaLocal.USUARIO + '',
           pendenciaLocal.DS_STATUS_PENDENCIA + '',
           pendenciaLocal.DT_SOLICITACAO + '',
-          pendenciaLocal.OBS + '',
-          pendenciaLocal.CORTE + '',
-          pendenciaLocal.QT_OP + '',
-          pendenciaLocal.MOTIVO + '',
+          pendenciaLocal.OBS + '' == 'null' ? '' : pendenciaLocal.OBS + '',
+          pendenciaLocal.CORTE + '' == 'null' ? '' : pendenciaLocal.CORTE + '',
+          pendenciaLocal.QT_OP_HIST + '',
+          pendenciaLocal.DS_MOTIVO_PENDENCIA + '',
         ];
         excelList.push(excelFile);
       });
