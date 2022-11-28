@@ -99,7 +99,7 @@ export class HistPendenciaComponent implements OnInit {
         });
         let tmpSolicitante: string[] = [];
         this.minhasPendenciasLocal.forEach((_) => {
-          let teste = _.pendencias.flatMap((x) => x.USUARIO);
+          let teste = _.pendencias.flatMap((x) => x.DS_USUARIO);
           tmpSolicitante.push(...teste);
         });
         // set the solicitante dropdown
@@ -159,7 +159,7 @@ export class HistPendenciaComponent implements OnInit {
         let filtered = {
           ..._,
           pendencias: _.pendencias.filter((p) =>
-            this.selectedSolicitante.includes(p.USUARIO)
+            this.selectedSolicitante.includes(p.DS_USUARIO)
           ),
         };
         return filtered;
@@ -223,7 +223,7 @@ export class HistPendenciaComponent implements OnInit {
           pendenciaLocal.DS_PRODUTO_MP + '',
           pendenciaLocal.TAMANHO + '',
           pendenciaLocal.QT_SOLICITADO + '',
-          pendenciaLocal.USUARIO + '',
+          pendenciaLocal.DS_USUARIO + '',
           pendenciaLocal.DS_STATUS_PENDENCIA + '',
           pendenciaLocal.DT_SOLICITACAO + '',
           pendenciaLocal.OBS + '' == 'null' ? '' : pendenciaLocal.OBS + '',

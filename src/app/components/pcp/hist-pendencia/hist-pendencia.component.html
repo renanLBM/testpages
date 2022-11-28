@@ -58,7 +58,7 @@
                 <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP+" - "+pendencia.CORTE}}</td>
                 <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }} ({{pendencia.QT_SOLICITADO/(pendencia.QT_OP_HIST
                   || 0) | percent:'1.0':'pt-Br'}})</td>
-                <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
+                <td data-th="Usuário Solicitante">{{ pendencia.DS_USUARIO }}</td>
                 <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
                 <td data-th="Motivo">{{pendencia.DS_MOTIVO_PENDENCIA }}</td>
                 <td data-th="Status">

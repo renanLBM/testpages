@@ -79,6 +79,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     this._motoristaService.listDisponivel().subscribe({
       next: (coletados) => {
         let listDisponivel = JSON.parse(coletados.data);
+        console.log(listDisponivel);
         listDisponivel = listDisponivel.filter(
           (x: { CD_LOCAL: number }) => x.CD_LOCAL == +id
         );
@@ -91,6 +92,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
         let foiColetado: boolean = false;
 
+        console.log(listDisponivel);
         listDisponivel.map((op: OP) => {
           foiColetado = op.DS_APONTAMENTO_DS == 'Coletado';
 
@@ -132,6 +134,7 @@ export class DescricaoFaccaoComponent implements OnInit {
             }
           });
         });
+        console.log(this.descOP);
 
         let title = this.descOP[0].local
           .replace('COSTURA', '')

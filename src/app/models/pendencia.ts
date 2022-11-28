@@ -12,7 +12,7 @@ export interface Pendencia {
   TAMANHO: string;
   QT_SOLICITADO: number;
   CD_USUARIO: number;
-  USUARIO: string;
+  DS_USUARIO: string;
   DT_SOLICITACAO: string;
   CD_STATUS_PENDENCIA?: number;
   DS_STATUS_PENDENCIA: string;

@@ -245,7 +245,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
             TAMANHO: tamanhoSelecionado,
             QT_SOLICITADO: qntSelecionado,
             CD_USUARIO: this.cd_user,
-            USUARIO: this.loggedUser,
+            DS_USUARIO: this.loggedUser,
             DT_SOLICITACAO: dt_modificacao,
             CD_STATUS_PENDENCIA: 1,
             DS_STATUS_PENDENCIA: 'Em análise',

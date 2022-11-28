@@ -309,9 +309,9 @@ export class PcpComponent implements OnInit {
     listaApontamento.forEach((ap) => {
       if (
         // verifica se existe algum apontamento no array filtrado
-        !!this.apontamentoTotal.filter(
+        this.apontamentoTotal.filter(
           (s) => s.DS_APONTAMENTO_DS == ap.DS_APONTAMENTO_DS
-        ).length
+        ).length > 0
       ) {
         this.apontamentoTotal.filter((s) => {
           return s.DS_APONTAMENTO_DS == ap.DS_APONTAMENTO_DS;
@@ -332,8 +332,13 @@ export class PcpComponent implements OnInit {
 
     // // cria um apontamento "Total" para identificar quantos não estão informados
     let apTotal: { count?: number; sum?: number } = {};
+    if(listaApontamento.filter((ap) => ap.DS_APONTAMENTO_DS == 'Total')[0]){
+      listaApontamento.filter((ap) => ap.DS_APONTAMENTO_DS == 'Total')[0].sum = 0;
+      listaApontamento.filter((ap) => ap.DS_APONTAMENTO_DS == 'Total')[0].count = 0;
+    }
+
     // verifica se existe algum item na lista de apontamentos passada como parâmetro
-    if (!!listaApontamento.length) {
+    if (listaApontamento.length > 0) {
       // somatorio do total para identificar os não informados
       apTotal = listaApontamento.reduce((prev, cur) => {
         prev.DS_APONTAMENTO_DS = 'Total';
@@ -354,7 +359,7 @@ export class PcpComponent implements OnInit {
     })[0].pecas_total;
 
     // subtrai o total de todas as ops com o total que foi inserido algum apontamento
-    if (!!listaApontamento.length) {
+    if (listaApontamento.length > 0) {
       this.apontamentoTotal.filter(
         (i) => i.DS_APONTAMENTO_DS == 'Não informado'
       )[0].qnt = qtTotal - apTotal.count!;
@@ -374,13 +379,6 @@ export class PcpComponent implements OnInit {
   filterApontamento(filtro: string) {}
 
   filtrosDropdown(): void {
-    this.resumoApontamento.push({
-      DS_CLASS: 'Total',
-      NR_CICLO: 0,
-      DS_APONTAMENTO_DS: 'Total',
-      sum: 0,
-      count: 0,
-    });
     this.loading.next(true);
     // reset das variáveis
     let nrCicloFiltrado: any[] = [];
