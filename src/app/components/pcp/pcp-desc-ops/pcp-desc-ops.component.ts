@@ -201,7 +201,7 @@ export class PcpDescOpsComponent implements OnInit {
 
         if (dtNovaPrev >= this.dtHoje) {
           x['motivo_atraso'] = atraso.DS_ATRASO_DS;
-          x['nova_previsao'] = (new Date(atraso.DT_PREV_RETORNO_NOVA)).toLocaleString('pt-Br');
+          x['nova_previsao'] = dtNovaPrev.toLocaleString('pt-Br', {timeZone: 'UTC'}).substring(0,9);
         }
       }
 
