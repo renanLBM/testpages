@@ -102,7 +102,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     private _apontamentoService: ApontamentoService,
     private _userService: UserService,
     private _route: ActivatedRoute,
-    private _router: Router,
+    private _router: Router
   ) {}
 
   ngOnInit(): void {
@@ -115,7 +115,6 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     // isDistribuicao
     let usuarioName = this._userService.getSession().login;
-    console.log(usuarioName);
 
     if (Pages[userNivel] == 'fornecedor') {
       this.itemsMenu = [{ title: 'Apontamento de Produção' }];
@@ -174,34 +173,36 @@ export class DescricaoFaccaoComponent implements OnInit {
         }
 
         this.apontamentoList = apontamentos;
-        this._atrasoService.getMotivos(this.routeId).subscribe((motivo: { data: string; }) => {
-          this.motivoList = JSON.parse(motivo.data);
+        this._atrasoService
+          .getMotivos(this.routeId)
+          .subscribe((motivo: { data: string }) => {
+            this.motivoList = JSON.parse(motivo.data);
 
-          if (!!getDataFromSession.length) {
-            this.listOPs = getDataFromSession.filter((op) => {
-              return op.CD_LOCAL == parseInt(this.routeId);
-            });
-            this.ajusteDosDados(filtroColecao, this.listOPs);
-          } else {
-            this._opsService.getOpByLocal(this.routeId).subscribe({
-              next: (ops) => {
-                ops = JSON.parse(ops.data);
-                ops[0].DS_LOCAL = ops[0].DS_LOCAL.replace('EXT. ', '');
-                this.isDistribuicao = ops[0].DS_LOCAL.split('. ')[0] == 'INT';
-                if (this.isDistribuicao || this.isUsuario) {
-                  this.showMenu.next(false);
-                }
+            if (!!getDataFromSession.length) {
+              this.listOPs = getDataFromSession.filter((op) => {
+                return op.CD_LOCAL == parseInt(this.routeId);
+              });
+              this.ajusteDosDados(filtroColecao, this.listOPs);
+            } else {
+              this._opsService.getOpByLocal(this.routeId).subscribe({
+                next: (ops) => {
+                  ops = JSON.parse(ops.data);
+                  ops[0].DS_LOCAL = ops[0].DS_LOCAL.replace('EXT. ', '');
+                  this.isDistribuicao = ops[0].DS_LOCAL.split('. ')[0] == 'INT';
+                  if (this.isDistribuicao || this.isUsuario) {
+                    this.showMenu.next(false);
+                  }
 
-                this.ajusteDosDados(filtroColecao, ops);
-              },
-              error: (e) => {
-                console.error(e);
-                this._setTitle.setTitle('Erro');
-                this.loadingError = true;
-              },
-            });
-          }
-        });
+                  this.ajusteDosDados(filtroColecao, ops);
+                },
+                error: (e) => {
+                  console.error(e);
+                  this._setTitle.setTitle('Erro');
+                  this.loadingError = true;
+                },
+              });
+            }
+          });
       });
   }
 
@@ -268,10 +269,11 @@ export class DescricaoFaccaoComponent implements OnInit {
       );
 
       let prevdate = new Date(op.DT_PREVRETORNO || '01/01/2001');
+      prevdate = new Date(prevdate.setHours(prevdate.getHours() + 3));
       prevdate =
         prevdate.toLocaleString() == 'Invalid Date'
           ? new Date('01/01/2001')
-          : prevdate;
+          : new Date(prevdate.setHours(prevdate.getHours() + 3));
       let prev =
         prevdate.toLocaleString() != 'Invalid Date'
           ? prevdate.toLocaleString('pt-br').substring(0, 10)
@@ -360,7 +362,6 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.descOP.forEach((o) => {
       this.semanaList.push(o.semana!);
       this.semanaList = [...new Set(this.semanaList)];
-
       this.semanaListAtraso = this.semanaList.filter(
         (_) => _ < this.semanaAtualNumber
       );
@@ -435,6 +436,26 @@ export class DescricaoFaccaoComponent implements OnInit {
           this.motivo = motivos.reduce((p, c) => {
             return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
           });
+          if(this.motivo.DS_ATRASO_DS == "Adiantamento"){
+            if(+this.motivo.DT_PREV_RETORNO_NOVA >= this.motivo.DT_PREVRETORNO!){
+              return {
+                cd_atraso: 0,
+                ds_atraso: '',
+                dt_atraso: '',
+                i_checked: false,
+              };
+            }
+          }else if(this.motivo.DS_ATRASO_DS != "Adiantamento") {
+            console.log(+this.motivo.DT_PREV_RETORNO_NOVA, this.motivo.DT_PREVRETORNO!);
+            if(+this.motivo.DT_PREV_RETORNO_NOVA <= this.motivo.DT_PREVRETORNO!){
+              return {
+                cd_atraso: 0,
+                ds_atraso: '',
+                dt_atraso: '',
+                i_checked: false,
+              };
+            }
+          }
           return {
             cd_atraso: this.motivo.CD_ATRASO,
             ds_atraso: this.motivo.DS_ATRASO_DS,
@@ -580,6 +601,23 @@ export class DescricaoFaccaoComponent implements OnInit {
           })
         );
       }
+    } else if (event == 0) {
+      this.semanaSelecionada = 'Em Atraso';
+      (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
+      this.descOP$.next(this.descOP);
+      if (this.selectedApontamento.length != 0) {
+        this.descOP$.next(
+          this.descOP.filter((_) => {
+            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+              ? 'Parado'
+              : _.DS_APONTAMENTO_DS;
+            return (
+              this.selectedApontamento.includes(situacaoAjustada!) &&
+              _.semana! < this.semanaAtualNumber
+            );
+          })
+        );
+      }
     } else {
       this.semanaSelecionada = event.toString();
       this.descOP$.next(this.descOP.filter((_) => _.semana == event));
@@ -647,9 +685,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     let ehPendencia = tipo == 'Pendências';
 
     if (ehPendencia) {
-      let codOp =
-      this.tempOP.NR_REDUZIDOOP +'-'+
-      this.tempOP.cd_local;
+      let codOp = this.tempOP.NR_REDUZIDOOP + '-' + this.tempOP.cd_local;
       this._router.navigate(['auditor/pendencias', codOp]);
       return;
     }
@@ -680,7 +716,9 @@ export class DescricaoFaccaoComponent implements OnInit {
         this.tempOP.checked = false;
       }
 
-      this.filtraMaiorMotivo(this.tempOP.NR_REDUZIDOOP +'-'+ this.tempOP.cd_local);
+      this.filtraMaiorMotivo(
+        this.tempOP.NR_REDUZIDOOP + '-' + this.tempOP.cd_local
+      );
       this.changeDetectorRef.detectChanges();
     });
   }

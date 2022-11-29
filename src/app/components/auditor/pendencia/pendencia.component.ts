@@ -84,7 +84,6 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     this._userService.getUser().subscribe((user) => {
       this.loggedUser = user.nome!;
       let logginUser = user.login!;
-      console.log(logginUser);
       if (Pages[userNivel] != 'auditor') {
         if (!usuarios_pendencias.includes(logginUser)) {
           this._router.navigate(['login']);
@@ -204,11 +203,9 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
         qntSelecionado = 0;
 
         let getCorte = document.getElementById(tmpCD_MP + '_corte') as HTMLInputElement;
-        console.log(getCorte);
 
         let descricaoCorte = '';
         if(!!getCorte){
-          console.log(getCorte.value);
           descricaoCorte = (
             document.getElementById(tmpCD_MP + '_corte') as HTMLInputElement
           ).value;
