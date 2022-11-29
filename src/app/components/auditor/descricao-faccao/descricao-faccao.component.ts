@@ -114,7 +114,8 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.isUsuario = userNivel == 5;
 
     // isDistribuicao
-    let usuarioName = this._userService.getSession().nome;
+    let usuarioName = this._userService.getSession().login;
+    console.log(usuarioName);
 
     if (Pages[userNivel] == 'fornecedor') {
       this.itemsMenu = [{ title: 'Apontamento de Produção' }];
