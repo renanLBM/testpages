@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
 import jwt_decode from 'jwt-decode';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, first, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Pages } from '../models/enums/enumPages';
 import { User } from '../models/user';
@@ -24,6 +24,7 @@ interface RetornoAPI {
 })
 export class UserService {
   private usuarioSubject = new BehaviorSubject<User>({
+    CD_USUARIO: 0,
     nivel: 0,
     nome: '',
   });
@@ -81,7 +82,7 @@ export class UserService {
     this.autenticando.next(true);
 
     return this._httpClient
-    .post(`${API}/api/user`, { user: logginUser }, { observe: 'response' })
+    .post(`${API}/api/login_user`, { user: logginUser }, { observe: 'response' })
     .pipe(
       tap((res) => {
         const resBody: RetornoAPI = res.body as RetornoAPI;
@@ -114,7 +115,9 @@ export class UserService {
   }
 
   setSession(): void {
-    this.getUser().subscribe((user) => {
+    this.getUser().pipe(
+      first()
+    ).subscribe((user) => {
       const msg = this._cryptoService.msgCrypto(JSON.stringify(user));
       sessionStorage.setItem('user', JSON.stringify(msg));
     });
@@ -128,6 +131,7 @@ export class UserService {
       return JSON.parse(msg);
     }
     return {
+      CD_USUARIO: 0,
       nivel: 0,
       nome: '',
     };
@@ -160,6 +164,7 @@ export class UserService {
 
   logout(): void {
     this.usuarioSubject.next({
+      CD_USUARIO: 0,
       nivel: 0,
       nome: '',
     });

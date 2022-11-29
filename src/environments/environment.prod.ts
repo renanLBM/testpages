@@ -7,8 +7,8 @@ export const environment = {
     authDomain: 'faccaocontrol.firebaseapp.com',
     messagingSenderId: '943441546924',
   },
-  usuarios_pendencias: ['Daliani', 'Suellen', 'Zoe Jeans', 'Pop Jeans'],
+  usuarios_pendencias: ['renan.garcia', 'alisson', 'zoe', 'pop', 'evelin', 'daniela.silva', 'manoel.santana'],
   production: true,
   ENCRIPT_KEY: '7PQ9TV&*d@38c0bT',
-  API_ENV: 'https://app-controle-ops.herokuapp.com',
+  API_ENV: 'https://apilabella.labellamafia.com.br/',
 };

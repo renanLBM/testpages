@@ -83,20 +83,20 @@ nb-layout-column {
     display: inline-block;
     margin: 2px !important;
     margin-right: 5px;
-    cursor: pointer;
+    // cursor: pointer;
     color: nb-theme(color-basic-100);
     user-select: none;
   }
 
-  .inspecao {
+  .status-inspecao {
     background: nb-theme(color-warning-new);
   }
 
-  .coletado {
+  .status-coletado {
     background: nb-theme(color-success-500);
   }
 
-  .industrializado {
+  .status-industrializado {
     background: nb-theme(color-danger-800);
   }
 }

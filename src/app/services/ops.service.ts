@@ -29,28 +29,10 @@ export class OpsService {
     private _cryptoService: CryptoService
   ) {}
 
-  getAllOPs(): Observable<OPs> {
+  getAllOPs(): Observable<any> {
     const headers = this.getToken();
-    const loggedUser = this._userService.getSession();
-    let regiao = loggedUser.regiao;
-    if (regiao && loggedUser.nivel != 0) {
-      return this._httpClient
-        .get<OPs>(`${API}/api/getfaccao/${regiao}`, {
-          headers,
-        })
-        .pipe(
-          tap((res) => {
-            this.opsData$.next(res);
-            this.setSessionData();
-          }),
-          catchError((error: HttpErrorResponse) => {
-            if (error.status == 401) this.missingToken();
-            return EMPTY;
-          })
-        );
-    }
     return this._httpClient
-      .get<OPs>(`${API}/api/getfaccao`, {
+      .get<any>(`${API}/api/op/all`, {
         headers,
       })
       .pipe(
@@ -65,11 +47,67 @@ export class OpsService {
       );
   }
 
-  getOpById(local: string, cod?: string): Observable<OPs> {
+  getOPsRegiao(): Observable<any> {
     const headers = this.getToken();
-    if (!!cod) {
+    const loggedUser = this._userService.getSession();
+    let regiao = loggedUser.regiao;
+    if (regiao == '99999') {
       return this._httpClient
-        .get<OPs>(`${API}/api/getop/${local}/${cod}`, {
+        .get<any>(`${API}/api/op/all`, {
+          headers,
+        })
+        .pipe(
+          tap((res) => {
+            this.opsData$.next(res);
+            this.setSessionData();
+          }),
+          catchError((error: HttpErrorResponse) => {
+            if (error.status == 401) this.missingToken();
+            return EMPTY;
+          })
+        );
+    } else {
+      return this._httpClient
+        .get<any>(`${API}/api/op/regiao/${regiao}`, {
+          headers,
+        })
+        .pipe(
+          tap((res) => {
+            this.opsData$.next(res);
+            this.setSessionData();
+          }),
+          catchError((error: HttpErrorResponse) => {
+            if (error.status == 401) this.missingToken();
+            return EMPTY;
+          })
+        );
+    }
+  }
+
+  getAllOPsResumido(): Observable<any> {
+    const headers = this.getToken();
+
+    return this._httpClient
+      .get<OPs>(`${API}/api/op/resumido/all`, {
+        headers,
+      })
+      .pipe(
+        tap((res) => {
+          this.opsData$.next(res);
+          this.setSessionData();
+        }),
+        catchError((error: HttpErrorResponse) => {
+          if (error.status == 401) this.missingToken();
+          return EMPTY;
+        })
+      );
+  }
+
+  getOpById(cod: string, local?: string): Observable<any> {
+    const headers = this.getToken();
+    if (!!local) {
+      return this._httpClient
+        .get<any>(`${API}/api/op/id/${cod + '-' + local}`, {
           headers,
         })
         .pipe(
@@ -80,7 +118,7 @@ export class OpsService {
         );
     } else {
       return this._httpClient
-        .get<OPs>(`${API}/api/getop/${local}/`, {
+        .get<any>(`${API}/api/op/id/${cod}`, {
           headers,
         })
         .pipe(
@@ -91,12 +129,25 @@ export class OpsService {
         );
     }
   }
+  getOpByLocal(local: string): Observable<any> {
+    const headers = this.getToken();
+    return this._httpClient
+      .get<any>(`${API}/api/op/local/${local}`, {
+        headers,
+      })
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status == 401) this.missingToken();
+          return EMPTY;
+        })
+      );
+  }
 
-  getOpByStatus(status: string, origem?: string): Observable<OPs> {
+  getOpByStatus(status: string, origem?: string): Observable<any> {
     const headers = this.getToken();
     if (!origem) {
       return this._httpClient
-        .get<OPs>(`${API}/api/getopbystatus/${status}`, {
+        .get<any>(`${API}/api/op/status/${status}`, {
           headers,
         })
         .pipe(
@@ -107,7 +158,7 @@ export class OpsService {
         );
     } else {
       return this._httpClient
-        .get<OPs>(`${API}/api/getopbyorigem/${status}/${origem}`, {
+        .get<any>(`${API}/api/op/status/${status}/${origem}`, {
           headers,
         })
         .pipe(
@@ -123,7 +174,7 @@ export class OpsService {
     const headers = this.getToken();
     if (!!local) {
       return this._httpClient
-        .get<LocalFaccoes>(`${API}/api/getlocal/${local}`, {
+        .get<any>(`${API}/api/local/${local}`, {
           headers,
         })
         .pipe(
@@ -134,7 +185,7 @@ export class OpsService {
         );
     } else {
       return this._httpClient
-        .get<LocalFaccoes>(`${API}/api/getlocal`, {
+        .get<any>(`${API}/api/local/all`, {
           headers,
         })
         .pipe(
@@ -161,9 +212,7 @@ export class OpsService {
   getSessionData(): OPs {
     const dataSaved = sessionStorage.getItem('data');
     const msg = !dataSaved ? null : this._cryptoService.msgDecrypto(dataSaved!);
-    if(!msg || !this.isDataSessionOk) {
-      localStorage.removeItem('data');
-      localStorage.removeItem('data-time');
+    if (!msg || !this.isDataSessionOk()) {
       sessionStorage.removeItem('data');
       sessionStorage.removeItem('data-time');
       return [];
@@ -191,21 +240,20 @@ export class OpsService {
     let dateNowDif = Date.now() - dateTime;
 
     // se a última atualização for maior que 30min retorna falso
-    if(dateNowDif > 1800000) return false;
+    if (dateNowDif > 900000) return false;
 
     // se a última atualização foi a menos de 1,5 minutos retorna "OK"
-    if(dateNowDif > 90000) {
+    if (dateNowDif > 90000) {
       const hourCache = new Date(dateTime).getHours();
       const minutesCache = new Date(dateTime).getMinutes();
-      const hourNow = new Date().getHours()
+      const hourNow = new Date().getHours();
 
       // se a hora do cache for menor que a hora atual
       // ou se está no limite da atualização do banco (até o sexto minuto da hora. Ex.: 10:06h)
-      if(hourCache < hourNow || minutesCache <= 6) {
+      if (hourCache < hourNow || minutesCache <= 6) {
         return false;
       }
     }
     return true;
   }
-
 }

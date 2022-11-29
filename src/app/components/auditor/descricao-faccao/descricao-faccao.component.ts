@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -19,7 +20,8 @@ import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
 import { Pages } from 'src/app/models/enums/enumPages';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OP, OPs } from 'src/app/models/ops';
-import { AuditorService } from 'src/app/services/auditor.service';
+import { ApontamentoService } from 'src/app/services/apontamento.service';
+import { AtrasoService } from 'src/app/services/atraso.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -29,8 +31,7 @@ import { DialogComponent } from 'src/app/shared/components/dialog/dialog.compone
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 import { environment } from 'src/environments/environment';
 
-
-const usuarios_pendencias = environment.usuarios_pendencias
+const usuarios_pendencias = environment.usuarios_pendencias;
 
 @Component({
   selector: 'fc-descricao-faccao',
@@ -39,6 +40,7 @@ const usuarios_pendencias = environment.usuarios_pendencias
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoFaccaoComponent implements OnInit {
+  datePipe = new DatePipe('pt-Br');
   selectedApontamento: string[] = [];
   idSelectedApontamento: number[] = [];
   apontamentoEnum = ApontamentoList;
@@ -88,18 +90,19 @@ export class DescricaoFaccaoComponent implements OnInit {
   ];
 
   constructor(
-    private _setTitle: SetTitleServiceService,
-    private _opsFilteredService: OpsFilteredService,
-    private _opsService: OpsService,
-    private _auditorService: AuditorService,
-    private _userService: UserService,
-    private _route: ActivatedRoute,
-    private _router: Router,
     private NbDdialogService: NbDialogService,
     private windowService: NbWindowService,
     private changeDetectorRef: ChangeDetectorRef,
     private nbMenuService: NbMenuService,
-    public _loadingService: LoadingService
+    public _loadingService: LoadingService,
+    private _setTitle: SetTitleServiceService,
+    private _opsFilteredService: OpsFilteredService,
+    private _opsService: OpsService,
+    private _atrasoService: AtrasoService,
+    private _apontamentoService: ApontamentoService,
+    private _userService: UserService,
+    private _route: ActivatedRoute,
+    private _router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -110,18 +113,16 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.isDistribuicao = this.routeId == '302';
     this.isUsuario = userNivel == 5;
 
-    if(this.isDistribuicao || this.isUsuario){
-      this.showMenu.next(false);
-    }
-
     // isDistribuicao
-    let usuarioName = this._userService.getSession().nome;
+    let usuarioName = this._userService.getSession().login;
+    console.log(usuarioName);
 
     if (Pages[userNivel] == 'fornecedor') {
       this.itemsMenu = [{ title: 'Apontamento de Produção' }];
     }
     if (
-      usuarios_pendencias.includes(usuarioName!)
+      usuarios_pendencias.includes(usuarioName!) ||
+      Pages[userNivel] == 'auditor'
     ) {
       this.itemsMenu.push({ title: 'Pendências' });
     }
@@ -157,12 +158,14 @@ export class DescricaoFaccaoComponent implements OnInit {
       return;
     }
 
-    this._auditorService
+    this._apontamentoService
       .getApontamento(this.routeId)
-      .subscribe((apontamentos) => {
-        apontamentos = apontamentos.filter(
-          (apontamentoBase) => apontamentoBase.CD_LOCAL + '' == this.routeId
+      .subscribe((apontamentos: any) => {
+        apontamentos = JSON.parse(apontamentos.data).filter(
+          (apontamentoBase: { CD_LOCAL: string }) =>
+            apontamentoBase.CD_LOCAL + '' == this.routeId
         );
+
         let situacaoEnum = Object.values(ApontamentoList).filter(
           (value) => typeof value === 'string'
         );
@@ -171,8 +174,8 @@ export class DescricaoFaccaoComponent implements OnInit {
         }
 
         this.apontamentoList = apontamentos;
-        this._auditorService.getMotivos(this.routeId).subscribe((motivo) => {
-          this.motivoList = motivo;
+        this._atrasoService.getMotivos(this.routeId).subscribe((motivo: { data: string; }) => {
+          this.motivoList = JSON.parse(motivo.data);
 
           if (!!getDataFromSession.length) {
             this.listOPs = getDataFromSession.filter((op) => {
@@ -180,8 +183,15 @@ export class DescricaoFaccaoComponent implements OnInit {
             });
             this.ajusteDosDados(filtroColecao, this.listOPs);
           } else {
-            this._opsService.getOpById(this.routeId).subscribe({
-              next: (ops: OPs) => {
+            this._opsService.getOpByLocal(this.routeId).subscribe({
+              next: (ops) => {
+                ops = JSON.parse(ops.data);
+                ops[0].DS_LOCAL = ops[0].DS_LOCAL.replace('EXT. ', '');
+                this.isDistribuicao = ops[0].DS_LOCAL.split('. ')[0] == 'INT';
+                if (this.isDistribuicao || this.isUsuario) {
+                  this.showMenu.next(false);
+                }
+
                 this.ajusteDosDados(filtroColecao, ops);
               },
               error: (e) => {
@@ -199,43 +209,30 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.descOP$.next(this.descOP);
   }
 
-  trackByOP(_index: number, op: { cod: string }) {
-    return op.cod;
+  trackByOP(_index: number, op: { NR_REDUZIDOOP: number }) {
+    return op.NR_REDUZIDOOP;
   }
 
   ajusteDosDados(filtroColecao: string[], ops: OPs): void {
     if (filtroColecao.length > 0) {
       ops = ops.filter((op) => {
-        return filtroColecao.includes(op.DS_CICLO);
+        return filtroColecao.includes(op.NR_CICLO + '');
       });
     }
 
-    ops.sort((a, b) => {
-      let dtPrevRetornoA: string[] = a.PREV_RETORNO.split(' ')[0].split('/');
-      let dataRetornoA: Date = new Date(
-        `${dtPrevRetornoA[2]}-${dtPrevRetornoA[1]}-${dtPrevRetornoA[0]} 04:00:00`
-      );
-      let dtPrevRetornoB: string[] = b.PREV_RETORNO.split(' ')[0].split('/');
-      let dataRetornoB: Date = new Date(
-        `${dtPrevRetornoB[2]}-${dtPrevRetornoB[1]}-${dtPrevRetornoB[0]} 04:00:00`
-      );
-
-      let result =
-        dataRetornoA > dataRetornoB ? 1 : dataRetornoB > dataRetornoA ? -1 : 0;
-
-      return result;
-    });
+    ops.sort((a, b) =>
+      a.DT_PREVRETORNO > b.DT_PREVRETORNO
+        ? 1
+        : b.DT_PREVRETORNO > a.DT_PREVRETORNO
+        ? -1
+        : 0
+    );
 
     let imgListAll: string[] = [];
     let maiorMotivo;
     let maiorApontamento;
 
     ops.forEach((op: OP) => {
-      let dtEntrada = op.DT_ENTRADA.split(' ')[0].split('/');
-      op.DT_ENTRADA = `${dtEntrada[2]}-${dtEntrada[1]}-${dtEntrada[0]} 04:00:00`;
-      let dtPrevRetorno = op.PREV_RETORNO.split(' ')[0].split('/');
-      op.PREV_RETORNO = `${dtPrevRetorno[2]}-${dtPrevRetorno[1]}-${dtPrevRetorno[0]} 04:00:00`;
-
       let newImage = new Image();
       newImage.src =
         this.urlBase +
@@ -263,15 +260,22 @@ export class DescricaoFaccaoComponent implements OnInit {
         this.imgList = [...new Set(imgListAll)];
       }
 
-      maiorMotivo = this.filtraMaiorMotivo(op.cod! + '-' + op.CD_LOCAL);
+      maiorMotivo = this.filtraMaiorMotivo(
+        op.NR_REDUZIDOOP! + '-' + op.CD_LOCAL
+      );
       maiorApontamento = this.filtraMaiorApontamento(
-        op.cod! + '-' + op.CD_LOCAL
+        op.NR_REDUZIDOOP! + '-' + op.CD_LOCAL
       );
 
-      let prevdate = new Date(op.PREV_RETORNO);
-      let prev = prevdate
-        ? prevdate.toLocaleString('pt-br').substring(0, 10)
-        : '01/01/2001';
+      let prevdate = new Date(op.DT_PREVRETORNO || '01/01/2001');
+      prevdate =
+        prevdate.toLocaleString() == 'Invalid Date'
+          ? new Date('01/01/2001')
+          : prevdate;
+      let prev =
+        prevdate.toLocaleString() != 'Invalid Date'
+          ? prevdate.toLocaleString('pt-br').substring(0, 10)
+          : '01/01/2001';
 
       // pega semana da op
       let oneJan = new Date(prevdate.getFullYear(), 0, 1);
@@ -280,9 +284,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       );
       let prevSemana = 0;
 
-      if (prevdate.toLocaleString('pt-br').substring(0, 10) == '01/01/2001') {
-        prevSemana = 0;
-      } else {
+      if (prevdate.toLocaleString('pt-br').substring(0, 10) != '01/01/2001') {
         if (prevdate.getDay() === 0) {
           prevSemana =
             Math.floor((prevdate.getDay() + 1 + numberOfDays) / 7) + 2;
@@ -306,11 +308,17 @@ export class DescricaoFaccaoComponent implements OnInit {
           op.CD_REFERENCIA.toString(),
         ciclo: op.NR_CICLO,
         op: op.NR_OP,
-        ref: op.CD_REFERENCIA,
+        ref: op.CD_REFERENCIA + '',
+        NR_REDUZIDOOP: op.NR_REDUZIDOOP!,
         previsao: prev,
         entrada: op.DT_ENTRADA,
-        Situacao: maiorApontamento.situacao || 'Não informado',
-        novaprevisao: maiorMotivo.dt_atraso,
+        DS_APONTAMENTO_DS:
+          maiorApontamento.DS_APONTAMENTO_DS || 'Não informado',
+        CD_ATRASO: maiorMotivo.cd_atraso,
+        novaprevisao: this.datePipe.transform(
+          maiorMotivo.dt_atraso,
+          'dd/MM/yyyy'
+        )!,
         motivo_atraso: maiorMotivo.ds_atraso,
         checked: maiorMotivo.i_checked,
         descricao: op.DS_GRUPO,
@@ -330,6 +338,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         status_color: op.Status.toLowerCase().replace(' ', '-'),
         qnt: op.QT_OP,
       });
+
       this.descOP.map((desc) => {
         switch (desc.status) {
           case 'Em andamento':
@@ -355,9 +364,11 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.semanaListAtraso = this.semanaList.filter(
         (_) => _ < this.semanaAtualNumber
       );
+      this.semanaListAtraso.sort((a, b) => (a > b ? 1 : -1));
       this.semanaListFuturo = this.semanaList.filter(
         (_) => _ > this.semanaAtualNumber
       );
+      this.semanaListFuturo.sort((a, b) => (a > b ? 1 : -1));
     });
 
     // verifica a semana mais proxima
@@ -418,22 +429,23 @@ export class DescricaoFaccaoComponent implements OnInit {
       let erro = this.motivoList.toString() == 'error';
       if (!erro) {
         let motivos = this.motivoList.filter(
-          (m) => m.cod + '-' + m.CD_LOCAL == cod
+          (m) => m.NR_REDUZIDOOP + '-' + m.CD_LOCAL == cod
         );
         if (motivos.length > 0) {
           this.motivo = motivos.reduce((p, c) => {
             return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
           });
           return {
-            ds_atraso: this.motivo.MOTIVO,
-            dt_atraso: this.motivo.NOVA_PREVISAO,
+            cd_atraso: this.motivo.CD_ATRASO,
+            ds_atraso: this.motivo.DS_ATRASO_DS,
+            dt_atraso: +this.motivo.DT_PREV_RETORNO_NOVA + 10800000,
             i_checked: true,
           };
         }
-        return { ds_atraso: '', dt_atraso: '', i_checked: false };
+        return { cd_atraso: 0, ds_atraso: '', dt_atraso: '', i_checked: false };
       }
     }
-    return { ds_atraso: '', dt_atraso: '', i_checked: false };
+    return { cd_atraso: 0, ds_atraso: '', dt_atraso: '', i_checked: false };
   }
 
   filtraMaiorApontamento(cod: string) {
@@ -441,14 +453,14 @@ export class DescricaoFaccaoComponent implements OnInit {
       let erro = this.apontamentoList.toString() == 'error';
       if (!erro) {
         let apontamentos = this.apontamentoList.filter(
-          (m) => m.cod + '-' + m.CD_LOCAL == cod
+          (m) => m.NR_REDUZIDOOP + '-' + m.CD_LOCAL == cod
         );
         if (apontamentos.length > 0) {
           this.apontamento = apontamentos.reduce((p, c) => {
             return p.ID_NOVA_SITUACAO! > c.ID_NOVA_SITUACAO! ? p : c;
           });
           return {
-            situacao: this.apontamento.Situacao,
+            DS_APONTAMENTO_DS: this.apontamento.DS_APONTAMENTO_DS,
             dt_coleta: '',
           };
         }
@@ -478,13 +490,13 @@ export class DescricaoFaccaoComponent implements OnInit {
         this.descOP$.next(
           this.descOP.filter(
             (_) =>
-              _.cod.includes(filterValue.toUpperCase()) &&
+              _.cod?.includes(filterValue.toUpperCase()) &&
               _.semana == parseInt(this.semanaSelecionada)
           )
         );
       } else {
         this.descOP$.next(
-          this.descOP.filter((_) => _.cod.includes(filterValue.toUpperCase()))
+          this.descOP.filter((_) => _.cod?.includes(filterValue.toUpperCase()))
         );
       }
       this.descOP$.subscribe((x) => {
@@ -508,9 +520,9 @@ export class DescricaoFaccaoComponent implements OnInit {
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
           this.descOP.filter((_) => {
-            let situacaoAjustada = _.Situacao?.includes('Parado')
+            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
               ? 'Parado'
-              : _.Situacao;
+              : _.DS_APONTAMENTO_DS;
             return (
               this.selectedApontamento.includes(situacaoAjustada!) &&
               _.semana == parseInt(this.semanaSelecionada)
@@ -523,9 +535,9 @@ export class DescricaoFaccaoComponent implements OnInit {
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
           this.descOP.filter((_) => {
-            let situacaoAjustada = _.Situacao?.includes('Parado')
+            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
               ? 'Parado'
-              : _.Situacao;
+              : _.DS_APONTAMENTO_DS;
             return this.selectedApontamento.includes(situacaoAjustada!);
           })
         );
@@ -561,9 +573,9 @@ export class DescricaoFaccaoComponent implements OnInit {
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
           this.descOP.filter((_) => {
-            let situacaoAjustada = _.Situacao?.includes('Parado')
+            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
               ? 'Parado'
-              : _.Situacao;
+              : _.DS_APONTAMENTO_DS;
             return this.selectedApontamento.includes(situacaoAjustada!);
           })
         );
@@ -574,9 +586,9 @@ export class DescricaoFaccaoComponent implements OnInit {
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
           this.descOP.filter((_) => {
-            let situacaoAjustada = _.Situacao?.includes('Parado')
+            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
               ? 'Parado'
-              : _.Situacao;
+              : _.DS_APONTAMENTO_DS;
             return (
               this.selectedApontamento.includes(situacaoAjustada!) &&
               _.semana == parseInt(this.semanaSelecionada)
@@ -636,13 +648,8 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     if (ehPendencia) {
       let codOp =
-        this.tempOP.ciclo +
-        '-' +
-        this.tempOP.op +
-        '-' +
-        this.tempOP.ref +
-        '-' +
-        this.tempOP.cd_local;
+      this.tempOP.NR_REDUZIDOOP +'-'+
+      this.tempOP.cd_local;
       this._router.navigate(['auditor/pendencias', codOp]);
       return;
     }
@@ -653,15 +660,18 @@ export class DescricaoFaccaoComponent implements OnInit {
         prev: this.tempOP.novaprevisao,
         i_motivo: this.tempOP.motivo_atraso,
         tipo: tipo,
-        situacao: this.tempOP.Situacao,
+        DS_APONTAMENTO_DS: this.tempOP.DS_APONTAMENTO_DS,
         apontamento: ehApontamento,
       },
     }).onClose.subscribe((x) => {
       if (ehApontamento) {
-        this.tempOP.Situacao = x.situacao;
+        this.tempOP.DS_APONTAMENTO_DS = x.DS_APONTAMENTO_DS;
       }
       if (!!x.prev) {
-        this.tempOP.novaprevisao = x.prev;
+        this.tempOP.novaprevisao = this.datePipe.transform(
+          x.prev,
+          'dd/MM/yyyy'
+        )!;
         this.tempOP.motivo_atraso = x.motivo;
         this.tempOP.checked = true;
       }
@@ -670,7 +680,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         this.tempOP.checked = false;
       }
 
-      this.filtraMaiorMotivo(this.tempOP.cod);
+      this.filtraMaiorMotivo(this.tempOP.NR_REDUZIDOOP +'-'+ this.tempOP.cd_local);
       this.changeDetectorRef.detectChanges();
     });
   }

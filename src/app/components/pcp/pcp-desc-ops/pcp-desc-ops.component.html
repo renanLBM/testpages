@@ -43,7 +43,7 @@
             <td>{{ item.NR_CICLO + '-' + item.NR_OP + '-' + item.CD_REFERENCIA }}</td>
             <td>{{ item.CD_LOCAL }}</td>
             <td>{{ item.DS_LOCAL }}</td>
-            <td>{{ item.DS_TIPO + '-' + item.CATEGORIA }}</td>
+            <td>{{ item.DS_TIPO + '-' + item.DS_CATEGORIA }}</td>
             <td class="img-hover">
               <a>
                 <span><img [src]="imgUrl + item.CD_REFERENCIA.toString() +
@@ -53,10 +53,10 @@
             </td>
             <td>{{ item.QT_OP | number: '1.0' }}</td>
             <td ngClass="{{item.css_class}}">
-              {{ item.PREV_RETORNO }}
+              {{ item.dt_ajustada | date: 'dd/MM/yyyy' : 'pt-Br' }}
             </td>
             <td>{{ item.dias_faccao }}</td>
-            <td>{{ item.apontamento }}</td>
+            <td>{{ item.DS_APONTAMENTO_DS }}</td>
             <td>{{ item.motivo_atraso }}</td>
             <td>{{ item.nova_previsao }}</td>
             <td>{{ item.DS_CLASS }}</td>

@@ -35,7 +35,6 @@ export class HeaderComponent implements OnInit {
     private _themeService: NbThemeService,
     private _setTitle: SetTitleServiceService,
     private _userService: UserService,
-    private _router: Router,
     private _cd: ChangeDetectorRef
   ) {}
 
@@ -58,6 +57,10 @@ export class HeaderComponent implements OnInit {
       this.isLoggedIn = value;
     });
     this.isLoggedIn = this._userService.isLogged();
+    const theme = localStorage.getItem('theme') || 'default';
+    this.checked = theme == 'default';
+    this._themeService.changeTheme(theme);
+
   }
 
   updateSingleSelectGroupValue(value: any): void {
@@ -69,9 +72,12 @@ export class HeaderComponent implements OnInit {
     this.checked = !this.checked;
     if (this.checked) {
       this._themeService.changeTheme('default');
+      localStorage.setItem('theme', 'default');
     } else {
       this._themeService.changeTheme('dark');
+      localStorage.setItem('theme', 'dark');
     }
+
   }
 
   toggleSidebar(): void {

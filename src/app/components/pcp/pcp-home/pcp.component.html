@@ -5,47 +5,32 @@
       <h6 class="filter-title">Filtros</h6>
       <div class="filtro-menu-wrapper">
         <div class="filtro-dropdown">
-          <nb-select multiple placeholder="Origem" [(ngModel)]="selectedOrigem" status="primary">
+          <nb-select multiple placeholder="Origem" [(ngModel)]="origemFiltrada" status="primary">
             <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
-            <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let origem of menuOrigem"
+            <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let origem of (uniqOrigem | async)"
               [value]="origem">{{origem}}</nb-option>
           </nb-select>
         </div>
         <div class="filtro-dropdown">
-          <nb-select multiple placeholder="Coleção" [(ngModel)]="selectedColecao" status="primary">
+          <nb-select multiple placeholder="Coleção" [(ngModel)]="colecaoFiltrada" status="primary">
             <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
             <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()"
-              *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}</nb-option>
+              *ngFor="let colecao of (uniqColecao | async)" [value]="colecao">{{colecao}}</nb-option>
           </nb-select>
         </div>
       </div>
     </div>
 
     <div class="apontamento-wrapper">
-      <nb-card [nbSpinner]="!!(loadingApontamento | async)">
+      <nb-card>
+      <!-- <nb-card [nbSpinner]="!!(loadingApontamento | async)"> -->
         <nb-card-header>
           <h4>Apontamento de produção</h4>
           <span class="span_apontamento">(peças por status)</span>
         </nb-card-header>
         <nb-card-body class="apontamento-alert-wrapper">
-          <nb-alert status="danger" (click)="filterApontamento('Não informado')">Não informado: {{
-            apontamentoList.nao_informado | number:'1.0':'pt-Br' }}</nb-alert>
-          <nb-alert status="danger" (click)="filterApontamento('Em transporte')">Em transporte: {{
-            apontamentoList.em_transporte | number:'1.0':'pt-Br' }}</nb-alert>
-          <nb-alert status="primary" (click)="filterApontamento('Em fila')">Em fila: {{
-            apontamentoList.em_fila | number:'1.0':'pt-Br' }}</nb-alert>
-          <nb-alert status="info" (click)="filterApontamento('Em produção')">Em produção: {{
-            apontamentoList.em_producao | number:'1.0':'pt-Br' }}</nb-alert>
-          <nb-alert status="warning" (click)="filterApontamento('Parado')">Parado: {{
-            apontamentoList.parado | number:'1.0':'pt-Br' }}</nb-alert>
-          <nb-alert class="inspecao" (click)="filterApontamento('Em inspeção')">Em inspeção: {{
-            apontamentoList.inspecao | number:'1.0':'pt-Br' }}</nb-alert>
-          <nb-alert status="success" (click)="filterApontamento('Disponível para coleta')">Disponível: {{
-            apontamentoList.disponivel | number:'1.0':'pt-Br' }}</nb-alert>
-          <nb-alert class="coletado" (click)="filterApontamento('Coletado')">Coletado: {{
-            apontamentoList.coletado | number:'1.0':'pt-Br' }}</nb-alert>
-          <nb-alert class="industrializado" (click)="filterApontamento('Não industrializado')">Não industrializado: {{
-            apontamentoList.nao_industrializado | number:'1.0':'pt-Br' }}</nb-alert>
+          <nb-alert status="{{item.cor}}" *ngFor="let item of apontamentoTotal$ | async">{{item.DS_APONTAMENTO_DS}}: {{
+            item.pecas | number:'1.0':'pt-Br' }}</nb-alert>
         </nb-card-body>
       </nb-card>
     </div>
@@ -61,10 +46,10 @@
 
     <ng-container *ngIf="!(emptyList | async); else error">
       <div class="card-wrapper status-wrapper">
-        <div *ngFor="let item of OpList$ | async">
-          <fc-card [loading]="false" [title]="item.name" [text_desc]="'Qnt. peças'" [qnt_atraso]="item.qnt_pecas"
-            [qnt_ops]="item.qnt" [c_status]="item.color!" [show_desc]="true"
-            [routerLink]="['/pcp/descricao/', item.name]">
+        <div *ngFor="let item of resumoStatus$ | async">
+          <fc-card [loading]="false" [title]="item.status!" [text_desc]="'Qnt. peças'" [qnt_atraso]="item.pecas_total!"
+            [qnt_ops]="item.qnt_total!" [c_status]="item.colorAccent!" [show_desc]="true"
+            [routerLink]="['/pcp/descricao/', item.status]">
           </fc-card>
         </div>
       </div>
@@ -72,17 +57,17 @@
 
       <div class="card-wrapper">
         <nb-card class="cards tipo-wrapper" [ngClass]="item.status!" [accent]="item.colorAccent!"
-          *ngFor="let item of statusTipo$ | async">
+          *ngFor="let item of resumoStatus$ | async">
           <nb-card-header class="header-tipo">
             <div class="h6 tipo-title-header">{{ item.status }}</div> | <div>Total OP's:</div> | <div>Total Peças:</div>
           </nb-card-header>
           <nb-card-body>
             <div class="body-tipo-wrapper" *ngFor="let i of item.tipo"
-              [routerLink]="['/pcp/descricao', i.status, i.name]">
+              [routerLink]="['/pcp/descricao', item.status, i.ds_tipo]">
               <div class="body-tipo">
-                <div class="h4 tipo-title-body">{{ i.name }}</div>
+                <div class="h4 tipo-title-body">{{ i.ds_tipo }}</div>
                 <div class="body-tipo-desc">{{i.qnt}}</div>
-                <div class="body-tipo-desc">{{i.qnt_pecas | number: '1.0'}}</div>
+                <div class="body-tipo-desc">{{i.pecas | number: '1.0'}}</div>
               </div>
               <hr>
             </div>

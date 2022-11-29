@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
-import { Apontamentos } from 'src/app/models/apontamento';
-import { Faccoes } from 'src/app/models/faccao';
-import { OP, OPs } from 'src/app/models/ops';
-import { AuditorService } from 'src/app/services/auditor.service';
+import { BehaviorSubject, tap } from 'rxjs';
+import {
+  ApontamentosResumidos,
+  ApontamentosTotal,
+} from 'src/app/models/apontamento';
+import { OPs } from 'src/app/models/ops';
+import { ApontamentoService } from 'src/app/services/apontamento.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -19,12 +20,21 @@ type NbComponentStatus =
   | 'info'
   | 'control';
 
+type tplotOptions = {
+  [key: string]: string;
+};
+
+interface ResumoPorStatus {
+  status: string;
+  qnt_total: number;
+  pecas_total: number;
+  colorAccent: NbComponentStatus;
+  tipo?: TipoPorStatus[];
+}
 interface TipoPorStatus {
-  status?: string;
-  qnt_total?: number;
-  pecas_total?: number;
-  tipo?: Faccoes;
-  colorAccent?: NbComponentStatus;
+  ds_tipo: string;
+  qnt: number;
+  pecas: number;
 }
 
 @Component({
@@ -33,484 +43,430 @@ interface TipoPorStatus {
   styleUrls: ['./pcp.component.scss'],
 })
 export class PcpComponent implements OnInit {
-  selectedOrigem: string = '';
-  menuOrigem: string[] = [];
-  selectedColecao: string[] = [];
-  menuColecao: string[] = [];
-  color: string[] = ['warning', 'info', 'success', 'danger', 'primary'];
-  selectedFilters = {
-    origem: this.selectedOrigem,
-    colecao: this.selectedColecao,
+  orderApontamento = [
+    'Não informado',
+    'Em transporte',
+    'Em fila',
+    'Em produção',
+    'Em inspeção',
+    'Parado',
+    'Disponível para coleta',
+    'Coletado',
+    'Não industrializado',
+  ];
+  corApontamento: tplotOptions = {
+    'Não informado': 'danger',
+    'Em transporte': 'danger',
+    'Em fila': 'primary',
+    'Em produção': 'info',
+    Parado: 'warning',
+    'Em inspeção': 'inspecao',
+    'Disponível para coleta': 'success',
+    Coletado: 'coletado',
+    'Não industrializado': 'industrializado',
+  };
+  color = ['info', 'success', 'danger'];
+  resumoStatus: ResumoPorStatus[] = [];
+
+  selectedFilters: {
+    origem: string[];
+    colecao: string[];
+    apontamentoFilter: string;
+  } = {
+    origem: [],
+    colecao: [],
     apontamentoFilter: '',
   };
-  loading = new BehaviorSubject<boolean>(true);
-  emptyList = new BehaviorSubject<boolean>(false);
-  loadingApontamento = new BehaviorSubject<boolean>(true);
 
-  tipoListOriginal: string[] = [];
-  listStatus!: OPs;
-  tipoList: any[] = [];
-  uniqTipo: any[] = [];
+  tmpColecao: string[] = [];
   uniqStatus: any[] = [];
-  OpList: Faccoes = [];
-  OpList$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.OpList);
-  OpTipoList: Faccoes = [];
+  uniqTipo: any[] = [];
+  uniqColecao: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  colecaoFiltrada: any[] = [];
+  tmpOrigem: string[] = [];
+  uniqOrigem: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  origemFiltrada: any[] = [];
+  uniqApontamento: any[] = [];
 
-  apontamentoList = {
-    nao_informado: 0,
-    em_transporte: 0,
-    em_fila: 0,
-    em_producao: 0,
-    parado: 0,
-    inspecao: 0,
-    disponivel: 0,
-    coletado: 0,
-    nao_industrializado: 0,
-  };
+  apontamentoTotal: ApontamentosTotal = [];
+  resumoApontamento: ApontamentosResumidos = [];
+  resumoRetorno: OPs = [];
+  resumoTipo!: TipoPorStatus;
 
-  apontamentoListPercent = {
-    nao_informado: 0.0,
-    em_transporte: 0.0,
-    em_fila: 0.0,
-    em_producao: 0.0,
-    parado: 0.0,
-    inspecao: 0.0,
-    disponivel: 0.0,
-    coletado: 0.0,
-    nao_industrializado: 0.0,
-  };
+  resumoStatus$: BehaviorSubject<ResumoPorStatus[]> = new BehaviorSubject<
+    ResumoPorStatus[]
+  >(this.resumoStatus);
+  apontamentoTotal$: BehaviorSubject<ApontamentosTotal> =
+    new BehaviorSubject<ApontamentosTotal>(this.apontamentoTotal);
 
-  statusTipo: TipoPorStatus[] = [
-    {
-      status: 'Total',
-      colorAccent: 'info',
-    },
-    {
-      status: 'Em andamento',
-      colorAccent: 'success',
-    },
-    {
-      status: 'Em atraso',
-      colorAccent: 'danger',
-    },
-  ];
-  statusTipo$: BehaviorSubject<TipoPorStatus[]> = new BehaviorSubject(
-    this.statusTipo
-  );
+  emptyList: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   constructor(
     private _setTitle: SetTitleServiceService,
-    private _opsService: OpsService,
+    private _opService: OpsService,
+    private _apontamentoService: ApontamentoService,
     private _opsFilteredService: OpsFilteredService,
-    private _auditorService: AuditorService,
-    private _router: Router,
     public _loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
     this._setTitle.setTitle('PCP');
 
-    const dataFromSession = this._opsService.getSessionData();
-
-    if (!!dataFromSession.length) {
-      this.listStatus = dataFromSession;
-      this.startData(this.listStatus);
-      this.loading.next(false);
-      this.emptyList.next(!this.listStatus.length);
-    } else {
-      this._opsService.getAllOPs().subscribe({
-        next: (list) => {
-          this.listStatus = list;
-          this.startData(this.listStatus);
-          this.loading.next(false);
-          this.emptyList.next(!this.listStatus.length);
-        },
-        error: (err: Error) => console.error(err),
-      });
-    }
-  }
-
-  startData(ops: OPs) {
-    ops.forEach((x) => {
-      this.tipoListOriginal.push(x.DS_TIPO);
-      this.tipoListOriginal = [...new Set(this.tipoListOriginal)];
-
-      this.menuOrigem.push(x.DS_CLASS);
-      this.menuOrigem = [...new Set(this.menuOrigem)];
-
-      this.menuColecao.push(x.NR_CICLO + '-' + x.DS_CICLO);
-      this.menuColecao = [...new Set(this.menuColecao)];
-
-      this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
-    });
-
-    this.summarize();
-
-    // set the filter service to pass to others components
     this._opsFilteredService.setFilter(this.selectedFilters);
 
-    this.statusTipo$.next(this.statusTipo);
-    this.OpList$.next(this.OpList);
+    this._opService
+      .getAllOPsResumido()
+      .pipe(
+        tap(
+          this._apontamentoService.getApontamentosResumido().subscribe({
+            next: (item) => {
+              this.resumoApontamento = JSON.parse(item.data);
+              this.resumoApontamento.forEach((item) => {
+                this.uniqApontamento.push(item.DS_APONTAMENTO_DS);
+                this.uniqApontamento = [...new Set(this.uniqApontamento)];
+              });
+            },
+          })
+        )
+      )
+      .subscribe({
+        next: (item) => {
+          this.resumoRetorno = JSON.parse(item.data);
+
+          this.uniqStatus.push('Total');
+
+          this.resumoRetorno.forEach((item) => {
+            this.uniqStatus.push(item.Status);
+            this.uniqStatus = [...new Set(this.uniqStatus)];
+
+            this.uniqTipo.push(item.DS_TIPO);
+            this.uniqTipo = [...new Set(this.uniqTipo)];
+            this.tmpColecao.push(item.NR_CICLO + '-' + item.DS_CICLO);
+            this.tmpColecao = [...new Set(this.tmpColecao)];
+            this.tmpColecao.sort((a, b) =>
+              +a.split('-')[0] > +b.split('-')[0]
+                ? 1
+                : +b.split('-')[0] > +a.split('-')[0]
+                ? -1
+                : 0
+            );
+            this.uniqColecao.next(this.tmpColecao);
+            this.tmpOrigem.push(item.DS_CLASS);
+            this.tmpOrigem = [...new Set(this.tmpOrigem)];
+            this.uniqOrigem.next(this.tmpOrigem);
+          });
+
+          this.summarize(this.resumoRetorno, this.resumoApontamento);
+          this.resumoStatus$.next(this.resumoStatus);
+          this.apontamentoTotal$.next(this.apontamentoTotal);
+          this.emptyList.next(!this.resumoStatus.length);
+          this.loading.next(false);
+        },
+      });
   }
 
-  summarize(filterSelected?: number): void {
-    // resetar as variáveis
-    this.tipoList = [];
-    this.OpList = [];
-    this.OpTipoList = [];
-
-    this.statusTipo = [
+  summarize(listaDeOPs: OPs, listaApontamento: ApontamentosResumidos): void {
+    // reset do array dos Status
+    this.resumoStatus = [
       {
         status: 'Total',
         colorAccent: 'info',
+        qnt_total: 0,
+        pecas_total: 0,
         tipo: [],
       },
       {
         status: 'Em andamento',
         colorAccent: 'success',
+        qnt_total: 0,
+        pecas_total: 0,
         tipo: [],
       },
       {
         status: 'Em atraso',
         colorAccent: 'danger',
+        qnt_total: 0,
+        pecas_total: 0,
         tipo: [],
       },
     ];
+    this.apontamentoTotal = [
+      {
+        DS_APONTAMENTO_DS: 'Não informado',
+        cor: 'danger',
+        qnt: 0,
+        pecas: 0,
+      },
+    ];
 
-    let listFilteredOPs = this.listStatus;
+    // variaveis temporárias para somatório
+    let tipoEmAndamentoTmp: TipoPorStatus[] = [];
+    let tipoEmAndamento: TipoPorStatus[] = [];
+    let tipoEmAtrasoTmp: TipoPorStatus[] = [];
+    let tipoEmAtraso: TipoPorStatus[] = [];
+    let tipoTotalTmp: TipoPorStatus[] = [];
+    let tipoTotal: TipoPorStatus[] = [];
 
-    switch (filterSelected) {
-      case 1: // dois filtros selecionados
-        listFilteredOPs = this.listStatus.filter(
-          (x) =>
-            this.selectedOrigem.includes(x.DS_CLASS) &&
-            this.selectedFilters.colecao.includes(x.DS_CICLO)
-        );
-        break;
-      case 2: // somente origem
-        listFilteredOPs = this.listStatus.filter((x) =>
-          this.selectedOrigem.includes(x.DS_CLASS)
-        );
-        break;
-      case 3: // somente colecao
-        listFilteredOPs = this.listStatus.filter((x) =>
-          this.selectedFilters.colecao.includes(x.DS_CICLO)
-        );
-        break;
-    }
+    listaDeOPs.forEach((item) => {
+      // passar por todos os itens do array para o somatório total
+      this.resumoStatus.filter((s) => s.status == item.Status)[0].qnt_total +=
+        +item.qnt! || 0;
+      this.resumoStatus.filter((s) => s.status == item.Status)[0].pecas_total +=
+        +item.pecas! || 0;
 
-    listFilteredOPs.forEach((x) => {
-      this.tipoList.push({
-        tipo: x['DS_TIPO'],
-        status: x['Status'],
-        qnt: Number(x['QT_OP'].toLocaleString().replace('.', '')),
+      // passar por todos os itens do array para o somatório de cada status por Tipo
+      if (item.Status == 'Em andamento') {
+        tipoEmAndamentoTmp.push({
+          ds_tipo: item.DS_TIPO,
+          qnt: item.qnt || 0,
+          pecas: item.pecas || 0,
+        });
+      } else if (item.Status == 'Em atraso') {
+        tipoEmAtrasoTmp.push({
+          ds_tipo: item.DS_TIPO,
+          qnt: item.qnt || 0,
+          pecas: item.pecas || 0,
+        });
+      }
+      tipoTotalTmp.push({
+        ds_tipo: item.DS_TIPO,
+        qnt: item.qnt || 0,
+        pecas: item.pecas || 0,
       });
-      this.tipoList.push({
-        tipo: 'Total',
-        status: x['Status'],
-        qnt: Number(x['QT_OP'].toLocaleString().replace('.', '')),
-      });
+      // Status Total
+      this.resumoStatus.filter((s) => s.status == 'Total')[0].qnt_total +=
+        +item.qnt! || 0;
+      this.resumoStatus.filter((s) => s.status == 'Total')[0].pecas_total +=
+        +item.pecas! || 0;
     });
 
-    // contagem dos percentuais de apontamentos
-    this.countApontamento(listFilteredOPs);
-
-    // set unique type
-    this.tipoList.forEach((f: { tipo: string; status: string }) => {
-      this.uniqTipo.push(f.tipo + '-' + f.status);
-      this.uniqTipo = [...new Set(this.uniqTipo)].filter((item) => item !== '');
-    });
-    // set unique status
-    this.tipoList.forEach((f: { status: any }) => {
-      this.uniqStatus.push(f.status);
-      this.uniqStatus = [...new Set(this.uniqStatus)].filter(
-        (item) => item !== ''
-      );
-    });
-
-    let qntOpsStatus = this.tipoList
-      .filter((tl: { tipo: string }) => tl.tipo == 'Total')
-      .reduce(
-        (prev: { [x: string]: any }, cur: { status: string | number }) => {
-          prev[cur.status] = (prev[cur.status] || 0) + 1;
-          return prev;
-        },
-        {}
-      );
-    let qntPecasStatus = this.tipoList
-      .filter((tl: { tipo: string }) => tl.tipo == 'Total')
-      .reduce(
-        (
-          prev: { [x: string]: number },
-          cur: { status: string; qnt: number }
-        ) => {
-          let cur_qnt: number = +cur.qnt;
-          let prev_qnt: number = +prev[cur.status] || 0;
-          prev[cur.status] = prev_qnt + cur_qnt;
-          return prev;
-        },
-        {}
-      );
-    let totalOpsStatus = this.tipoList
-      .filter((tl: { tipo: string }) => tl.tipo == 'Total')
-      .reduce((prev: { [x: string]: any }, cur: { tipo: string | number }) => {
-        prev[cur.tipo] = (prev[cur.tipo] || 0) + 1;
-        return prev;
-      }, {});
-    let totalPecasStatus = this.tipoList
-      .filter((tl: { tipo: string }) => tl.tipo == 'Total')
-      .reduce(
-        (
-          prev: { [x: string]: any },
-          cur: { tipo: string | number; qnt: number }
-        ) => {
-          let cur_qnt: number = +cur.qnt;
-          let prev_qnt: number = +prev[cur.tipo] || 0;
-          prev[cur.tipo] = prev_qnt + cur_qnt;
-          return prev;
-        },
-        {}
-      );
-
-    this.uniqStatus.map((s: string, index: number) => {
-      let ordem = s == 'Em andamento' ? 1 : 2;
-      this.OpList.push({
-        name: s,
-        qnt: qntOpsStatus[s] || 0,
-        qnt_pecas: +qntPecasStatus[s] || 0,
-        ordem: ordem,
-      });
-    });
-    this.OpList.push({
-      name: 'Total',
-      qnt: totalOpsStatus['Total'] || 0,
-      qnt_pecas: totalPecasStatus['Total'] || 0,
-      ordem: 0,
-    });
-
-    this.OpList.map((op) => {
-      if (op.name == 'Em andamento') {
-        op.color = 'success';
-      } else if (op.name == 'Pendente') {
-        op.color = 'warning';
-      } else if (op.name == 'Em atraso') {
-        op.color = 'danger';
+    // somatório dos tipos por cada status
+    tipoEmAndamentoTmp.forEach((t) => {
+      let tmp = tipoEmAndamento.find((o) => o.ds_tipo === t.ds_tipo);
+      if (!tmp) {
+        // se ainda não existe no array, então inclui
+        tipoEmAndamento.push({
+          pecas: t.pecas,
+          qnt: t.qnt,
+          ds_tipo: t.ds_tipo,
+        });
       } else {
-        op.color = 'primary';
+        // caso já exista soma
+        tmp.pecas += t.pecas;
+        tmp.qnt += t.qnt;
+      }
+    });
+    tipoEmAtrasoTmp.forEach((t) => {
+      let tmp = tipoEmAtraso.find((o) => o.ds_tipo === t.ds_tipo);
+      if (!tmp) {
+        tipoEmAtraso.push({
+          pecas: t.pecas,
+          qnt: t.qnt,
+          ds_tipo: t.ds_tipo,
+        });
+      } else {
+        tmp.pecas += t.pecas;
+        tmp.qnt += t.qnt;
+      }
+    });
+    tipoTotalTmp.forEach((t) => {
+      let tmp = tipoTotal.find((o) => o.ds_tipo === t.ds_tipo);
+      if (!tmp) {
+        tipoTotal.push({
+          pecas: t.pecas,
+          qnt: t.qnt,
+          ds_tipo: t.ds_tipo,
+        });
+      } else {
+        tmp.pecas += t.pecas;
+        tmp.qnt += t.qnt;
       }
     });
 
-    this.OpList.sort((a, b) =>
-      a.ordem! > b.ordem! ? 1 : b.ordem! > a.ordem! ? -1 : 0
-    );
-
-    let qntTotalPecasTipo = this.tipoList.reduce(
-      (
-        prev: { [x: string]: any },
-        cur: { tipo: string | number; qnt: string }
-      ) => {
-        prev[cur.tipo] = (prev[cur.tipo] || 0) + parseInt(cur.qnt);
-        return prev;
-      },
-      {}
-    );
-
-    let qntTotalOpsTipo = this.tipoList.reduce(
-      (prev: { [x: string]: any }, cur: { tipo: string | number }) => {
-        prev[cur.tipo] = (prev[cur.tipo] || 0) + 1;
-        return prev;
-      },
-      {}
-    );
-
-    let qntPecasTipo = this.tipoList.reduce(
-      (
-        prev: { [x: string]: any },
-        cur: { tipo: string; status: string; qnt: string }
-      ) => {
-        prev[cur.tipo + '-' + cur.status] =
-          (prev[cur.tipo + '-' + cur.status] || 0) + +cur.qnt;
-        return prev;
-      },
-      {}
-    );
-    let qntOpsTipo = this.tipoList.reduce(
-      (prev: { [x: string]: any }, cur: { tipo: string; status: string }) => {
-        prev[cur.tipo + '-' + cur.status] =
-          (prev[cur.tipo + '-' + cur.status] || 0) + 1;
-        return prev;
-      },
-      {}
-    );
-    // set the quantity of the itens that where not fount to 0
-    this.tipoListOriginal.forEach((t) => {
-      if (!qntTotalPecasTipo[t]) {
-        qntTotalPecasTipo[t] = 0;
+    // inclui os tipos já com as quantidades somadas ao array com os totais por status
+    this.resumoStatus.forEach((rs) => {
+      if (rs.status == 'Em andamento') {
+        rs.tipo = tipoEmAndamento;
+      } else if (rs.status == 'Em atraso') {
+        rs.tipo = tipoEmAtraso;
+      } else if (rs.status == 'Total') {
+        rs.tipo = tipoTotal;
       }
     });
 
-    let pecasArray = Object.keys(qntTotalPecasTipo).map((key) => [
-      key,
-      qntTotalPecasTipo[key],
-    ]);
+    // inicialização do array de apontamentos
+    this.uniqApontamento.forEach((a: string) => {
+      this.apontamentoTotal.push({
+        DS_APONTAMENTO_DS: a,
+        cor: this.corApontamento[a],
+        qnt: 0,
+        pecas: 0,
+      });
+    });
 
-    for (let i of pecasArray) {
-      let key: string = i[0];
-      if (key != 'Total') {
-        this.OpTipoList.push(
-          ...[
-            {
-              name: key,
-              qnt: qntTotalOpsTipo[key] || 0,
-              status: 'Total',
-              qnt_pecas: +i[1] || 0,
-            },
-          ]
-        );
+    // somatório das quantidades por apontamento
+    listaApontamento.forEach((ap) => {
+      if (
+        // verifica se existe algum apontamento no array filtrado
+        this.apontamentoTotal.filter(
+          (s) => s.DS_APONTAMENTO_DS == ap.DS_APONTAMENTO_DS
+        ).length > 0
+      ) {
+        this.apontamentoTotal.filter((s) => {
+          return s.DS_APONTAMENTO_DS == ap.DS_APONTAMENTO_DS;
+        })[0].qnt += +ap.count;
+        this.apontamentoTotal.filter(
+          (s) => s.DS_APONTAMENTO_DS == ap.DS_APONTAMENTO_DS
+        )[0].pecas += +ap.sum;
       }
+    });
+
+    // classifica os apontamentos de acordo com o array "orderApontamento"
+    this.apontamentoTotal.sort((a, b) => {
+      return (
+        this.orderApontamento.indexOf(a.DS_APONTAMENTO_DS) -
+        this.orderApontamento.indexOf(b.DS_APONTAMENTO_DS)
+      );
+    });
+
+    // // cria um apontamento "Total" para identificar quantos não estão informados
+    let apTotal: { count?: number; sum?: number } = {};
+    if(listaApontamento.filter((ap) => ap.DS_APONTAMENTO_DS == 'Total')[0]){
+      listaApontamento.filter((ap) => ap.DS_APONTAMENTO_DS == 'Total')[0].sum = 0;
+      listaApontamento.filter((ap) => ap.DS_APONTAMENTO_DS == 'Total')[0].count = 0;
     }
-    this.uniqTipo.map((s: string, index: number) => {
-      if (s.split('-')[0] != 'Total') {
-        this.OpTipoList.push(
-          ...[
-            {
-              name: s.split('-')[0],
-              qnt: qntOpsTipo[s] || 0,
-              status: s.split('-')[1],
-              qnt_pecas: +qntPecasTipo[s] || 0,
-            },
-          ]
-        );
-      }
-    });
 
-    this.OpTipoList.sort((a, b) =>
-      a.name! > b.name! ? 1 : b.name! > a.name! ? -1 : 0
-    );
+    // verifica se existe algum item na lista de apontamentos passada como parâmetro
+    if (listaApontamento.length > 0) {
+      // somatorio do total para identificar os não informados
+      apTotal = listaApontamento.reduce((prev, cur) => {
+        prev.DS_APONTAMENTO_DS = 'Total';
+        prev.DS_CLASS = 'Total';
+        prev.NR_CICLO = 0;
+        prev.count += cur.count || 0;
+        prev.sum += cur.sum || 0;
+        return prev;
+      });
+    }
 
-    this.statusTipo.forEach((s) => {
-      let tmpOP: Faccoes = [];
-      this.OpTipoList.filter((n) => n.status?.includes(s.status!)).forEach(
-        (op) => {
-          tmpOP.push(op);
-        }
-      );
-      let idx = this.statusTipo.findIndex((st) => st.status == s.status);
-      this.statusTipo[idx] = {
-        status: this.statusTipo[idx].status,
-        tipo: tmpOP,
-        colorAccent: this.statusTipo[idx].colorAccent,
-      };
-    });
+    // filtra somente os totais para identificar a quantidade de não informados
+    let qtTotal = this.resumoStatus.filter((rs) => {
+      return rs.status == 'Total';
+    })[0].qnt_total;
+    let pecasTotal = this.resumoStatus.filter((rs) => {
+      return rs.status == 'Total';
+    })[0].pecas_total;
 
-    this.statusTipo$.next(this.statusTipo);
-    this.OpList$.next(this.OpList);
+    // subtrai o total de todas as ops com o total que foi inserido algum apontamento
+    if (listaApontamento.length > 0) {
+      this.apontamentoTotal.filter(
+        (i) => i.DS_APONTAMENTO_DS == 'Não informado'
+      )[0].qnt = qtTotal - apTotal.count!;
+      this.apontamentoTotal.filter(
+        (i) => i.DS_APONTAMENTO_DS == 'Não informado'
+      )[0].pecas = pecasTotal - apTotal.sum!;
+    } else {
+      this.apontamentoTotal.filter(
+        (i) => i.DS_APONTAMENTO_DS == 'Não informado'
+      )[0].qnt = qtTotal!;
+      this.apontamentoTotal.filter(
+        (i) => i.DS_APONTAMENTO_DS == 'Não informado'
+      )[0].pecas = pecasTotal!;
+    }
   }
 
-  countApontamento(OPs: OPs) {
-    this._auditorService.getApontamento().subscribe((apontamento) => {
-      let situacaoList: string[] = [];
-
-      let codList: string[] = [];
-      OPs.forEach((op: OP) => {
-        codList.push(op.cod! + op.CD_LOCAL);
-        codList = [...new Set(codList)];
-      });
-
-      let apontamentoFiltered: Apontamentos = apontamento.filter((op) =>
-        codList.includes(op.cod! + op.CD_LOCAL)
-      );
-
-      let opsSemApontamento = apontamentoFiltered.flatMap((a) => a.cod + a.CD_LOCAL);
-
-      // filtrar de acordo com as OPs do input
-      apontamentoFiltered.forEach((a) => {
-        situacaoList.push(a.Situacao!);
-      });
-
-      // Soma do total de peças por situação
-      let situacaoListObjQntPecas: any | Object = {};
-      apontamentoFiltered.forEach((_) => {
-        let cur = _.Situacao!;
-        cur = cur.toString().includes('Parado') ? (cur = 'Parado') : cur;
-        situacaoListObjQntPecas[cur] = !!situacaoListObjQntPecas[cur]
-          ? parseInt(_.QT_OP.toString()) +
-            parseInt(situacaoListObjQntPecas[cur])
-          : +_.QT_OP;
-      });
-
-      let totalPecasPorSituacao = 0;
-      for (const key in situacaoListObjQntPecas) {
-        totalPecasPorSituacao += parseInt(situacaoListObjQntPecas[key]);
-      }
-
-      this.apontamentoList = {
-        // verificar o total de pecas e o total por situação quando filtrado coleçao
-        nao_informado: this.OpList[0].qnt_pecas - totalPecasPorSituacao || 0,
-        em_transporte: situacaoListObjQntPecas['Em transporte'] || 0,
-        em_fila: situacaoListObjQntPecas['Em fila'] || 0,
-        em_producao: situacaoListObjQntPecas['Em produção'] || 0,
-        parado: situacaoListObjQntPecas['Parado'] || 0,
-        inspecao: situacaoListObjQntPecas['Em inspeção'] || 0,
-        disponivel: situacaoListObjQntPecas['Disponível para coleta'] || 0,
-        coletado: situacaoListObjQntPecas['Coletado'] || 0,
-        nao_industrializado:
-          situacaoListObjQntPecas['Não industrializado'] || 0,
-      };
-      this.loadingApontamento.next(false);
-    });
-  }
-
-  filterApontamento(filtro: string) {
-    let colecaoAjustado = this.selectedColecao.map((x) => {
-      if (x.split('-').length > 0) {
-        return x.split('-')[1];
-      }
-      return x;
-    });
-
-    this.selectedFilters = {
-      origem: this.selectedOrigem,
-      colecao: colecaoAjustado,
-      apontamentoFilter: filtro,
-    };
-
-    // set the filter service to pass to others components
-    this._opsFilteredService.setFilter(this.selectedFilters);
-
-    this._router.navigate(['pcp/ops-descricao/Total/99999']);
-  }
+  filterApontamento(filtro: string) {}
 
   filtrosDropdown(): void {
-    let colecaoFilter = this.selectedColecao.map((item) => item.split('-')[1]);
+    this.loading.next(true);
+    // reset das variáveis
+    let nrCicloFiltrado: any[] = [];
+    let filtroTmpColecao: string[] = [];
+    let filtroUniqOrigem: string[] = [];
+    let colecaoFilter = this.colecaoFiltrada.map((item) => item.split('-')[0]);
 
     this.selectedFilters = {
-      origem: this.selectedOrigem,
+      origem: this.origemFiltrada,
       colecao: colecaoFilter,
       apontamentoFilter: '',
     };
 
-    let hasOrigem = this.selectedOrigem.length > 0;
-    let hasColecao = this.selectedColecao.length > 0;
-
     // set the filter service to pass to others components
     this._opsFilteredService.setFilter(this.selectedFilters);
 
-    // 1 = dois filtros selecionados
-    if (hasColecao && hasOrigem) {
-      this.summarize(1);
-      return;
+    // separa o nr_ciclo do ds_ciclo
+    this.colecaoFiltrada.forEach((x) => {
+      nrCicloFiltrado.push(+x.split('-')[0]);
+    });
+    // verificar qual o filtro foi selecionado
+    let hasOrigem = !!this.origemFiltrada.length;
+    let hasColecao = !!this.colecaoFiltrada.length;
+    // switch case para filtrar o que foi selecionado
+    let filtroSelecionado =
+      hasOrigem && hasColecao ? 3 : hasColecao ? 2 : hasOrigem ? 1 : 0;
+    let filtradasOPs: OPs = [];
+    let filtradasApontamentos: ApontamentosResumidos = [];
+    switch (filtroSelecionado) {
+      case 1:
+        filtradasOPs = this.resumoRetorno.filter((ops) => {
+          return this.origemFiltrada.includes(ops.DS_CLASS);
+        });
+        filtradasOPs.forEach((item) => {
+          filtroTmpColecao.push(item.NR_CICLO + '-' + item.DS_CICLO);
+          filtroTmpColecao = [...new Set(filtroTmpColecao)];
+        });
+        filtroTmpColecao.sort((a, b) =>
+          +a.split('-')[0] > +b.split('-')[0]
+            ? 1
+            : +b.split('-')[0] > +a.split('-')[0]
+            ? -1
+            : 0
+        );
+        this.uniqColecao.next(filtroTmpColecao);
+
+        filtradasApontamentos = this.resumoApontamento.filter((aps) => {
+          return this.origemFiltrada.includes(aps.DS_CLASS);
+        });
+        break;
+      case 2:
+        filtradasOPs = this.resumoRetorno.filter((ops) => {
+          return nrCicloFiltrado.includes(ops.NR_CICLO);
+        });
+        filtradasOPs.forEach((item) => {
+          filtroUniqOrigem.push(item.DS_CLASS);
+          filtroUniqOrigem = [...new Set(filtroUniqOrigem)];
+        });
+        this.uniqOrigem.next(filtroUniqOrigem);
+
+        filtradasApontamentos = this.resumoApontamento.filter((aps) => {
+          return nrCicloFiltrado.includes(+aps.NR_CICLO);
+        });
+        break;
+      case 3:
+        filtradasOPs = this.resumoRetorno.filter((ops) => {
+          return (
+            this.origemFiltrada.includes(ops.DS_CLASS) &&
+            nrCicloFiltrado.includes(ops.NR_CICLO)
+          );
+        });
+        filtradasApontamentos = this.resumoApontamento.filter((aps) => {
+          return (
+            this.origemFiltrada.includes(aps.DS_CLASS) &&
+            nrCicloFiltrado.includes(+aps.NR_CICLO)
+          );
+        });
+        break;
+      default:
+        this.uniqColecao.next(this.tmpColecao);
+        this.uniqOrigem.next(this.tmpOrigem);
+        filtradasOPs = this.resumoRetorno;
+        filtradasApontamentos = this.resumoApontamento;
     }
-    // 2 = somente origem
-    if (hasOrigem) {
-      this.summarize(2);
-      return;
-    }
-    // 3 = somente colecao
-    if (hasColecao) {
-      this.summarize(3);
-      return;
-    }
-    this.summarize();
+
+    this.summarize(filtradasOPs, filtradasApontamentos);
+    this.resumoStatus$.next(this.resumoStatus);
+    this.apontamentoTotal$.next(this.apontamentoTotal);
+    this.loading.next(false);
   }
 }

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Faccoes } from 'src/app/models/faccao';
-import { OPs } from 'src/app/models/ops';
+import { OPDescricoes } from 'src/app/models/opdescricao';
+import { OP, OPs } from 'src/app/models/ops';
 import { MotoristaService } from 'src/app/services/motorista.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
@@ -23,8 +23,10 @@ export class ListFaccoesComponent implements OnInit {
   listOPsDisponiveis: OPs = [];
 
   localList: any[] = [];
-  faccaoList: Faccoes = [];
-  faccaoList$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.faccaoList);
+  faccaoList: OPDescricoes = [];
+  faccaoList$: BehaviorSubject<OPDescricoes> = new BehaviorSubject(
+    this.faccaoList
+  );
 
   constructor(
     private _setTitle: SetTitleServiceService,
@@ -35,30 +37,14 @@ export class ListFaccoesComponent implements OnInit {
   ngOnInit(): void {
     this._setTitle.setTitle('Carregando...');
 
-    // pega todos os códigos das ops marcadas como disponível
     this._motoristaService.listDisponivel().subscribe({
-      next: (apontamentos) => {
-        this.listCodOPsDisponiveis = apontamentos.flatMap(
-          (op) => op.cod + '-' + op.CD_LOCAL.toString()
-        );
+      next: (ops) => {
+        this.listOPsDisponiveis = JSON.parse(ops.data);
 
-        // listagem de todas as facções que possuem ops com status de apontamento "Disponível para coleta"
-        this._opsService.getAllOPs().subscribe({
-          next: (ops) => {
+        this.setfaccaolist(this.listOPsDisponiveis);
 
-            this.listOPsDisponiveis = ops.filter((op) => {
-              return this.listCodOPsDisponiveis.includes(
-                op.cod + '-' + op.CD_LOCAL.toString()
-              );
-            });
-
-            this.setfaccaolist(this.listOPsDisponiveis);
-
-            this._setTitle.setTitle('Motorista');
-            this.emptyList = false;
-          },
-          error: (err: Error) => console.error(err),
-        });
+        this._setTitle.setTitle('Motorista');
+        this.emptyList = false;
       },
       error: (err: Error) => console.error(err),
     });

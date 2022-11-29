@@ -1,4 +1,5 @@
 export interface User {
+  CD_USUARIO?: number,
   id?: number,
   nome?: string,
   nivel?: number,

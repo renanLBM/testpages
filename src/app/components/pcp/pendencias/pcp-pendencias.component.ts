@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { NbToastrService } from '@nebular/theme';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, zip } from 'rxjs';
 import { StatusPendencia } from 'src/app/models/enums/enumStatusPendencia';
 import { PendenciaLocal } from 'src/app/models/localFacao';
 import { Pendencia, Pendencias } from 'src/app/models/pendencia';
-import { OpsService } from 'src/app/services/ops.service';
 import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'fc-pcppendencias',
@@ -15,9 +15,12 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   styleUrls: ['./pcp-pendencias.component.scss'],
 })
 export class PCPPendenciasComponent implements OnInit {
+
   // TODO:
   // make this an enum to change in Auditor and PCP
   ignoredStatus = ['Finalizado', 'Recusado'];
+
+  fileName = 'Pendencias.xlsx';
 
   statusEnum = ['Em análise', 'Almoxarifado', 'Enviado'];
   selectedStatus: string[] = [];
@@ -40,12 +43,13 @@ export class PCPPendenciasComponent implements OnInit {
   minhasPendenciasLocal$: BehaviorSubject<PendenciaLocal[]> =
     new BehaviorSubject<PendenciaLocal[]>([]);
 
+  filteredArray: PendenciaLocal[] = [];
+
   constructor(
     private toastrService: NbToastrService,
     private _setTituloService: SetTitleServiceService,
     private _userService: UserService,
-    private _pendenciaService: PendenciasService,
-    private _opsService: OpsService
+    private _pendenciaService: PendenciasService
   ) {}
 
   ngOnInit(): void {
@@ -61,46 +65,58 @@ export class PCPPendenciasComponent implements OnInit {
     this._userService.getUser().subscribe((_) => (usuario = _.nome!));
     this._pendenciaService.listPendencia().subscribe({
       next: (pendencias) => {
-        this.minhasPendencias = pendencias;
+        this.minhasPendencias = JSON.parse(pendencias.data);
         this.minhasPendencias = this.minhasPendencias.filter(
-          (pendencia) => !this.ignoredStatus.includes(pendencia.STATUS)
+          (pendencia) =>
+            !this.ignoredStatus.includes(pendencia.DS_STATUS_PENDENCIA)
         );
 
-        let flatCdLocal = this.minhasPendencias.flatMap((_) => _.CD_LOCAL + '');
+        this.minhasPendencias.forEach((pendencia) => {
+          pendencia.display_name = !!pendencia.CORTE ? pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP+" - "+pendencia.CORTE : pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP;
+          pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br');
+          pendencia.cod =
+            pendencia.NR_CICLO +
+            '-' +
+            pendencia.NR_OP +
+            '-' +
+            pendencia.CD_REFERENCIA;
 
-        this._opsService.getLocalFaccao().subscribe({
-          next: (local) => {
-            // passar por todos os locais e adicionar na variavel minhasPendenciasLocal os que forem encontrados no flatCdLocal
-            local.forEach((lcod) => {
-              if (flatCdLocal.includes(lcod.CD_LOCAL)) {
-                let tmpPendencia: Pendencias = [];
-                // passar por todas as pendencias e incluir em cada local
-                this.minhasPendencias.forEach((pendencia) => {
-                  if (lcod.CD_LOCAL == pendencia.CD_LOCAL + '') {
-                    tmpPendencia.push(pendencia);
-                  }
-                });
-                this.minhasPendenciasLocal.push({
-                  local: lcod.CD_LOCAL + ' - ' + lcod.DS_LOCAL,
-                  pendencias: tmpPendencia,
-                });
-              }
+          if (this.minhasPendenciasLocal.length > 0) {
+            if (this.minhasPendenciasLocal.filter((l) => l.local == pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL).length){
+              this.minhasPendenciasLocal.filter((l) => l.local == pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL)[0].pendencias.push(pendencia);
+            }else{
+              this.minhasPendenciasLocal.push({
+                local: pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL,
+                pendencias: [pendencia],
+              });
+            }
+          } else {
+            this.minhasPendenciasLocal.push({
+              local: pendencia.CD_LOCAL + ' - ' + pendencia.DS_LOCAL,
+              pendencias: [pendencia],
             });
-            let tmpSolicitante: string[] = [];
-            this.minhasPendenciasLocal.forEach((_) => {
-              let teste = _.pendencias.flatMap((x) => x.USUARIO);
-              tmpSolicitante.push(...teste);
-            });
-            // set the solicitante dropdown
-            this.solicitanteEnum = Array.from(new Set(tmpSolicitante));
-
-            this.orderByQntPendencia(this.minhasPendenciasLocal);
-            this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
-          },
-          error: (err) => {
-            console.warn(err);
-          },
+          }
         });
+
+        let tmpSolicitante: string[] = [];
+        this.minhasPendenciasLocal.forEach((_) => {
+          let teste = _.pendencias.flatMap((x) => x.DS_USUARIO);
+          tmpSolicitante.push(...teste);
+        });
+        // set the solicitante dropdown
+        this.solicitanteEnum = Array.from(new Set(tmpSolicitante));
+        this.solicitanteEnum = this.solicitanteEnum.sort((a, b) => {
+          if (a > b) {
+            return 1;
+          } else if (b > a) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+
+        this.orderByQntPendencia(this.minhasPendenciasLocal);
+        this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
 
         this._setTituloService.setTitle('Pendências');
         this.loading.next(false);
@@ -120,8 +136,15 @@ export class PCPPendenciasComponent implements OnInit {
 
     let elementSelect = event.target as HTMLSelectElement;
     const novoStatus = elementSelect.value.split('_')[0];
+    const cd_novoStatus = StatusPendencia[novoStatus as keyof typeof StatusPendencia] +1;
 
-    this._pendenciaService.alterarStatus(pendencia, novoStatus).subscribe({
+    pendencia.CD_NovoStatus = !!cd_novoStatus ? cd_novoStatus : 0;
+    pendencia.DS_NovoStatus = !!novoStatus ? StatusPendencia[cd_novoStatus-1] : '';
+    let data_ajustada = pendencia.DT_MODIFICACAO?.split(' ');
+    pendencia.DT_MODIFICACAO = data_ajustada![0].split("/").reverse().join('-') + ' ' + data_ajustada![1];
+
+
+    this._pendenciaService.editPendencia(pendencia).subscribe({
       next: (ret) => {
         if (ret == 1) {
           this.toastrService.success(
@@ -144,7 +167,33 @@ export class PCPPendenciasComponent implements OnInit {
     });
   }
 
+  filtroOP(event: Event): void {
+    document.getElementById('filtro-op')?.focus();
+    const filterValue = (event.target as HTMLInputElement).value;
+
+    this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
+    this.filteredArray = this.minhasPendenciasLocal;
+    // se filtro status
+    // verificar se o filtro solicitante está ativo e filtrar os dois
+    // caso contrário filtrar somente status
+    if (filterValue.length > 0) {
+      this.filteredArray = this.minhasPendenciasLocal.map((_) => {
+        let filtered = {
+          ..._,
+          pendencias: _.pendencias.filter((p) => p.cod?.includes(filterValue)),
+        };
+        return filtered;
+      });
+      this.filteredArray = this.filteredArray.filter(
+        (_) => _.pendencias.length > 0
+      );
+      this.orderByQntPendencia(this.filteredArray);
+      this.minhasPendenciasLocal$.next(this.filteredArray);
+    }
+  }
+
   filtroDropdown() {
+    (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
     this.selectedSolicitante = [];
     this.idSelectedSolicitante.forEach((x) => {
       this.selectedSolicitante.push(this.solicitanteEnum[x]);
@@ -158,52 +207,122 @@ export class PCPPendenciasComponent implements OnInit {
     // verificar se o filtro solicitante está ativo e filtrar os dois
     // caso contrário filtrar somente status
     if (this.selectedSolicitante.length > 0) {
-      let filteredArray = this.minhasPendenciasLocal.map((_) => {
+      this.filteredArray = this.minhasPendenciasLocal.map((_) => {
         let filtered = {
           ..._,
           pendencias: _.pendencias.filter((p) =>
-            this.selectedSolicitante.includes(p.USUARIO)
+            this.selectedSolicitante.includes(p.DS_USUARIO)
           ),
         };
         return filtered;
       });
       if (this.selectedStatus.length > 0) {
-        filteredArray = filteredArray.map((_) => {
+        this.filteredArray = this.filteredArray.map((_) => {
           let filtered = {
             ..._,
             pendencias: _.pendencias.filter((p) =>
-              this.selectedStatus.includes(p.STATUS)
+              this.selectedStatus.includes(p.DS_STATUS_PENDENCIA)
             ),
           };
           return filtered;
         });
       }
-      this.orderByQntPendencia(filteredArray);
-      this.minhasPendenciasLocal$.next(filteredArray);
+      this.filteredArray = this.filteredArray.filter(
+        (_) => _.pendencias.length > 0
+      );
+      this.orderByQntPendencia(this.filteredArray);
+      this.minhasPendenciasLocal$.next(this.filteredArray);
     } else if (this.selectedStatus.length > 0) {
-      let filteredArray = this.minhasPendenciasLocal.map((_) => {
+      this.filteredArray = this.minhasPendenciasLocal.map((_) => {
         let filtered = {
           ..._,
           pendencias: _.pendencias.filter((p) =>
-            this.selectedStatus.includes(p.STATUS)
+            this.selectedStatus.includes(p.DS_STATUS_PENDENCIA)
           ),
         };
         return filtered;
       });
       if (this.selectedSolicitante.length > 0) {
-        filteredArray = filteredArray.map((_) => {
+        this.filteredArray = this.filteredArray.map((_) => {
           let filtered = {
             ..._,
             pendencias: _.pendencias.filter((p) =>
-              this.selectedSolicitante.includes(p.USUARIO)
+              this.selectedSolicitante.includes(p.DS_USUARIO)
             ),
           };
           return filtered;
         });
       }
-      this.orderByQntPendencia(filteredArray);
-      this.minhasPendenciasLocal$.next(filteredArray);
+      this.filteredArray = this.filteredArray.filter(
+        (_) => _.pendencias.length > 0
+      );
+      this.orderByQntPendencia(this.filteredArray);
+      this.minhasPendenciasLocal$.next(this.filteredArray);
     }
+  }
+
+  exportexcel(): void {
+    /* table id is passed over here */
+    let excelFile = [
+      [
+        'CD_PENDENCIA',
+        'CD_LOCAL',
+        'NR_CICLO',
+        'NR_OP',
+        'CD_REFERENCIA',
+        'DS_CLASSIFICACAO',
+        'CD_PRODUTO_MP',
+        'DS_PRODUTO_MP',
+        'TAMANHO',
+        'QT_SOLICITADO',
+        'USUARIO',
+        'STATUS',
+        'DT_SOLICITACAO',
+        'Obs',
+        'CORTE',
+        'QT_OP',
+        'MOTIVO',
+      ],
+    ];
+    let pendenciaExcel = this.filteredArray;
+    if (pendenciaExcel.length == 0) {
+      pendenciaExcel = this.minhasPendenciasLocal;
+    }
+    pendenciaExcel.forEach((pendenciasLocal) => {
+      pendenciasLocal.pendencias.forEach((pendenciaLocal) => {
+        let teste = [
+          pendenciaLocal.CD_PENDENCIA + '',
+          pendenciaLocal.CD_LOCAL + '',
+          pendenciaLocal.NR_CICLO + '',
+          pendenciaLocal.NR_OP + '',
+          pendenciaLocal.CD_REFERENCIA + '',
+          pendenciaLocal.DS_CLASSIFICACAO + '',
+          pendenciaLocal.CD_PRODUTO_MP + '',
+          pendenciaLocal.DS_PRODUTO_MP + '',
+          pendenciaLocal.TAMANHO + '',
+          pendenciaLocal.QT_SOLICITADO + '',
+          pendenciaLocal.DS_USUARIO + '',
+          pendenciaLocal.DS_STATUS_PENDENCIA + '',
+          pendenciaLocal.DT_SOLICITACAO + '',
+          pendenciaLocal.OBS + '' == 'null' ? '' : pendenciaLocal.OBS + '',
+          pendenciaLocal.CORTE + '' == 'null' ? '' : pendenciaLocal.CORTE + '',
+          pendenciaLocal.QT_OP_HIST + '',
+          pendenciaLocal.DS_MOTIVO_PENDENCIA + '',
+        ];
+        excelFile.push(teste);
+      });
+    });
+
+    /* generate workbook and add the worksheet */
+    // const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(excelFile);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Planilha1');
+    // var fmt = '@';
+    // wb.Sheets['Sheet1']['F'] = fmt;
+
+    /* save to file */
+    XLSX.writeFile(wb, this.fileName);
   }
 
   orderByQntPendencia(arrayToSort: PendenciaLocal[]) {

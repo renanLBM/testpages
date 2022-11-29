@@ -18,6 +18,35 @@ $breakpoint-alpha: 480px;
   }
 }
 
+.filter-wrapper {
+  margin: 30px 15px 15px;
+  padding: 10px;
+  border: 1px solid lightblue;
+  border-radius: 5px;
+  background-color: nb-theme(background-basic-color-2);
+
+  .filter-title {
+    font-weight: 600;
+    margin-top: -20px;
+    background: linear-gradient(0deg, nb-theme(background-basic-color-2) 0%, nb-theme(background-basic-color-2) 55%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0) 100%);
+    width: max-content;
+    padding: 0 5px;
+    user-select: none;
+  }
+
+  .filter-menu-wrapper {
+    margin-left: 2em;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-dropdown {
+    margin-right: 15px;
+  }
+
+}
+
 nb-alert {
   min-height: 25px;
   font-size: 13px;

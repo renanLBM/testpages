@@ -128,8 +128,8 @@
                     <p class="desc-text"><b>Coleção:</b> {{ item.drop }}</p>
                     <p class="c-qnt"><b>Peças:</b> {{ item.qnt }}</p>
                     <div class="nv-prev" *ngIf="!isDistribuicao">
-                      <nb-alert [ngClass]="item.Situacao!" class="nv-alert">{{
-                        item.Situacao }}</nb-alert>
+                      <nb-alert [ngClass]="item.DS_APONTAMENTO_DS!" class="nv-alert">{{
+                        item.DS_APONTAMENTO_DS }}</nb-alert>
                     </div>
                     <div *ngIf="isDistribuicao" class="pdf-wrapper">
                       <img class="ico-pdf" src="../../../../assets/pdf.png" alt="download_pdf">

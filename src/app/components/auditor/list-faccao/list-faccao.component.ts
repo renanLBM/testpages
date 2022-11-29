@@ -1,11 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Pages } from 'src/app/models/enums/enumPages';
-import { Faccao, Faccoes } from 'src/app/models/faccao';
+import { OPDescricao, OPDescricoes } from 'src/app/models/opdescricao';
 import { OPs } from 'src/app/models/ops';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -37,14 +33,16 @@ export class ListFaccaoComponent implements OnInit {
   localList: any[] = [];
   AllOpsList: OPs = [];
   AllOpsList2: OPs = [];
-  faccaoList: Faccoes = [];
-  faccaoList$: BehaviorSubject<Faccao[]> = new BehaviorSubject(this.faccaoList);
+  faccaoList: OPDescricoes = [];
+  faccaoList$: BehaviorSubject<OPDescricoes> = new BehaviorSubject(
+    this.faccaoList
+  );
 
   constructor(
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
     private _opsFilteredService: OpsFilteredService,
-    private _userService: UserService,
+    private _userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -71,26 +69,40 @@ export class ListFaccaoComponent implements OnInit {
       this.faccaoList.forEach((x) => {
         this.menuColecao.push(x.ciclo + '-' + x.colecao!);
         this.menuColecao = [...new Set(this.menuColecao)];
+        x['name'] = x['name'].replace('EXT. ', '');
       });
 
-      this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
+      this.menuColecao.sort((a, b) =>
+        +a.split('-')[0] > +b.split('-')[0]
+          ? 1
+          : +b.split('-')[0] > +a.split('-')[0]
+          ? -1
+          : 0
+      );
 
       this.faccaoList$.next(this.faccaoList);
       this._setTitle.setTitle(titulo);
       this.loading.next(false);
       this.emptyList.next(!this.faccaoList.length);
     } else {
-      this._opsService.getAllOPs().subscribe({
+      this._opsService.getOPsRegiao().subscribe({
         next: (list) => {
-          this.AllOpsList = list;
-          this.setfaccaolist(list);
+          this.AllOpsList = JSON.parse(list.data);
+          this.setfaccaolist(this.AllOpsList);
 
           this.faccaoList.forEach((x) => {
             this.menuColecao.push(x.ciclo + '-' + x.colecao!);
             this.menuColecao = [...new Set(this.menuColecao)];
+            x['name'] = x['name'].replace('EXT. ', '');
           });
 
-          this.menuColecao.sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
+          this.menuColecao.sort((a, b) =>
+            +a.split('-')[0] > +b.split('-')[0]
+              ? 1
+              : +b.split('-')[0] > +a.split('-')[0]
+              ? -1
+              : 0
+          );
 
           this.faccaoList$.next(this.faccaoList);
           this._setTitle.setTitle(titulo);
@@ -184,7 +196,7 @@ export class ListFaccaoComponent implements OnInit {
   }
 
   filtrosDropdown(): void {
-    let colecaoFilter = this.selectedColecao.map((item) => item.split('-')[1]);
+    let colecaoFilter = this.selectedColecao.map((item) => item.split('-')[0]);
 
     this.selectedFilters = {
       origem: '',
@@ -199,7 +211,7 @@ export class ListFaccaoComponent implements OnInit {
 
     if (this.selectedColecao.length > 0) {
       filteredOps = this.AllOpsList.filter((x) => {
-        return colecaoFilter.includes(x.DS_CICLO);
+        return colecaoFilter.includes(x.NR_CICLO + '');
       });
 
       this.setfaccaolist(filteredOps);

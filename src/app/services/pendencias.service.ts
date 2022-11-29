@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { MateriasPrimas } from '../models/materiaPrima';
 import { Pendencia, Pendencias } from '../models/pendencia';
 import { TokenService } from './token.service';
+import { StatusPendencia } from 'src/app/models/enums/enumStatusPendencia';
 
 const API = environment.API_ENV;
 
@@ -18,9 +19,9 @@ export class PendenciasService {
     private _tokenService: TokenService
   ) {}
 
-  listMateriaPrima(cod_op: string): Observable<MateriasPrimas> {
+  listMateriaPrima(cod_op: string): Observable<any> {
     const headers = this.getToken();
-    return this._httpClient.get<MateriasPrimas>(
+    return this._httpClient.get<any>(
       `${API}/api/materiaprima/${cod_op}`,
       {
         headers,
@@ -28,32 +29,34 @@ export class PendenciasService {
     );
   }
 
-  listPendencia(user?: string): Observable<Pendencias> {
+  listPendencia(user?: number, ativo?: number): Observable<any> {
     const headers = this.getToken();
 
     if (!!user) {
-      return this._httpClient.get<Pendencias>(
-        `${API}/api/getpendencia/${user}`,
+      return this._httpClient.get<any>(
+        `${API}/api/pendencia/${user}/${ativo}`,
         {
           headers,
         }
       );
     }
-    return this._httpClient.get<Pendencias>(`${API}/api/getpendencia`, {
+    return this._httpClient.get<any>(`${API}/api/pendencia/all`, {
       headers,
     });
   }
 
-  setPendencia(pendencias: Pendencias): Observable<number> {
+  setPendencia(pendencias: Pendencias): Observable<number>{
     const headers = this.getToken();
+
     const body = JSON.stringify(pendencias);
     return this._httpClient
-      .post<any>(`${API}/api/setpendencia`, body, {
+      .post<any>(`${API}/api/add/pendencia`, body, {
         headers,
       })
       .pipe(
         map((res) => {
-          if (res == 'ok') {
+          let x = res['data'];
+          if (x == 'OK') {
             return 1;
           }
           return 0;
@@ -61,17 +64,18 @@ export class PendenciasService {
       );
   }
 
-  alterarStatus(pendencia: Pendencia, novoStatus?: string) {
+  editPendencia(pendencia: Pendencia): Observable<number>{
     const headers = this.getToken();
-    pendencia['novoStatus'] = !!novoStatus ? novoStatus : '';
+
     const body = JSON.stringify(pendencia);
     return this._httpClient
-      .post<any>(`${API}/api/editpendencia`, body, {
+      .post<any>(`${API}/api/edit/pendencia`, body, {
         headers,
       })
       .pipe(
         map((res) => {
-          if (res == 'ok') {
+          let x = res['data'];
+          if (x == 'OK') {
             return 1;
           }
           return 0;

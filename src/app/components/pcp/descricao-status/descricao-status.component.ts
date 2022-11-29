@@ -9,11 +9,11 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { NbDialogService } from '@nebular/theme';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { Faccao, Faccoes } from 'src/app/models/faccao';
+import { OPDescricao, OPDescricoes } from 'src/app/models/opdescricao';
 import { Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
-import { AuditorService } from 'src/app/services/auditor.service';
+import { AtrasoService } from 'src/app/services/atraso.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -50,8 +50,8 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   faccaoList: any[] = [];
   motivoList: Motivos = [];
   newMotivoList: Motivos = [];
-  faccao: Faccoes = [];
-  faccao$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.faccao);
+  faccao: OPDescricoes = [];
+  faccao$: BehaviorSubject<OPDescricoes> = new BehaviorSubject(this.faccao);
 
   dtHoje = new Date();
 
@@ -59,7 +59,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
     private _opsFilteredService: OpsFilteredService,
-    private _auditorService: AuditorService,
+    private _atrasolService: AtrasoService,
     private _route: ActivatedRoute,
     private _location: Location,
     private _dialogService: NbDialogService,
@@ -70,8 +70,8 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     this._setTitle.setTitle('Carregando...');
     this.selectedFilters = this._opsFilteredService.getFilter();
 
-    this._auditorService.getMotivos().subscribe((m) => {
-      this.motivoList = m;
+    this._atrasolService.getMotivos().subscribe((m) => {
+      this.motivoList = JSON.parse(m.data);
 
       this.dtOptions = {
         language: LanguagePtBr.ptBr_datatable,
@@ -110,7 +110,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
         } else {
           this._opsService.getAllOPs().subscribe({
             next: (listOPs) => {
-              this.startDataTotal(listOPs);
+              this.startDataTotal(JSON.parse(listOPs.data));
             },
             error: (err: Error) => {
               console.error(err);
@@ -135,7 +135,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
             .getOpByStatus(this.tituloStatus, this.origem)
             .subscribe({
               next: (listOPs) => {
-                this.startDataFiltered(listOPs);
+                this.startDataFiltered(JSON.parse(listOPs.data));
               },
               error: (err: Error) => {
                 console.error(err);
@@ -151,18 +151,12 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     this.listFaccoes = this.filterOPs(listOPs);
 
     // transforma o cod em uma lista
-    this.codigoList = this.listFaccoes.flatMap((x) => x.cod + '-' + x.CD_LOCAL);
+    this.codigoList = this.listFaccoes.flatMap((x) => x.CD_PRODUCAO);
 
     this.motivoList = this.motivoList.filter((m) => {
-      let dtNovaPrev = m.NOVA_PREVISAO.split('/');
-      let new_dtNovaPrev = new Date(
-        +dtNovaPrev[2],
-        +dtNovaPrev[1] - 1,
-        +dtNovaPrev[0]
-      );
+      let dataAjustada = new Date(m.DT_PREV_RETORNO_NOVA);
       return (
-        this.codigoList.includes(m.cod + '-' + m.CD_LOCAL) &&
-        new_dtNovaPrev >= this.dtHoje
+        this.codigoList.includes(m.CD_PRODUCAO) && dataAjustada >= this.dtHoje
       );
     });
 
@@ -180,7 +174,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     } = this.contabilizaTotais();
 
     let id = 0;
-    let motivos = [];
+    let motivos: string | any[] = [];
 
     nomesUnicos.map((f: string, index: number) => {
       id = this.faccaoList.find((x) => x.local == f)?.id_local!;
@@ -219,7 +213,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     this.faccao
       .sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0))
       .map(
-        (f: Faccao, index: number) =>
+        (f: OPDescricao, index: number) =>
           (f.color = this.color[index % this.color.length])
       );
 
@@ -243,11 +237,14 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
       pecasAtrasoTotal,
     } = this.contabilizaTotais();
 
-    this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
+    this.codigoList = this.listFaccoes.flatMap((x) => x.CD_PRODUCAO);
 
-    this.motivoList = this.motivoList.filter((m) =>
-      this.codigoList.includes(m.cod)
-    );
+    this.motivoList = this.motivoList.filter((m) => {
+      let dataAjustada = new Date(m.DT_PREV_RETORNO_NOVA);
+      return (
+        this.codigoList.includes(m.CD_PRODUCAO) && dataAjustada >= this.dtHoje
+      );
+    });
 
     let id = 0;
     let motivos: Motivos = [];
@@ -316,7 +313,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     this.faccao
       .sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0))
       .map(
-        (f: Faccao, index: number) =>
+        (f: OPDescricao, index: number) =>
           (f.color = this.color[index % this.color.length])
       );
 
@@ -444,17 +441,17 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
 
     if (hasOrigem && hasColecao) {
       listFilteredOPs = OPList.filter(
-        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.DS_CICLO)
+        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.NR_CICLO + '')
       );
     } else if (hasOrigem && !hasColecao) {
       listFilteredOPs = OPList.filter((x) => origem.includes(x.DS_CLASS));
     } else if (!hasOrigem && hasColecao) {
-      listFilteredOPs = OPList.filter((x) => colecao.includes(x.DS_CICLO));
+      listFilteredOPs = OPList.filter((x) => colecao.includes(x.NR_CICLO + ''));
     }
     return listFilteredOPs;
   }
 
-  trackByFaccao(_index: number, faccao: Faccao) {
+  trackByFaccao(_index: number, faccao: OPDescricao) {
     return faccao.id;
   }
 

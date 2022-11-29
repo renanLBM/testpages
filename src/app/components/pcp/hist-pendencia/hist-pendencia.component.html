@@ -3,6 +3,35 @@
     <a (click)="voltar()">Voltar</a>
   </div>
 
+  <div class="filter-wrapper">
+    <h6 class="filter-title">Filtros</h6>
+    <div class="filter-menu-wrapper">
+      <div class="filter-dropdown">
+        <nb-select multiple placeholder="Solicitante" [(ngModel)]="idSelectedSolicitante" status="primary">
+          <nb-option (click)="filtroDropdown()">Limpar filtro</nb-option>
+          <nb-option style="font-size: 12px !important;" (click)="filtroDropdown()"
+            *ngFor="let solicitante of solicitanteEnum; let i = index" [value]="i">{{ solicitante }}
+          </nb-option>
+        </nb-select>
+      </div>
+      <div class="filter-dropdown">
+        <nb-form-field>
+          <input type="text" id="filtro-op" #filtro nbInput (keyup)="filtroOP($event)"
+            placeholder="Filtrar Ciclo, OP ou Ref">
+          <button nbSuffix nbButton ghost>
+            <nb-icon icon="search-outline" aria-label="pesquisar">
+            </nb-icon>
+          </button>
+        </nb-form-field>
+      </div>
+      <div class="filter-dropdown bt-excel">
+        <button class="bt-exportar" nbButton shape="semi-round" (click)="exportexcel()">Exportar
+          <img class="ico-excel" src="../../../../assets/icon_excel.png" alt="download_pdf">
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="card-wrapper">
     <ng-container *ngFor="let mp of minhasPendenciasLocal$ | async">
       <nb-card>
@@ -18,6 +47,7 @@
               <th>Qtd. Solicitada</th>
               <th>Usuário Solicitante</th>
               <th>Data Solicitação</th>
+              <th>Motivo</th>
               <th>Status</th>
               <th>Observações</th>
             </tr>
@@ -25,15 +55,17 @@
               <tr>
                 <td data-th="Cód. OP">{{pendencia.NR_CICLO+"-"+pendencia.NR_OP+"-"+pendencia.CD_REFERENCIA}}</td>
                 <td data-th="Classificação">{{pendencia.DS_CLASSIFICACAO }}</td>
-                <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP }}</td>
-                <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }}</td>
-                <td data-th="Usuário Solicitante">{{ pendencia.USUARIO }}</td>
+                <td data-th="Matéria Prima">{{pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP+" - "+pendencia.CORTE}}</td>
+                <td data-th="Qtd. Solicitada">{{pendencia.QT_SOLICITADO }} ({{pendencia.QT_SOLICITADO/(pendencia.QT_OP_HIST
+                  || 0) | percent:'1.0':'pt-Br'}})</td>
+                <td data-th="Usuário Solicitante">{{ pendencia.DS_USUARIO }}</td>
                 <td data-th="Data Solicitação">{{pendencia.DT_SOLICITACAO }}</td>
+                <td data-th="Motivo">{{pendencia.DS_MOTIVO_PENDENCIA }}</td>
                 <td data-th="Status">
-                  <nb-alert [ngClass]="pendencia.STATUS" class="nv-alert">{{
-                    pendencia.STATUS }}</nb-alert>
+                  <nb-alert [ngClass]="pendencia.DS_STATUS_PENDENCIA" class="nv-alert">{{
+                    pendencia.DS_STATUS_PENDENCIA }}</nb-alert>
                 </td>
-                <td data-th="Observações">{{pendencia.Obs }}</td>
+                <td data-th="Observações">{{pendencia.OBS }}</td>
                 <hr>
               </tr>
             </ng-container>
@@ -53,6 +85,7 @@
           <th>Qtd. Solicitada</th>
           <th>Usuário Solicitante</th>
           <th>Data Solicitação</th>
+          <th>Motivo</th>
           <th>Status</th>
           <th>Observações</th>
         </tr>
@@ -62,11 +95,9 @@
           <td data-th="Matéria Prima">...</td>
           <td data-th="Qtd. Solicitada">...</td>
           <td data-th="Data Solicitação">...</td>
+          <td data-th="Motivo">...</td>
           <td data-th="Status">...</td>
           <td data-th="Observações">...</td>
-          <td data-th="Confirmar Recebimento" class="recebido-row">
-            ...
-          </td>
         </tr>
         <hr>
       </ng-container>

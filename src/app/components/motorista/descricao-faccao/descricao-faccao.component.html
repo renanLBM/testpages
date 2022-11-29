@@ -101,14 +101,14 @@
                   <p class="c-qnt"><b>Peças:</b> {{ item.qnt }}</p>
                 </div>
                 <div class="bt-coletar-wrapper" *ngIf="!item.checked; else coletado">
-                  <button (click)="sendColetaBt(item)" class="bt-coletar" nbButton status="success">Coletar
+                  <button (click)="setColeta(item)" class="bt-coletar" nbButton status="success">Coletar
                     <nb-icon icon="paper-plane-outline" aria-label="pesquisar">
                     </nb-icon>
                   </button>
                 </div>
                 <ng-template #coletado>
                   <div class="bt-coletar-wrapper">
-                    <button (click)="removeColetaBt(item)" class="bt-coletar" nbButton status="danger">Remover coleta
+                    <button (click)="removeColeta(item)" class="bt-coletar" nbButton status="danger">Remover coleta
                       <nb-icon icon="trash-2-outline" aria-label="pesquisar">
                       </nb-icon>
                     </button>

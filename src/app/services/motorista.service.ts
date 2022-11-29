@@ -2,8 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Apontamentos } from '../models/apontamento';
-import { Coleta, Coletas } from '../models/coleta';
+import { Coleta } from '../models/coleta';
 import { TokenService } from './token.service';
 
 const API = environment.API_ENV;
@@ -14,9 +13,9 @@ const API = environment.API_ENV;
 export class MotoristaService {
   constructor(private _httpClient: HttpClient, private _tokenService: TokenService) {}
 
-  listDisponivel(): Observable<Apontamentos> {
+  listDisponivel(): Observable<any> {
     const headers = this.getToken();
-    return this._httpClient.get<Apontamentos>(`${API}/api/motorista`, {
+    return this._httpClient.get<any>(`${API}/api/coleta/all`, {
       headers,
     });
   }
@@ -24,11 +23,11 @@ export class MotoristaService {
   setColeta(coleta: Coleta): Observable<number> {
     const headers = this.getToken();
     const body = JSON.stringify(coleta);
-    return this._httpClient.post<any>(`${API}/api/setcoleta`, body, {
+    return this._httpClient.post<any>(`${API}/api/add/coleta`, body, {
       headers,
     }).pipe(
       map((res) => {
-        if (res == 'ok') {
+        if (res.data == 'OK') {
           return 1;
         }
         return 0;
@@ -39,11 +38,11 @@ export class MotoristaService {
   removeColeta(coleta: Coleta): Observable<number> {
     const headers = this.getToken();
     const body = JSON.stringify(coleta);
-    return this._httpClient.post<any>(`${API}/api/removecoleta`, body, {
+    return this._httpClient.post<any>(`${API}/api/remove/coleta`, body, {
       headers,
     }).pipe(
       map((res) => {
-        if (res == 'ok') {
+        if (res.data == 'OK') {
           return 1;
         }
         return 0;

@@ -7,5 +7,9 @@ export enum ApontamentoList {
   'Em inspeção',
   'Disponível para coleta',
   'Coletado',
-  'Não industrializado'
+  'Não industrializado',
+  'Parado - Despriorizado',
+  'Parado - Resolução de pendência',
+  'Parado - Remanejamento',
+  'Parado - Sistema'
 }

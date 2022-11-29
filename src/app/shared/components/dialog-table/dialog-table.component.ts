@@ -20,14 +20,16 @@ export class DialogTableComponent implements OnDestroy, OnInit {
   emptyList: boolean = false;
   motivoList$: BehaviorSubject<Motivos> = new BehaviorSubject(this.motivos);
 
-  constructor(
-    protected _dialogRef: NbDialogRef<DialogTableComponent>
-  ) {}
+  constructor(protected _dialogRef: NbDialogRef<DialogTableComponent>) {}
 
   ngOnInit(): void {
     if (this.motivos.length == 0) {
       this.emptyList = true;
     }
+
+    this.motivos.sort((a, b) => {
+      return a.DT_PREV_RETORNO_NOVA > b.DT_PREV_RETORNO_NOVA ? 1 : -1;
+    });
     this.dtOptions = {
       language: LanguagePtBr.ptBr_datatable,
       pagingType: 'full_numbers',

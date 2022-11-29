@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   OnInit,
 } from '@angular/core';
@@ -9,8 +8,9 @@ import { BehaviorSubject } from 'rxjs';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { Coleta } from 'src/app/models/coleta';
 import { descOP } from 'src/app/models/descOP';
-import { OP, OPs } from 'src/app/models/ops';
-import { AuditorService } from 'src/app/services/auditor.service';
+import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
+import { OP } from 'src/app/models/ops';
+import { ApontamentoService } from 'src/app/services/apontamento.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { MotoristaService } from 'src/app/services/motorista.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -31,30 +31,27 @@ export class DescricaoFaccaoComponent implements OnInit {
   defaultImage = '../../../../assets/not-found.png';
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
 
-  apontamentoList!: Apontamentos;
   novoApontamento!: Apontamento;
 
   latitude: number = 0;
   longitude: number = 0;
   user: string = '';
+  cd_user = 0;
 
   novaColeta!: Coleta;
   coletado: boolean = false;
   qntOPs: number = 0;
   qntPecas: number = 0;
-  listCodOPsDisponiveis: string[] = [];
   descOPLoad = new BehaviorSubject<boolean>(true);
   descOP: descOP[] = [];
   descOP$: BehaviorSubject<descOP[]> = new BehaviorSubject(this.descOP);
 
   constructor(
+    private _route: ActivatedRoute,
     private _setTitle: SetTitleServiceService,
-    private _opsService: OpsService,
-    private _auditorService: AuditorService,
+    private _aponamentoSerice: ApontamentoService,
     private _motoristaService: MotoristaService,
     private _userService: UserService,
-    private changeDetectorRef: ChangeDetectorRef,
-    private _route: ActivatedRoute,
     public _loadingService: LoadingService
   ) {}
 
@@ -62,6 +59,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     this._setTitle.setTitle('Carregando...');
     let id = this._route.snapshot.paramMap.get('id')!;
     this.user = this._userService.getSession().nome!;
+    this.cd_user = this._userService.getSession().CD_USUARIO!;
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -80,113 +78,79 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     this._motoristaService.listDisponivel().subscribe({
       next: (coletados) => {
-        this.apontamentoList = coletados.filter((x) => x.CD_LOCAL == +id);
-        this.listCodOPsDisponiveis = this.apontamentoList.flatMap((x) => x.cod + '-' + x.CD_LOCAL);
-        this._opsService.getOpById(id).subscribe({
-          next: (ops: OPs) => {
-            ops = ops.filter((op: OP) =>
-              this.listCodOPsDisponiveis.includes(op.cod + '-' + op.CD_LOCAL)
-            );
-            ops.sort((a, b) => {
-              let dataRetornoA = `${a.PREV_RETORNO.substring(
-                6,
-                10
-              )}-${a.PREV_RETORNO.substring(3, 5)}-${a.PREV_RETORNO.substring(
-                0,
-                2
-              )}`;
-              let dataRetornoB = `${b.PREV_RETORNO.substring(
-                6,
-                10
-              )}-${b.PREV_RETORNO.substring(3, 5)}-${b.PREV_RETORNO.substring(
-                0,
-                2
-              )}`;
+        let listDisponivel = JSON.parse(coletados.data);
+        console.log(listDisponivel);
+        listDisponivel = listDisponivel.filter(
+          (x: { CD_LOCAL: number }) => x.CD_LOCAL == +id
+        );
 
-              let x = new Date(dataRetornoA);
-              let y = new Date(dataRetornoB);
+        listDisponivel.sort(
+          (a: { DT_PREVRETORNO: string }, b: { DT_PREVRETORNO: string }) => {
+            return a > b ? 1 : -1;
+          }
+        );
 
-              if (x > y) {
-                return 1;
-              } else if (y > x) {
-                return -1;
-              } else {
-                return 0;
-              }
-            });
+        let foiColetado: boolean = false;
 
-            let maiorApontamento;
-            let foiColetado: boolean = false;
+        console.log(listDisponivel);
+        listDisponivel.map((op: OP) => {
+          foiColetado = op.DS_APONTAMENTO_DS == 'Coletado';
 
-            ops.map((op) => {
-              maiorApontamento = this.filtraMaiorApontamento(op.cod!);
-              foiColetado = maiorApontamento.situacao == 'Coletado';
-
-              this.descOP.push({
-                cd_local: op.CD_LOCAL,
-                local: op.DS_LOCAL,
-                cod:
-                  op.NR_CICLO.toString() +
-                  '-' +
-                  op.NR_OP.toString() +
-                  '-' +
-                  op.CD_REFERENCIA.toString(),
-                ciclo: op.NR_CICLO,
-                op: op.NR_OP,
-                ref: op.CD_REFERENCIA,
-                previsao: op.PREV_RETORNO.substring(0, 10),
-                Situacao: maiorApontamento.situacao,
-                checked: foiColetado,
-                descricao: op.DS_GRUPO,
-                drop: op.DS_DROP,
-                img:
-                  this.imgUrl +
-                  op.CD_REFERENCIA.toString() +
-                  '/' +
-                  op.CD_REFERENCIA.toString() +
-                  '-1.jpg',
-                link_ficha_tecnica: '',
-                status: op.Status,
-                status_color: op.Status.toLowerCase().replace(' ', '-'),
-                qnt: op.QT_OP,
-              });
-              this.descOP.map((desc) => {
-                if (desc.status == 'Em andamento') {
-                  desc.accent = 'success';
-                } else if (desc.status == 'Pendente') {
-                  desc.accent = 'warning';
-                } else if (desc.status == 'Em atraso') {
-                  desc.accent = 'danger';
-                } else {
-                  desc.accent = 'basic';
-                }
-              });
-            });
-
-            let title = this.descOP[0].local
-              .replace('COSTURA', '')
-              .replace('CONSERTO', '')
-              .replace('ESTAMPARIA', '')
-              .replace('TERCEIROS', '');
-            this._setTitle.setTitle(title);
-
-            this.qntOPs = this.descOP.length;
-            let quantidades: number[] = this.descOP.flatMap(
-              (op) => op.qnt || 0
-            );
-            this.qntPecas = quantidades.reduce((prev, cur) => {
-              return +prev + +cur;
-            }, 0);
-
-            this.descOP$.next(this.descOP);
-            this.descOPLoad.next(!this.descOP.length);
-          },
-          error: (e) => {
-            console.error(e);
-            this._setTitle.setTitle('Erro');
-            this.loadingError = true;
-          },
+          this.descOP.push({
+            cod: op.NR_CICLO + '-' + op.NR_OP + '-' + op.CD_REFERENCIA,
+            NR_REDUZIDOOP: op.NR_REDUZIDOOP!,
+            cd_local: op.CD_LOCAL,
+            local: op.DS_LOCAL,
+            ciclo: +op.NR_CICLO,
+            op: +op.NR_OP,
+            ref: op.CD_REFERENCIA,
+            previsao: new Date(+op.DT_PREVRETORNO)
+              .toLocaleString('pt-Br')
+              .substring(0, 10),
+            Situacao: op.DS_APONTAMENTO_DS,
+            checked: foiColetado,
+            descricao: op.DS_GRUPO,
+            drop: op.DS_DROP,
+            img:
+              this.imgUrl +
+              op.CD_REFERENCIA.toString() +
+              '/' +
+              op.CD_REFERENCIA.toString() +
+              '-1.jpg',
+            link_ficha_tecnica: '',
+            status: op.DS_APONTAMENTO_DS,
+            status_color: op.DS_APONTAMENTO_DS!.toLowerCase().replace(' ', '-'),
+            qnt: op.QT_OP,
+          });
+          this.descOP.map((desc) => {
+            if (desc.status == 'Em andamento') {
+              desc.accent = 'success';
+            } else if (desc.status == 'Pendente') {
+              desc.accent = 'warning';
+            } else if (desc.status == 'Em atraso') {
+              desc.accent = 'danger';
+            } else {
+              desc.accent = 'basic';
+            }
+          });
         });
+        console.log(this.descOP);
+
+        let title = this.descOP[0].local
+          .replace('COSTURA', '')
+          .replace('CONSERTO', '')
+          .replace('ESTAMPARIA', '')
+          .replace('TERCEIROS', '');
+        this._setTitle.setTitle(title);
+
+        this.qntOPs = this.descOP.length;
+        let quantidades: number[] = this.descOP.flatMap((op) => op.qnt || 0);
+        this.qntPecas = quantidades.reduce((prev, cur) => {
+          return +prev + +cur;
+        }, 0);
+
+        this.descOP$.next(this.descOP);
+        this.descOPLoad.next(!this.descOP.length);
       },
       error: (e) => {
         console.error(e);
@@ -196,28 +160,8 @@ export class DescricaoFaccaoComponent implements OnInit {
     });
   }
 
-  trackByOP(_index: number, op: { cod: string }) {
-    return op.cod;
-  }
-
-  filtraMaiorApontamento(cod: string) {
-    if (this.apontamentoList) {
-      let erro = this.apontamentoList.toString() == 'error';
-      if (!erro) {
-        let apontamentos = this.apontamentoList.filter((m) => m.cod == cod);
-        if (apontamentos.length > 0) {
-          let apontamento = apontamentos.reduce((p, c) => {
-            return p.ID_NOVA_SITUACAO! > c.ID_NOVA_SITUACAO! ? p : c;
-          });
-          return {
-            situacao: apontamento.Situacao,
-            dt_coleta: '',
-          };
-        }
-        return { ds_atraso: '', dt_atraso: '', i_checked: false };
-      }
-    }
-    return { ds_atraso: '', dt_atraso: '', i_checked: false };
+  trackByOP(_index: number, op: { NR_REDUZIDOOP: number }) {
+    return op.NR_REDUZIDOOP;
   }
 
   filtroOP(event: Event): void {
@@ -229,7 +173,9 @@ export class DescricaoFaccaoComponent implements OnInit {
     } else {
       this.filtroAtivo = true;
       this.descOP$.next(
-        this.descOP.filter((_) => _.cod.includes(filterValue.toUpperCase()))
+        this.descOP.filter((_) => {
+          return _.cod?.includes(filterValue.toUpperCase());
+        })
       );
       this.descOP$.subscribe((x) => {
         this.emptyList = !x.length;
@@ -243,20 +189,24 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.descOP$.next(this.descOP);
   }
 
-  sendColetaBt(op: descOP): void {
+  setColeta(op: descOP): void {
+    this.loading = true;
+    let data_ajustada = new Date().toLocaleString('pt-Br').split(' ');
+    let dt_modificacao =
+      data_ajustada![0].split('/').reverse().join('-') +
+      ' ' +
+      data_ajustada![1];
+
     this.novaColeta = {
-      cod: '',
+      NR_REDUZIDOOP: op.NR_REDUZIDOOP!,
       CD_LOCAL: op.cd_local,
-      NR_CICLO: op.ciclo!,
-      NR_OP: op.op!,
-      CD_REFERENCIA: op.ref,
-      PREV_RETORNO: op.previsao,
+      DT_PREVRETORNO_HIST: op.previsao,
       QT_OP: op.qnt!,
-      Status: op.status!,
+      DS_STATUS_HIST: op.status!,
+      CD_RESPONSAVEL: this.cd_user,
       USUARIO: this.user,
-      DT_COLETA: new Date().toLocaleString('pt-Br'),
-      latitude: this.latitude,
-      longitude: this.longitude,
+      DT_COLETA: dt_modificacao,
+      GEOLOCALIZACAO: this.latitude + ', ' + this.longitude,
     };
 
     this._motoristaService.setColeta(this.novaColeta).subscribe({
@@ -267,44 +217,46 @@ export class DescricaoFaccaoComponent implements OnInit {
         }
         this.coletado = true;
         this.submitiApontamento(op);
-        this.setCheckedColeta(op.cod, this.coletado);
+        this.setCheckedColeta(op.NR_REDUZIDOOP!, this.coletado);
+        this.loading = false;
       },
       error: (err) => {
         alert(`ERROR(${err.code}) ${err.message}`);
         this.coletado = false;
+        this.loading = false;
       },
     });
-
-    this.loading = false;
-    this.changeDetectorRef.detectChanges();
   }
 
-  setCheckedColeta(cod: string, coletado: boolean): void {
+  setCheckedColeta(cod: number, coletado: boolean): void {
     this.descOP.map((op) => {
-      if (op.cod == cod) {
+      if (op.NR_REDUZIDOOP == cod) {
         op.checked = coletado;
       }
       return op;
     });
-    this.changeDetectorRef.detectChanges();
+
+    this.descOP$.next(this.descOP);
   }
 
-  removeColetaBt(op: descOP): void {
+  removeColeta(op: descOP): void {
     this.loading = true;
+    let data_ajustada = new Date().toLocaleString('pt-Br').split(' ');
+    let dt_modificacao =
+      data_ajustada![0].split('/').reverse().join('-') +
+      ' ' +
+      data_ajustada![1];
 
     this.novaColeta = {
-      cod: '',
+      NR_REDUZIDOOP: op.NR_REDUZIDOOP!,
       CD_LOCAL: op.cd_local,
-      NR_CICLO: op.ciclo!,
-      NR_OP: op.op!,
-      CD_REFERENCIA: op.ref,
-      PREV_RETORNO: op.previsao,
       QT_OP: op.qnt!,
-      Status: op.status!,
+      DT_PREVRETORNO_HIST: op.previsao,
+      DS_STATUS_HIST: op.status!,
+      CD_RESPONSAVEL: this.cd_user,
       USUARIO: this.user,
-      DT_COLETA: new Date().toLocaleString('pt-Br'),
-      latitude: this.latitude,
-      longitude: this.longitude,
+      DT_COLETA: dt_modificacao,
+      GEOLOCALIZACAO: this.latitude + ', ' + this.longitude,
     };
 
     this._motoristaService.removeColeta(this.novaColeta).subscribe({
@@ -313,33 +265,40 @@ export class DescricaoFaccaoComponent implements OnInit {
           return;
         }
         this.coletado = false;
-        this.setCheckedColeta(op.cod, this.coletado);
+        this.loading = false;
+        this.setCheckedColeta(op.NR_REDUZIDOOP!, this.coletado);
       },
       error: (err) => {
+        this.loading = false;
         alert(`ERROR(${err.code}) ${err.message}`);
       },
     });
   }
 
   submitiApontamento(op: descOP): void {
+    let data_ajustada = new Date().toLocaleString('pt-Br').split(' ');
+    let dt_modificacao =
+      data_ajustada![0].split('/').reverse().join('-') +
+      ' ' +
+      data_ajustada![1];
+
     this.novoApontamento = {
-      cod: '',
+      NR_REDUZIDOOP: op.NR_REDUZIDOOP,
       CD_LOCAL: op.cd_local,
-      NR_CICLO: op.ciclo!,
-      NR_OP: op.op!,
-      CD_REFERENCIA: op.ref,
-      PREV_RETORNO: op.previsao,
+      DT_PREVRETORNO: op.previsao,
       QT_OP: op.qnt!,
       Status: op.status!,
-      Situacao: 'Coletado',
+      CD_APONTAMENTO_DS:
+        ApontamentoList['Coletado' as keyof typeof ApontamentoList] + 1,
+      DS_APONTAMENTO_DS: 'Coletado',
+      CD_USUARIO: this.cd_user,
       USUARIO: this.user,
-      DT_INSERIDO: new Date().toLocaleString('pt-Br'),
-      latitude: this.latitude,
-      longitude: this.longitude,
+      DT_MODIFICACAO: dt_modificacao,
+      GEOLOCALIZACAO: this.latitude + ', ' + this.longitude,
     };
 
     this.loading = true;
-    this._auditorService.setApontamento(this.novoApontamento).subscribe({
+    this._aponamentoSerice.setApontamento(this.novoApontamento).subscribe({
       next: (ret) => {
         this.loading = false;
         return;
