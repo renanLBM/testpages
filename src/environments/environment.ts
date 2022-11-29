@@ -11,7 +11,7 @@ export const environment = {
     authDomain: 'faccaocontrol.firebaseapp.com',
     messagingSenderId: '943441546924',
   },
-  usuarios_pendencias: ['Renan Garcia', 'Alisson', 'Zoe Jeans', 'Pop Jeans', 'Evelin'],
+  usuarios_pendencias: ['Renan Garcia', 'Alisson', 'Zoe Jeans', 'Pop Jeans', 'Evelin', 'Daniela'],
   production: false,
   ENCRIPT_KEY: '7PQ9TV&*d@38c0bT',
   // API_ENV: 'http://172.16.10.159:8080/',
