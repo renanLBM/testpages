@@ -636,7 +636,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       }
       this.descOP$.subscribe((x) => {
         // pega primeiro e último dia da semana para mostrar na toolbar
-        this.getFirstAndLastWeekDay(x[0].previsao);
+        this.getFirstAndLastWeekDay(x[0].previsao!);
 
         this.isEmptyList = !x.length;
         this.countOPs(x);

@@ -75,7 +75,7 @@ export class DialogComponent implements OnInit {
     dateInput?.blur();
     dateInput?.setAttribute('readonly', 'readonly'); // Force mobile keyboard to hide on input field.
 
-    let prev_ajuste = this.prevOP.previsao.split('/').reverse();
+    let prev_ajuste = this.prevOP.previsao!.split('/').reverse();
     if (this.tipo != 'Adiantamento') {
       prev_ajuste[2] = +prev_ajuste[2] + 1 + '';
       let min_prev = new Date(prev_ajuste.join('-'));
@@ -132,7 +132,7 @@ export class DialogComponent implements OnInit {
     this.novoMotivo = {
       NR_REDUZIDOOP: this.prevOP.NR_REDUZIDOOP!,
       CD_LOCAL: this.prevOP.cd_local,
-      DT_PREV_RETORNO: this.prevOP.previsao,
+      DT_PREV_RETORNO: this.prevOP.previsao!,
       DT_PREV_RETORNO_NOVA: '',
       QT_OP: this.prevOP.qnt!,
       Status: this.prevOP.status!,
@@ -214,7 +214,7 @@ export class DialogComponent implements OnInit {
       ' ' +
       data_ajustada![1];
     let prev_retorno_ajustado =
-      this.prevOP.previsao.split('/').reverse().join('-');
+      this.prevOP.previsao!.split('/').reverse().join('-');
     novaDataForm =
       novaDataForm.split('/').reverse().join('-');
 

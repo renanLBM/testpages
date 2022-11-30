@@ -1,8 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
@@ -13,7 +10,6 @@ import { OP } from 'src/app/models/ops';
 import { ApontamentoService } from 'src/app/services/apontamento.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { MotoristaService } from 'src/app/services/motorista.service';
-import { OpsService } from 'src/app/services/ops.service';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
@@ -24,6 +20,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoFaccaoComponent implements OnInit {
+  datePipe = new DatePipe('pt-Br');
   loading: boolean = false;
   loadingError: boolean = false;
   filtroAtivo: boolean = false;
@@ -102,8 +99,9 @@ export class DescricaoFaccaoComponent implements OnInit {
             ciclo: +op.NR_CICLO,
             op: +op.NR_OP,
             ref: op.CD_REFERENCIA,
+            // previsao: this.datePipe.transform(new Date(+op.DT_PREVRETORNO + ), 'dd/MM/yyyy'),
             previsao: new Date(+op.DT_PREVRETORNO)
-              .toLocaleString('pt-Br')
+              .toLocaleString('pt-Br', { timeZone: 'UTC' })
               .substring(0, 10),
             Situacao: op.DS_APONTAMENTO_DS,
             checked: foiColetado,

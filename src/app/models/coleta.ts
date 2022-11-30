@@ -5,7 +5,7 @@ export interface Coleta {
   NR_REDUZIDOOP: number,
   CD_LOCAL: number,
   QT_OP: number,
-  DT_PREVRETORNO_HIST: string,
+  DT_PREVRETORNO_HIST: string | null,
   DS_STATUS_HIST?: string,
   CD_RESPONSAVEL: number,
   DT_COLETA: string,

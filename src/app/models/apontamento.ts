@@ -4,7 +4,7 @@ export interface Apontamento {
   NR_CICLO?: number,
   NR_OP?: number,
   CD_REFERENCIA?: string,
-  DT_PREVRETORNO: string,
+  DT_PREVRETORNO: string | null,
   QT_OP: number,
   Status: string,
   Situacao?: string,
