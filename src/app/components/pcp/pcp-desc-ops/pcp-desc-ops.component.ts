@@ -199,7 +199,7 @@ export class PcpDescOpsComponent implements OnInit {
       );
 
       x['motivo_atraso'] = '-';
-      x['nova_previsao'] = '';
+      x['nova_previsao'] = '-';
 
       //  verifica se teve atraso para essa OP
       if (atraso) {

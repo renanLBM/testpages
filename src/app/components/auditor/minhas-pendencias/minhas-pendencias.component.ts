@@ -63,9 +63,10 @@ export class MinhasPendenciasComponent implements OnInit {
               ' - ' +
               pendencia.CORTE
             : pendencia.CD_PRODUTO_MP + ' - ' + pendencia.DS_PRODUTO_MP;
+          let dataAjustada = new Date(pendencia.DT_SOLICITACAO);
           pendencia.DT_SOLICITACAO = new Date(
-            pendencia.DT_SOLICITACAO
-          ).toLocaleString('pt-Br');
+            dataAjustada
+          ).toLocaleString('pt-Br', { timeZone: 'UTC' });
           pendencia.cod =
             pendencia.NR_CICLO +
             '-' +

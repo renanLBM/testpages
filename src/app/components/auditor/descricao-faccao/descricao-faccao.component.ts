@@ -63,13 +63,13 @@ export class DescricaoFaccaoComponent implements OnInit {
   dataIni!: Date;
   dataFim!: Date;
 
-  semanaAtual: string = '0';
-  semanaAtualNumber: number = 0;
+  semanaAtual: number = 0;
+  anoAtual: number = 0;
   semanaSelecionada: string = '0';
   closestSemana: number = 0;
-  semanaList: number[] = [];
+  semanaList: { semana: number; ano: number }[] = [];
   semanaListAtraso: number[] = [];
-  semanaListFuturo: number[] = [];
+  semanaListFuturo: { semana: number; ano: number }[] = [];
 
   listOPs: OPs = [];
   tempOP!: descOP;
@@ -137,15 +137,13 @@ export class DescricaoFaccaoComponent implements OnInit {
     let numberOfDays: number = Math.floor(
       (currentdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000)
     );
-    this.semanaAtual = (
-      Math.floor((currentdate.getDay() + 1 + numberOfDays - 3) / 7) + 2
-    ).toString();
+    this.semanaAtual =
+      Math.floor((currentdate.getDay() + 1 + numberOfDays - 3) / 7) + 2;
+    this.anoAtual = currentdate.getFullYear();
 
-    this.semanaSelecionada = this.semanaAtual;
-    this.semanaAtualNumber = parseInt(this.semanaAtual);
+    this.semanaSelecionada = this.semanaAtual + '';
 
     this._setTitle.setTitle('Carregando...');
-    // pega todos os dados da tabela de alterações
 
     // se tiver dados no cache utiliza
     const getDataFromSession = this._opsService.getSessionData();
@@ -284,22 +282,28 @@ export class DescricaoFaccaoComponent implements OnInit {
       let numberOfDays = Math.floor(
         (prevdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000)
       );
-      let prevSemana = 0;
+      let prevSemana: { semana: number; ano: number } = { semana: 0, ano: 0 };
 
       if (prevdate.toLocaleString('pt-br').substring(0, 10) != '01/01/2001') {
         if (prevdate.getDay() === 0) {
-          prevSemana =
-            Math.floor((prevdate.getDay() + 1 + numberOfDays) / 7) + 2;
+          prevSemana = {
+            semana: Math.floor((prevdate.getDay() + 1 + numberOfDays) / 7) + 2,
+            ano: prevdate.getFullYear(),
+          };
         } else {
-          prevSemana =
-            Math.abs(
-              Math.floor((prevdate.getDay() + 1 + numberOfDays - 3) / 7)
-            ) + 2;
+          prevSemana = {
+            semana:
+              Math.abs(
+                Math.floor((prevdate.getDay() + 1 + numberOfDays - 3) / 7)
+              ) + 2,
+            ano: prevdate.getFullYear(),
+          };
         }
       }
 
       this.descOP.push({
-        semana: prevSemana,
+        semana: prevSemana.semana,
+        ano: prevSemana.ano,
         cd_local: op.CD_LOCAL,
         local: op.DS_LOCAL,
         cod:
@@ -360,20 +364,37 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     // lista de numero de semanas(por data da OP) da facção
     this.descOP.forEach((o) => {
-      this.semanaList.push(o.semana!);
+      this.semanaList.push({ semana: o.semana!, ano: o.ano! });
       this.semanaList = [...new Set(this.semanaList)];
-      this.semanaListAtraso = this.semanaList.filter(
-        (_) => _ < this.semanaAtualNumber
+      // filtra as semanas do mesmo ano que são menotes que
+      let listAtrasoSemana = this.semanaList.filter(
+        (_) => _.semana < this.semanaAtual && _.ano == this.anoAtual
       );
+      let listAtrasoAno = this.semanaList.filter((_) => _.ano < this.anoAtual);
+      let listAtraso = listAtrasoSemana.concat(listAtrasoAno);
+      this.semanaListAtraso = listAtraso.flatMap((_) => _.semana);
+      this.semanaListAtraso = [...new Set(this.semanaListAtraso)];
       this.semanaListAtraso.sort((a, b) => (a > b ? 1 : -1));
-      this.semanaListFuturo = this.semanaList.filter(
-        (_) => _ > this.semanaAtualNumber
+
+      let listFuturoSemana = this.semanaList.filter(
+        (_) => _.semana > this.semanaAtual && _.ano == this.anoAtual
       );
-      this.semanaListFuturo.sort((a, b) => (a > b ? 1 : -1));
+      let listFuturoAno = this.semanaList.filter((_) => _.ano > this.anoAtual);
+      let listFuturo = listFuturoSemana.concat(listFuturoAno);
+      this.semanaListFuturo = [
+        ...new Map(
+          listFuturo.map((v) => [JSON.stringify([v.semana, v.ano]), v])
+        ).values(),
+      ];
+      this.semanaListFuturo = [...new Set(this.semanaListFuturo)];
+      this.semanaListFuturo.sort((a, b) => ((a.ano > b.ano ? true : a.semana > b.semana ) ? 1 : -1));
     });
 
     // verifica a semana mais proxima
-    this.closestSemana = this.semanaList.reduce((a, b) => {
+    let listClosest = this.semanaList
+      .filter((_) => _.ano == this.anoAtual)
+      .flatMap((_) => _.semana);
+    this.closestSemana = listClosest.reduce((a, b) => {
       let aDiff = Math.abs(a - parseInt(this.semanaSelecionada));
       let bDiff = Math.abs(b - parseInt(this.semanaSelecionada));
 
@@ -401,7 +422,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.descOP$.next(this.descOP);
     this.descOPLoad.next(!this.descOP.length);
     // filtra somente a semana atual
-    this.filtraSemana(parseInt(this.semanaSelecionada));
+    this.filtraSemana(false, parseInt(this.semanaSelecionada));
   }
 
   ordenarMenor(): void {
@@ -436,8 +457,10 @@ export class DescricaoFaccaoComponent implements OnInit {
           this.motivo = motivos.reduce((p, c) => {
             return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
           });
-          if(this.motivo.DS_ATRASO_DS == "Adiantamento"){
-            if(+this.motivo.DT_PREV_RETORNO_NOVA >= this.motivo.DT_PREVRETORNO!){
+          if (this.motivo.DS_ATRASO_DS == 'Adiantamento') {
+            if (
+              +this.motivo.DT_PREV_RETORNO_NOVA >= this.motivo.DT_PREVRETORNO!
+            ) {
               return {
                 cd_atraso: 0,
                 ds_atraso: '',
@@ -445,9 +468,10 @@ export class DescricaoFaccaoComponent implements OnInit {
                 i_checked: false,
               };
             }
-          }else if(this.motivo.DS_ATRASO_DS != "Adiantamento") {
-            console.log(+this.motivo.DT_PREV_RETORNO_NOVA, this.motivo.DT_PREVRETORNO!);
-            if(+this.motivo.DT_PREV_RETORNO_NOVA <= this.motivo.DT_PREVRETORNO!){
+          } else if (this.motivo.DS_ATRASO_DS != 'Adiantamento') {
+            if (
+              +this.motivo.DT_PREV_RETORNO_NOVA <= this.motivo.DT_PREVRETORNO!
+            ) {
               return {
                 cd_atraso: 0,
                 ds_atraso: '',
@@ -581,13 +605,13 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
   }
 
-  filtraSemana(event: number, reset?: boolean) {
+  filtraSemana(reset: boolean, eventSemana: number, eventAno?: number) {
     this.qntOPs = 0;
     this.qntPecas = 0;
     if (reset) {
       this.semanaSelecionada = '';
     }
-    if (event == -1) {
+    if (eventSemana == -1) {
       this.semanaSelecionada = 'Todas';
       (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
       this.descOP$.next(this.descOP);
@@ -601,26 +625,34 @@ export class DescricaoFaccaoComponent implements OnInit {
           })
         );
       }
-    } else if (event == 0) {
+    } else if (eventSemana == 0) {
       this.semanaSelecionada = 'Em Atraso';
       (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
       this.descOP$.next(this.descOP);
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
           this.descOP.filter((_) => {
+            console.log(_.semana, _.ano);
             let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
               ? 'Parado'
               : _.DS_APONTAMENTO_DS;
             return (
               this.selectedApontamento.includes(situacaoAjustada!) &&
-              _.semana! < this.semanaAtualNumber
+              _.semana! < this.semanaAtual &&
+              _.ano! <= this.anoAtual
             );
           })
         );
+        return;
       }
+      this.descOP$.next(
+        this.descOP.filter((_) => {
+          return _.semana! < this.semanaAtual && _.ano! <= this.anoAtual;
+        })
+      );
     } else {
-      this.semanaSelecionada = event.toString();
-      this.descOP$.next(this.descOP.filter((_) => _.semana == event));
+      this.semanaSelecionada = eventSemana.toString();
+      this.descOP$.next(this.descOP.filter((_) => _.semana == eventSemana));
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
           this.descOP.filter((_) => {
@@ -629,7 +661,8 @@ export class DescricaoFaccaoComponent implements OnInit {
               : _.DS_APONTAMENTO_DS;
             return (
               this.selectedApontamento.includes(situacaoAjustada!) &&
-              _.semana == parseInt(this.semanaSelecionada)
+              _.semana == +this.semanaSelecionada &&
+              _.ano! <= this.anoAtual
             );
           })
         );
@@ -637,7 +670,6 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.descOP$.subscribe((x) => {
         // pega primeiro e último dia da semana para mostrar na toolbar
         this.getFirstAndLastWeekDay(x[0].previsao!);
-
         this.isEmptyList = !x.length;
         this.countOPs(x);
       });

@@ -57,12 +57,12 @@
             <span>Semana selecionada: <b>{{semanaSelecionada}}</b> <span *ngIf="+semanaSelecionada > 0"> (de {{
                 dataIni | date: 'dd/MM/yyyy' }} a {{ dataFim | date: 'dd/MM/yyyy' }})</span></span>
             <nb-tag-list style="margin: 5px;">
-              <nb-tag status="basic" appearance="outline" text=" Todas " (click)="filtraSemana(-1, true)"></nb-tag>
-              <nb-tag *ngIf="semanaListAtraso.length > 0" status="danger" appearance="outline" text=" Em Atraso " (click)="filtraSemana(0, true)"></nb-tag>
-              <nb-tag *ngIf="semanaAtualNumber == closestSemana" status="primary" appearance="filled"
-                text="Sem. {{semanaAtualNumber}}" (click)="filtraSemana(semanaAtualNumber, true)"></nb-tag>
-              <nb-tag status="success" appearance="outline" *ngFor="let item of semanaListFuturo" text="Sem. {{item}}"
-                (click)="filtraSemana(item, true)"></nb-tag>
+              <nb-tag status="basic" appearance="outline" text=" Todas " (click)="filtraSemana(true, -1)"></nb-tag>
+              <nb-tag *ngIf="semanaListAtraso.length > 0" status="danger" appearance="outline" text=" Em Atraso " (click)="filtraSemana(true, 0)"></nb-tag>
+              <nb-tag *ngIf="semanaAtual == closestSemana" status="primary" appearance="filled"
+                text="Sem. {{semanaAtual}}" (click)="filtraSemana(true, semanaAtual, anoAtual)"></nb-tag>
+              <nb-tag status="success" appearance="outline" *ngFor="let item of semanaListFuturo" text="Sem. {{item.semana}}"
+                (click)="filtraSemana(true, item.semana, item.ano)"></nb-tag>
             </nb-tag-list>
           </div>
         </ng-container>

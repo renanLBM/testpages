@@ -73,7 +73,7 @@ export class PCPPendenciasComponent implements OnInit {
 
         this.minhasPendencias.forEach((pendencia) => {
           pendencia.display_name = !!pendencia.CORTE ? pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP+" - "+pendencia.CORTE : pendencia.CD_PRODUTO_MP+" - "+pendencia.DS_PRODUTO_MP;
-          pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br');
+          pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br', { timeZone: 'UTC' });
           pendencia.cod =
             pendencia.NR_CICLO +
             '-' +

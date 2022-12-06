@@ -10,6 +10,7 @@ export interface descOP {
   previsao: string | null,
   entrada?: string,
   semana?: number,
+  ano?: number
   descricao?: string,
   drop?: string,
   novaprevisao?: string,

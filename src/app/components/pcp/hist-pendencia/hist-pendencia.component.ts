@@ -63,7 +63,7 @@ export class HistPendenciaComponent implements OnInit {
         );
 
         this.minhasPendencias.forEach((pendencia) => {
-          pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br');
+          pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br', { timeZone: 'UTC' });
           pendencia.cod =
             pendencia.NR_CICLO +
             '-' +
