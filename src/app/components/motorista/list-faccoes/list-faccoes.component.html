@@ -33,16 +33,14 @@
     </ng-template>
 
     <div *ngIf="!emptyList; else listaVazia">
-      <cdk-virtual-scroll-viewport [itemSize]="10" class="list-viewport">
         <div class="cards-wrapper">
-          <div *cdkVirtualFor="let item of faccaoList$ | async">
+          <div *ngFor="let item of faccaoList$ | async">
             <fc-card [headerColor]="'header-color'" [show_desc]="show_desc" [title]="item.name"
               [text_desc]="'Qnt. peças'" [qnt_ops]="item.qnt" [c_status]="''" [qnt_atraso]="item.qnt_pecas!"
               [per_atraso]="item.per_atraso!" [routerLink]="['/motorista/descricao/', item.id]">
             </fc-card>
           </div>
         </div>
-      </cdk-virtual-scroll-viewport>
     </div>
 
     <ng-template #listaVazia>
