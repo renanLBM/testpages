@@ -31,28 +31,28 @@
         </div>
         <div class="qtd-wrapper">
           <div class="toolbar-value" (click)="filtroApontamento('Disponível para coleta')">
-            <div>
+            <div class="toolbar-subtitle">
               Peças Disponíveis para coleta:
             </div>
-            <div class="h6 disponivel">
+            <button nbButton class="h6 disponivel">
               {{(qtDisponivel$ | async)| number: '1.0': 'pt-Br'}}
-            </div>
+            </button>
           </div>
           <div class="toolbar-value" (click)="filtroApontamento('Coletado')">
-            <div>
+            <div class="toolbar-subtitle">
               Peças Coletadas:
             </div>
-            <div class="h6 coletado">
+            <button nbButton class="h6 coletado">
               {{(qtColetado$ | async) | number: '1.0': 'pt-Br'}}
-            </div>
+            </button>
           </div>
           <div class="toolbar-value" (click)="filtroApontamento('Todos')">
-            <div>
+            <div class="toolbar-subtitle">
               Total de peças:
             </div>
-            <div class="h6">
+            <button nbButton class="h6">
               {{(qtTotal$ | async) | number: '1.0': 'pt-Br'}}
-            </div>
+            </button>
           </div>
         </div>
       </div>

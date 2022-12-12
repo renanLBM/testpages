@@ -82,7 +82,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     this._motoristaService.listDisponivel().subscribe({
       next: (coletados) => {
         let listDisponivel = JSON.parse(coletados.data);
-        if (!filtroApontamento || filtroApontamento == "Todos") {
+        if ([undefined, "Todos", ""].includes(filtroApontamento)) {
           listDisponivel = listDisponivel.filter(
             (x: { CD_LOCAL: number; DS_APONTAMENTO_DS: string }) =>
               x.CD_LOCAL == +id
