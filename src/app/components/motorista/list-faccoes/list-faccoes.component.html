@@ -29,6 +29,32 @@
             </nb-form-field>
           </div>
         </div>
+        <div class="qtd-wrapper">
+          <div class="toolbar-value" (click)="filtroApontamento('Disponível para coleta')">
+            <div>
+              Peças Disponíveis para coleta:
+            </div>
+            <div class="h6 disponivel">
+              {{(qtDisponivel$ | async)| number: '1.0': 'pt-Br'}}
+            </div>
+          </div>
+          <div class="toolbar-value" (click)="filtroApontamento('Coletado')">
+            <div>
+              Peças Coletadas:
+            </div>
+            <div class="h6 coletado">
+              {{(qtColetado$ | async) | number: '1.0': 'pt-Br'}}
+            </div>
+          </div>
+          <div class="toolbar-value" (click)="filtroApontamento('Todos')">
+            <div>
+              Total de peças:
+            </div>
+            <div class="h6">
+              {{(qtTotal$ | async) | number: '1.0': 'pt-Br'}}
+            </div>
+          </div>
+        </div>
       </div>
     </ng-template>
 

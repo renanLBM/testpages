@@ -180,12 +180,6 @@ nb-tag {
   font-weight: 600;
 }
 
-// .pdf-link:hover {
-//   text-transform: uppercase;
-//   font-size: .9em;
-// }
-
-
 // text-decoration: line-through;
 .c-desc {
   padding: 0 10px 10px;
@@ -268,7 +262,6 @@ nb-tag {
 }
 
 .c-img {
-  min-width: 35%;
   max-width: 200px;
   display: flex;
   align-items: center;
@@ -285,7 +278,6 @@ nb-tag {
 
 .c-desc {
   width: -webkit-fill-available;
-  margin-left: 10px;
 
   .bt-edit {
     cursor: pointer;

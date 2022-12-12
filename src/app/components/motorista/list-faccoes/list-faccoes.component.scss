@@ -15,6 +15,7 @@ nb-layout-column {
 
 
 .filter-wrapper {
+  display: flex;
   margin: 0 15px;
   margin-top: 40px;
   padding: 10px;
@@ -38,10 +39,28 @@ nb-layout-column {
     align-items: center;
   }
 
-  .filter-dropdown {
-    margin-right: 15px;
-  }
+}
 
+.qtd-wrapper {
+  display: flex;
+  margin-left: 10vw;
+}
+.toolbar-value {
+  margin: 0 10px;
+  text-align: center;
+  .h6 {
+    font-size: 1.125rem;
+    font-family: Open Sans, sans-serif;
+    font-weight: 700;
+    line-height: 1.5rem;
+    cursor: pointer;
+  }
+  .disponivel {
+    color: var(--color-success-new);
+  }
+  .coletado {
+    color: var(--alert-success-background-color);
+  }
 }
 
 .list-viewport {
@@ -130,7 +149,15 @@ nb-layout-column {
   .list-viewport {
     height: 700px;
   }
+}
 
+@media screen and (max-width: 475px) {
+  .filter-wrapper {
+    flex-wrap: wrap;
+  }
+  .qtd-wrapper {
+    margin-left: auto;
+  }
 }
 
 @media screen and (min-height: 900px) {

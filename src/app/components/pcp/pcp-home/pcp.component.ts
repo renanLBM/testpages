@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, forkJoin, tap } from 'rxjs';
 import {
   ApontamentosResumidos,
   ApontamentosTotal,
@@ -112,7 +112,6 @@ export class PcpComponent implements OnInit {
 
   ngOnInit(): void {
     this._setTitle.setTitle('PCP');
-
     this._opsFilteredService.setFilter(this.selectedFilters);
 
     this._opService
@@ -142,19 +141,18 @@ export class PcpComponent implements OnInit {
 
             this.uniqTipo.push(item.DS_TIPO);
             this.uniqTipo = [...new Set(this.uniqTipo)];
-            this.tmpColecao.push(item.NR_CICLO + '-' + item.DS_CICLO);
-            this.tmpColecao = [...new Set(this.tmpColecao)];
-            this.tmpColecao.sort((a, b) =>
-              +a.split('-')[0] > +b.split('-')[0]
-                ? 1
-                : +b.split('-')[0] > +a.split('-')[0]
-                ? -1
-                : 0
-            );
-            this.uniqColecao.next(this.tmpColecao);
+
             this.tmpOrigem.push(item.DS_CLASS);
             this.tmpOrigem = [...new Set(this.tmpOrigem)];
             this.uniqOrigem.next(this.tmpOrigem);
+
+            this.tmpColecao.push(item.NR_CICLO + '-' + item.DS_CICLO);
+            this.tmpColecao = [...new Set(this.tmpColecao)];
+            this.tmpColecao.sort((a, b) =>
+              +a.split('-')[0] > +b.split('-')[0] ? 1:
+              +a.split('-')[0] < +b.split('-')[0] ? -1 : 0
+            );
+            this.uniqColecao.next(this.tmpColecao);
           });
 
           this.summarize(this.resumoRetorno, this.resumoApontamento);
