@@ -278,7 +278,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         CD_ATRASO: maiorMotivo.cd_atraso,
         novaprevisao: new Date(maiorMotivo.dt_atraso).toLocaleString('pt-Br', {
           timeZone: 'UTC',
-        }),
+        }).substring(0,10),
         motivo_atraso: maiorMotivo.ds_atraso,
         checked: maiorMotivo.i_checked,
         descricao: op.DS_GRUPO,
