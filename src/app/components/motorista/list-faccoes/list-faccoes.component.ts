@@ -47,6 +47,12 @@ export class ListFaccoesComponent implements OnInit {
   ngOnInit(): void {
     this._setTitle.setTitle('Carregando...');
 
+    this._opsFilteredService.setFilter({
+      origem: '',
+      colecao: '',
+      apontamentoFilter: '',
+    });
+
     this._motoristaService.listDisponivel().subscribe({
       next: (ops) => {
         this.listOPsDisponiveis = JSON.parse(ops.data);

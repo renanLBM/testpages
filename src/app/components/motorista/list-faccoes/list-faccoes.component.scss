@@ -26,7 +26,10 @@ nb-layout-column {
   .filter-title {
     font-weight: 600;
     margin-top: -20px;
-    background: linear-gradient(0deg, nb-theme(background-basic-color-2) 0%, nb-theme(background-basic-color-2) 55%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(0deg, rgba(255, 255, 255,0) 0%,
+                                      rgba(255, 255, 255,0) 55%,
+                                      nb-theme(background-basic-color-2) 55%,
+                                      nb-theme(background-basic-color-2) 100%);
     width: max-content;
     padding: 0 5px;
     user-select: none;
