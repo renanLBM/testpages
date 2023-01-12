@@ -12,7 +12,7 @@ import {
   NbWindowService,
 } from '@nebular/theme';
 import { BehaviorSubject, forkJoin } from 'rxjs';
-import { filter, map, mergeMap } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { descOP, descOPs } from 'src/app/models/descOP';
 import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
@@ -154,7 +154,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       // Local
       let ops = JSON.parse(res[2].data);
       ops[0].DS_LOCAL = ops[0].DS_LOCAL.replace('EXT. ', '');
-      this.isDistribuicao = ops[0].DS_LOCAL.split('. ')[0] == 'INT';
+      this.isDistribuicao = ops[0].CD_LOCAL == 302;
       if (this.isDistribuicao || this.isUsuario) {
         this.showMenu.next(false);
       }
