@@ -37,6 +37,8 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoFaccaoComponent implements OnInit {
+  itensLimite = 10;
+
   selectedApontamento: string[] = [];
   idSelectedApontamento: number[] = [];
 
@@ -45,6 +47,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   apontamentoEnum = ApontamentoList;
   menuApontamento: string[] = [];
   isDistribuicao = false;
+  isInterno = false;
   isUsuario = false;
   showMenu = new BehaviorSubject<boolean>(true);
 
@@ -108,6 +111,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     let userNivel = this._userService.getNivel();
     this.routeId = this._route.snapshot.paramMap.get('id')!;
     this.isDistribuicao = this.routeId == '302';
+    this.isInterno = ['302', '8921'].includes(this.routeId);
     this.isUsuario = userNivel == 5;
 
     // isDistribuicao
@@ -178,8 +182,11 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
 
     ops.sort((a, b) =>
-      a.DT_PREVRETORNO > b.DT_PREVRETORNO ? 1 : b.DT_PREVRETORNO > a.DT_PREVRETORNO
-        ? -1 : 0
+      a.DT_PREVRETORNO > b.DT_PREVRETORNO
+        ? 1
+        : b.DT_PREVRETORNO > a.DT_PREVRETORNO
+        ? -1
+        : 0
     );
 
     let imgListAll: string[] = [];
@@ -276,9 +283,11 @@ export class DescricaoFaccaoComponent implements OnInit {
         DS_APONTAMENTO_DS:
           maiorApontamento.DS_APONTAMENTO_DS || 'Não informado',
         CD_ATRASO: maiorMotivo.cd_atraso,
-        novaprevisao: new Date(maiorMotivo.dt_atraso).toLocaleString('pt-Br', {
-          timeZone: 'UTC',
-        }).substring(0,10),
+        novaprevisao: new Date(maiorMotivo.dt_atraso)
+          .toLocaleString('pt-Br', {
+            timeZone: 'UTC',
+          })
+          .substring(0, 10),
         motivo_atraso: maiorMotivo.ds_atraso,
         checked: maiorMotivo.i_checked,
         descricao: op.DS_GRUPO,
@@ -323,6 +332,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   ordenarMenor(): void {
+    this.itensLimite = 10;
     this.descOP.sort((a, b) => {
       let dateA = new Date(a.entrada! || '0');
       let dateB = new Date(b.entrada! || '0');
@@ -333,6 +343,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.descOP$.next(this.descOP);
   }
   ordenarMaior(): void {
+    this.itensLimite = 10;
     this.descOP.sort((a, b) => {
       let dateA: Date = new Date(a.entrada! || '0');
       let dateB: Date = new Date(b.entrada! || '0');
@@ -349,7 +360,8 @@ export class DescricaoFaccaoComponent implements OnInit {
         let motivos = this.motivoList.filter(
           (m) => m.NR_REDUZIDOOP + '-' + m.CD_LOCAL == cod
         );
-        if (motivos.length > 0) { // se tiver motivos na lista
+        if (motivos.length > 0) {
+          // se tiver motivos na lista
           this.motivo = motivos.reduce((p, c) => {
             return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
           });
@@ -357,13 +369,23 @@ export class DescricaoFaccaoComponent implements OnInit {
             if (
               +this.motivo.DT_PREV_RETORNO_NOVA >= this.motivo.DT_PREVRETORNO!
             ) {
-              return {cd_atraso: 0, ds_atraso: '', dt_atraso: '', i_checked: false};
+              return {
+                cd_atraso: 0,
+                ds_atraso: '',
+                dt_atraso: '',
+                i_checked: false,
+              };
             }
           } else if (this.motivo.DS_ATRASO_DS != 'Adiantamento') {
             if (
               +this.motivo.DT_PREV_RETORNO_NOVA <= this.motivo.DT_PREVRETORNO!
             ) {
-              return {cd_atraso: 0, ds_atraso: '', dt_atraso: '', i_checked: false};
+              return {
+                cd_atraso: 0,
+                ds_atraso: '',
+                dt_atraso: '',
+                i_checked: false,
+              };
             }
           }
           return {
@@ -399,32 +421,41 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   filtroOP(event: Event): void {
+    this.itensLimite = 10;
     document.getElementById('filtro-op')?.focus();
     const filterValue = (event.target as HTMLInputElement).value;
     this.idSelectedApontamento = [];
     if (filterValue == '') {
       this.filtroAtivo = false;
       this.descOP$.next(this.descOP);
-      if (this.semanaSelecionada != 'Todas') {
+      if (this.semanaSelecionada != 'Todas' && !this.isInterno) {
         this.descOP$.next(
-          this.descOP.filter(
-            (_) => _.semana == parseInt(this.semanaSelecionada)
-          )
+          this.descOP
+            .filter((_) => _.semana == parseInt(this.semanaSelecionada))
         );
       }
     } else {
       this.filtroAtivo = true;
       if (this.semanaSelecionada != 'Todas') {
-        this.descOP$.next(
-          this.descOP.filter(
-            (_) =>
-              _.cod?.includes(filterValue.toUpperCase()) &&
-              _.semana == parseInt(this.semanaSelecionada)
-          )
-        );
+        if (this.isInterno) {
+          this.descOP$.next(
+            this.descOP
+              .filter((_) => _.cod?.includes(filterValue.toUpperCase()))
+          );
+        } else {
+          this.descOP$.next(
+            this.descOP
+              .filter(
+                (_) =>
+                  _.cod?.includes(filterValue.toUpperCase()) &&
+                  _.semana == parseInt(this.semanaSelecionada)
+              )
+          );
+        }
       } else {
         this.descOP$.next(
-          this.descOP.filter((_) => _.cod?.includes(filterValue.toUpperCase()))
+          this.descOP
+            .filter((_) => _.cod?.includes(filterValue.toUpperCase()))
         );
       }
       this.descOP$.subscribe((x) => {
@@ -435,6 +466,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   filtrosDropdown() {
+    this.itensLimite = 10;
     this.selectedApontamento = [];
     this.idSelectedApontamento.forEach((x) => {
       this.selectedApontamento.push(this.apontamentoEnum[x]);
@@ -443,31 +475,34 @@ export class DescricaoFaccaoComponent implements OnInit {
     (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
     if (this.semanaSelecionada != 'Todas') {
       this.descOP$.next(
-        this.descOP.filter((_) => _.semana == parseInt(this.semanaSelecionada))
+        this.descOP
+          .filter((_) => _.semana == parseInt(this.semanaSelecionada))
       );
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => {
-            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
-              ? 'Parado'
-              : _.DS_APONTAMENTO_DS;
-            return (
-              this.selectedApontamento.includes(situacaoAjustada!) &&
-              _.semana == parseInt(this.semanaSelecionada)
-            );
-          })
+          this.descOP
+            .filter((_) => {
+              let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+                ? 'Parado'
+                : _.DS_APONTAMENTO_DS;
+              return (
+                this.selectedApontamento.includes(situacaoAjustada!) &&
+                _.semana == parseInt(this.semanaSelecionada)
+              );
+            })
         );
       }
     } else {
       this.descOP$.next(this.descOP);
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => {
-            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
-              ? 'Parado'
-              : _.DS_APONTAMENTO_DS;
-            return this.selectedApontamento.includes(situacaoAjustada!);
-          })
+          this.descOP
+            .filter((_) => {
+              let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+                ? 'Parado'
+                : _.DS_APONTAMENTO_DS;
+              return this.selectedApontamento.includes(situacaoAjustada!);
+            })
         );
       }
     }
@@ -478,21 +513,26 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   limpaFiltro(item: HTMLInputElement): void {
+    this.itensLimite = 10;
     this.filtroAtivo = false;
     item.value = '';
     this.descOP$.next(this.descOP);
     if (this.semanaSelecionada != 'Todas') {
-      this.descOP$.next(
-        this.descOP.filter((_) => _.semana == parseInt(this.semanaSelecionada))
-      );
+      if (!this.isInterno) {
+        this.descOP$.next(
+          this.descOP
+            .filter((_) => _.semana == parseInt(this.semanaSelecionada))
+        );
+      }
     }
   }
 
   filtraSemana(reset: boolean, eventSemana: number, eventAno?: number) {
+    this.itensLimite = 10;
     this.qntOPs = 0;
     this.qntPecas = 0;
     if (reset) {
-      this.semanaSelecionada = this.semanaAtual+'';
+      this.semanaSelecionada = this.semanaAtual + '';
     }
     if (eventSemana == -1) {
       this.semanaSelecionada = 'Todas';
@@ -500,12 +540,13 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.descOP$.next(this.descOP);
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => {
-            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
-              ? 'Parado'
-              : _.DS_APONTAMENTO_DS;
-            return this.selectedApontamento.includes(situacaoAjustada!);
-          })
+          this.descOP
+            .filter((_) => {
+              let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+                ? 'Parado'
+                : _.DS_APONTAMENTO_DS;
+              return this.selectedApontamento.includes(situacaoAjustada!);
+            })
         );
       }
     } else if (eventSemana == 0) {
@@ -514,42 +555,49 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.descOP$.next(this.descOP);
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => {
-            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
-              ? 'Parado'
-              : _.DS_APONTAMENTO_DS;
-            return (
-              this.selectedApontamento.includes(situacaoAjustada!) &&
-              _.semana! < this.semanaAtual &&
-              _.ano! <= this.anoAtual
-            );
-          })
+          this.descOP
+            .filter((_) => {
+              let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+                ? 'Parado'
+                : _.DS_APONTAMENTO_DS;
+              return (
+                this.selectedApontamento.includes(situacaoAjustada!) &&
+                _.semana! < this.semanaAtual &&
+                _.ano! <= this.anoAtual
+              );
+            })
         );
         return;
       }
       this.descOP$.next(
-        this.descOP.filter((_) => {
-          return _.semana! < this.semanaAtual && _.ano! <= this.anoAtual;
-        })
+        this.descOP
+          .filter((_) => {
+            return _.semana! < this.semanaAtual && _.ano! <= this.anoAtual;
+          })
       );
     } else {
       this.semanaSelecionada = eventSemana.toString();
-      this.descOP$.next(this.descOP.filter((_) => _.semana == eventSemana));
+      this.descOP$.next(
+        this.descOP
+          .filter((_) => _.semana == eventSemana)
+      );
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP.filter((_) => {
-            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
-              ? 'Parado'
-              : _.DS_APONTAMENTO_DS;
-            return (
-              this.selectedApontamento.includes(situacaoAjustada!) &&
-              _.semana == +this.semanaSelecionada &&
-              _.ano! <= this.anoAtual
-            );
-          })
+          this.descOP
+            .filter((_) => {
+              let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+                ? 'Parado'
+                : _.DS_APONTAMENTO_DS;
+              return (
+                this.selectedApontamento.includes(situacaoAjustada!) &&
+                _.semana == +this.semanaSelecionada &&
+                _.ano! <= this.anoAtual
+              );
+            })
         );
       }
     }
+
     this.descOP$.subscribe((x) => {
       // pega primeiro e último dia da semana para mostrar na toolbar
       this.getFirstAndLastWeekDay(x[0].previsao!);
@@ -710,7 +758,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     let listClosest = this.semanaList
       .filter((_) => _.ano == this.anoAtual)
       .flatMap((_) => _.semana);
-    if(listClosest.length > 0) {
+    if (listClosest.length > 0) {
       this.closestSemana = listClosest.reduce((a, b) => {
         let aDiff = Math.abs(a - parseInt(this.semanaSelecionada));
         let bDiff = Math.abs(b - parseInt(this.semanaSelecionada));
@@ -727,20 +775,18 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   adjustTitle(local: string) {
-    let title = local
-    .replace('COSTURA', '')
-    .replace('CONSERTO', '')
-    .replace('ESTAMPARIA', '')
-    .replace('TERCEIROS', '');
-  this._setTitle.setTitle(title);
+    let title = local;
+    if (!this.isInterno) {
+      title = local
+        .replace('COSTURA', '')
+        .replace('CONSERTO', '')
+        .replace('ESTAMPARIA', '')
+        .replace('TERCEIROS', '');
+    }
+    this._setTitle.setTitle(title);
   }
 
   openUrl(link: string) {
     window.open(link, '_blank');
-  }
-
-  scrollTop() {
-    var container = document.querySelector('#top-page')! as HTMLElement;
-    container.scrollIntoView();
   }
 }

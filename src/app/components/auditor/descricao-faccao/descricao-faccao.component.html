@@ -13,7 +13,7 @@
         <div class="filter-wrapper">
           <h6 class="filter-title">Filtros</h6>
           <div class="filter-menu-wrapper">
-            <div class="filter-dropdown" *ngIf="!isDistribuicao">
+            <div class="filter-dropdown" *ngIf="!isInterno">
               <nb-select multiple placeholder="Apontamento" [(ngModel)]="idSelectedApontamento" status="primary">
                 <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
                 <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()"
@@ -52,17 +52,18 @@
 
       <!-- toolbar -->
       <div class="toolbar-wrapper">
-        <ng-container *ngIf="!isDistribuicao">
+        <ng-container *ngIf="!isInterno">
           <div class="tag-wrapper">
             <span>Semana selecionada: <b>{{semanaSelecionada}}</b> <span *ngIf="+semanaSelecionada > 0"> (de {{
                 dataIni | date: 'dd/MM/yyyy' }} a {{ dataFim | date: 'dd/MM/yyyy' }})</span></span>
             <nb-tag-list style="margin: 5px;">
               <nb-tag status="basic" appearance="outline" text=" Todas " (click)="filtraSemana(true, -1)"></nb-tag>
-              <nb-tag *ngIf="semanaListAtraso.length > 0" status="danger" appearance="outline" text=" Em Atraso " (click)="filtraSemana(true, 0)"></nb-tag>
+              <nb-tag *ngIf="semanaListAtraso.length > 0" status="danger" appearance="outline" text=" Em Atraso "
+                (click)="filtraSemana(true, 0)"></nb-tag>
               <nb-tag *ngIf="semanaAtual == closestSemana" status="primary" appearance="filled"
                 text="Sem. {{semanaAtual}}" (click)="filtraSemana(true, semanaAtual, anoAtual)"></nb-tag>
-              <nb-tag status="success" appearance="outline" *ngFor="let item of semanaListFuturo" text="Sem. {{item.semana}}"
-                (click)="filtraSemana(true, item.semana, item.ano)"></nb-tag>
+              <nb-tag status="success" appearance="outline" *ngFor="let item of semanaListFuturo"
+                text="Sem. {{item.semana}}" (click)="filtraSemana(true, item.semana, item.ano)"></nb-tag>
             </nb-tag-list>
           </div>
         </ng-container>
@@ -89,8 +90,8 @@
 
       <div *ngIf="!isEmptyList; else listaVazia">
         <div class="card-wrapper">
-          <nb-card class="search-results" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50"
-            [accent]="item.accent || 'basic'" *ngFor="let item of descOP$ | async; trackBy: trackByOP">
+          <nb-card class="search-results" [accent]="item.accent || 'basic'"
+            *ngFor="let item of descOP$ | async; trackBy: trackByOP">
             <nb-card-body>
               <div class="c-body-wrapper">
                 <div (click)="openWindow(item.ref.toString())" class="c-img">
@@ -108,7 +109,7 @@
                     </div>
                   </div>
                   <div class="c-body">
-                    <p *ngIf="!isDistribuicao; else entrada" style="font-size: 15px;"><b>Previsão de retorno:</b> {{
+                    <p *ngIf="!isInterno; else entrada" style="font-size: 15px;"><b>Previsão de retorno:</b> {{
                       item.previsao }}</p>
                     <ng-template #entrada>
                       <p style="font-size: 15px;"><b>Disponibilizado:</b> {{ item.entrada |
