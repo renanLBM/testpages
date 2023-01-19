@@ -179,6 +179,8 @@ export class MinhasPendenciasComponent implements OnInit {
     this.loadingSend.next(false);
     this.loading.next(true);
     pendencia.MODIFICADO_POR = this._userService.getSession().nome;
+    let usuarioSolicitante = pendencia.CD_USUARIO;
+    pendencia.CD_USUARIO = this._userService.getSession().CD_USUARIO || 0;
     pendencia.DT_MODIFICACAO = new Date(Date.now()).toLocaleString('pt-Br');
 
     pendencia.CD_NovoStatus = 4;
@@ -219,6 +221,7 @@ export class MinhasPendenciasComponent implements OnInit {
             this.minhasPendenciasLocal.splice(idxLocalRemoved, 1);
           }
 
+          pendencia.CD_USUARIO = usuarioSolicitante;
           this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
           this.isEmptyList.next(!this.minhasPendenciasLocal.length);
           this.loadingSend.next(true);
