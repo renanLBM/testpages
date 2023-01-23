@@ -7,7 +7,6 @@ import jwt_decode from 'jwt-decode';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, first, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { Pages } from '../models/enums/enumPages';
 import { User } from '../models/user';
 import { CryptoService } from './crypto.service';
 import { TokenService } from './token.service';
@@ -82,21 +81,25 @@ export class UserService {
     this.autenticando.next(true);
 
     return this._httpClient
-    .post(`${API}/api/login_user`, { user: logginUser }, { observe: 'response' })
-    .pipe(
-      tap((res) => {
-        const resBody: RetornoAPI = res.body as RetornoAPI;
-        const authToken = resBody.token;
-        this.setToken(authToken);
-        this.logged.next(true);
-        this.autenticando.next(false);
-      }),
-      catchError((err) => {
-        console.warn(err);
-        this.autenticando.next(false);
-        this._toasterService.danger('Erro ao acessar o servidor!', 'Erro',{
-          preventDuplicates: true,
-        });
+      .post(
+        `${API}/api/login_user`,
+        { user: logginUser },
+        { observe: 'response' }
+      )
+      .pipe(
+        tap((res) => {
+          const resBody: RetornoAPI = res.body as RetornoAPI;
+          const authToken = resBody.token;
+          this.setToken(authToken);
+          this.logged.next(true);
+          this.autenticando.next(false);
+        }),
+        catchError((err) => {
+          console.warn(err);
+          this.autenticando.next(false);
+          this._toasterService.danger('Erro ao acessar o servidor!', 'Erro', {
+            preventDuplicates: true,
+          });
           return of(err.error);
         })
       );
@@ -115,12 +118,12 @@ export class UserService {
   }
 
   setSession(): void {
-    this.getUser().pipe(
-      first()
-    ).subscribe((user) => {
-      const msg = this._cryptoService.msgCrypto(JSON.stringify(user));
-      sessionStorage.setItem('user', JSON.stringify(msg));
-    });
+    this.getUser()
+      .pipe(first())
+      .subscribe((user) => {
+        const msg = this._cryptoService.msgCrypto(JSON.stringify(user));
+        sessionStorage.setItem('user', JSON.stringify(msg));
+      });
   }
 
   getSession(): User {

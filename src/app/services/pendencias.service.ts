@@ -3,10 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { MateriasPrimas } from '../models/materiaPrima';
 import { Pendencia, Pendencias } from '../models/pendencia';
 import { TokenService } from './token.service';
-import { StatusPendencia } from 'src/app/models/enums/enumStatusPendencia';
 
 const API = environment.API_ENV;
 
@@ -22,7 +20,7 @@ export class PendenciasService {
   listMateriaPrima(cod_op: string): Observable<any> {
     const headers = this.getToken();
     return this._httpClient.get<any>(
-      `${API}/api/materiaprima/${cod_op}`,
+      `${API}/api/faccaocontrol/materiaprima/${cod_op}`,
       {
         headers,
       }
@@ -34,13 +32,13 @@ export class PendenciasService {
 
     if (!!user) {
       return this._httpClient.get<any>(
-        `${API}/api/pendencia/${user}/${ativo}`,
+        `${API}/api/faccaocontrol/pendencia/${user}/${ativo}`,
         {
           headers,
         }
       );
     }
-    return this._httpClient.get<any>(`${API}/api/pendencia/all`, {
+    return this._httpClient.get<any>(`${API}/api/faccaocontrol/pendencia/all`, {
       headers,
     });
   }
@@ -50,7 +48,7 @@ export class PendenciasService {
 
     const body = JSON.stringify(pendencias);
     return this._httpClient
-      .post<any>(`${API}/api/add/pendencia`, body, {
+      .post<any>(`${API}/api/faccaocontrol/pendencia/add`, body, {
         headers,
       })
       .pipe(
@@ -69,30 +67,13 @@ export class PendenciasService {
 
     const body = JSON.stringify(pendencia);
     return this._httpClient
-      .post<any>(`${API}/api/edit/pendencia`, body, {
+      .post<any>(`${API}/api/faccaocontrol/pendencia/edit`, body, {
         headers,
       })
       .pipe(
         map((res) => {
           let x = res['data'];
           if (x == 'OK') {
-            return 1;
-          }
-          return 0;
-        })
-      );
-  }
-
-  confirmarRecebimento(pendencia: Pendencia) {
-    const headers = this.getToken();
-    const body = JSON.stringify(pendencia);
-    return this._httpClient
-      .post<any>(`${API}/api/setconfirmapendencia`, body, {
-        headers,
-      })
-      .pipe(
-        map((res) => {
-          if (res == 'ok') {
             return 1;
           }
           return 0;

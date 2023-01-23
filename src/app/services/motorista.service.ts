@@ -15,7 +15,7 @@ export class MotoristaService {
 
   listDisponivel(): Observable<any> {
     const headers = this.getToken();
-    return this._httpClient.get<any>(`${API}/api/coleta/all`, {
+    return this._httpClient.get<any>(`${API}/api/faccaocontrol/coleta/all`, {
       headers,
     });
   }
@@ -23,7 +23,7 @@ export class MotoristaService {
   setColeta(coleta: Coleta): Observable<number> {
     const headers = this.getToken();
     const body = JSON.stringify(coleta);
-    return this._httpClient.post<any>(`${API}/api/add/coleta`, body, {
+    return this._httpClient.post<any>(`${API}/api/faccaocontrol/coleta/add`, body, {
       headers,
     }).pipe(
       map((res) => {
@@ -38,7 +38,7 @@ export class MotoristaService {
   removeColeta(coleta: Coleta): Observable<number> {
     const headers = this.getToken();
     const body = JSON.stringify(coleta);
-    return this._httpClient.post<any>(`${API}/api/remove/coleta`, body, {
+    return this._httpClient.post<any>(`${API}/api/faccaocontrol/coleta/remove`, body, {
       headers,
     }).pipe(
       map((res) => {

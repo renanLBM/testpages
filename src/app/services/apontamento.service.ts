@@ -26,7 +26,7 @@ export class ApontamentoService {
     const headers = this.getToken();
 
     return this._httpClient
-      .get<any>(`${API}/api/apontamento/resumido/origem_colecao`, {
+      .get<any>(`${API}/api/faccaocontrol/apontamento/resumido/origem_colecao`, {
         headers,
       })
       .pipe(
@@ -41,7 +41,7 @@ export class ApontamentoService {
     const headers = this.getToken();
     if (!id) {
       return this._httpClient
-        .get<any>(`${API}/api/apontamento/all`, {
+        .get<any>(`${API}/api/faccaocontrol/apontamento/all`, {
           headers,
         })
         .pipe(
@@ -52,7 +52,7 @@ export class ApontamentoService {
         );
     } else {
       return this._httpClient
-        .get<any>(`${API}/api/apontamento/local/${id}`, {
+        .get<any>(`${API}/api/faccaocontrol/apontamento/local/${id}`, {
           headers,
         })
         .pipe(
@@ -68,7 +68,7 @@ export class ApontamentoService {
     const body = JSON.stringify(apontamento);
     const headers = this.getToken();
     return this._httpClient
-      .post<any>(`${API}/api/add/apontamento`, body, { headers })
+      .post<any>(`${API}/api/faccaocontrol/apontamento/add`, body, { headers })
       .pipe(
         map((res) => {
           if (res.data == 'OK') {
