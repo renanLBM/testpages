@@ -12,7 +12,7 @@ import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
-import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
+import { ApontamentoList, ApontamentoListParado } from 'src/app/models/enums/enumApontamentos';
 import { ApontamentoService } from 'src/app/services/apontamento.service';
 
 @Component({
@@ -222,7 +222,7 @@ export class PcpDescOpsComponent implements OnInit {
       if (!apontamentoShowed.includes('-')) {
         x['DS_APONTAMENTO_DS'] =
           '0' +
-          ApontamentoList[apontamentoShowed as keyof typeof ApontamentoList] +
+          ApontamentoListParado[apontamentoShowed as keyof typeof ApontamentoListParado] +
           ' - ' +
           apontamento.DS_APONTAMENTO_DS;
       } else {

@@ -4,7 +4,10 @@ import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { Apontamento } from 'src/app/models/apontamento';
 import { descOP } from 'src/app/models/descOP';
-import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
+import {
+  ApontamentoList,
+  ApontamentoListParado,
+} from 'src/app/models/enums/enumApontamentos';
 import {
   MotivoAtraso,
   MotivoAtrasoCD,
@@ -156,7 +159,7 @@ export class DialogComponent implements OnInit {
           removed: this.removed,
         });
       },
-      error: (err: { code: any; message: any; }) => {
+      error: (err: { code: any; message: any }) => {
         alert(`ERROR(${err.code}) ${err.message}`);
       },
     });
@@ -213,10 +216,11 @@ export class DialogComponent implements OnInit {
       data_ajustada![0].split('/').reverse().join('-') +
       ' ' +
       data_ajustada![1];
-    let prev_retorno_ajustado =
-      this.prevOP.previsao!.split('/').reverse().join('-');
-    novaDataForm =
-      novaDataForm.split('/').reverse().join('-');
+    let prev_retorno_ajustado = this.prevOP
+      .previsao!.split('/')
+      .reverse()
+      .join('-');
+    novaDataForm = novaDataForm.split('/').reverse().join('-');
 
     this.novoMotivo = {
       CD_ATRASO: !!this.prevOP.CD_ATRASO ? this.prevOP.CD_ATRASO : 0,
@@ -245,7 +249,7 @@ export class DialogComponent implements OnInit {
             removed: this.removed,
           });
         },
-        error: (err: { code: any; message: any; }) => {
+        error: (err: { code: any; message: any }) => {
           alert(`ERROR(${err.code}) ${err.message}`);
           this.err = true;
           this.loading = false;
@@ -261,7 +265,7 @@ export class DialogComponent implements OnInit {
             removed: this.removed,
           });
         },
-        error: (err: { code: any; message: any; }) => {
+        error: (err: { code: any; message: any }) => {
           alert(`ERROR(${err.code}) ${err.message}`);
           this.err = true;
           this.loading = false;
@@ -304,14 +308,17 @@ export class DialogComponent implements OnInit {
       QT_OP: this.prevOP.qnt!,
       Status: this.prevOP.status!,
       CD_APONTAMENTO_DS:
-        ApontamentoList[novoApontamentoForm as keyof typeof ApontamentoList] +
-        1,
+        ApontamentoListParado[
+          novoApontamentoForm as keyof typeof ApontamentoListParado
+        ] + 1,
       DS_APONTAMENTO_DS: novoApontamentoForm,
       CD_USUARIO: this.cd_user,
       USUARIO: this.user,
       DT_MODIFICACAO: dt_modificacao,
       GEOLOCALIZACAO: this.latitude + ', ' + this.longitude,
     };
+
+    console.log(this.novoApontamento);
 
     if (novoApontamentoForm.match('Parado') && this.selectedParado < 0) {
       this.err = true;
@@ -327,7 +334,7 @@ export class DialogComponent implements OnInit {
             DS_APONTAMENTO_DS: this.novoApontamento.DS_APONTAMENTO_DS,
           });
         },
-        error: (err: { code: any; message: any; }) => {
+        error: (err: { code: any; message: any }) => {
           alert(`ERROR(${err.code}) ${err.message}`);
           this.err = true;
           this.loading = false;
