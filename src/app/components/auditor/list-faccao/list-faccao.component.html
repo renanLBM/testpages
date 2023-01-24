@@ -1,7 +1,7 @@
 <nb-layout>
   <nb-layout-column>
-    <div *ngIf="_loadingService.isLoading | async; else allOPs">
-      <div class="card-wrapper">
+    <div *ngIf="loading | async; else allOPs">
+      <div class="card-wrapper loading">
         <div *ngFor="let i of color">
           <fc-card [loading]="true" [title]="'...'" [qnt_ops]="0" [c_status]="i" [qnt_atraso]="0" [show_desc]="true">
           </fc-card>
@@ -16,7 +16,8 @@
           <div class="filtro-dropdown">
             <nb-select multiple placeholder="Coleção" [(ngModel)]="selectedColecao" status="primary">
               <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
-              <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}
+              <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()"
+                *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}
               </nb-option>
             </nb-select>
           </div>
@@ -38,7 +39,7 @@
       </div>
     </ng-template>
 
-    <div *ngIf="!emptyList; else listaVazia">
+    <div *ngIf="!(emptyList | async); else listaVazia">
       <div class="card-wrapper">
         <div *ngFor="let item of faccaoList$ | async">
           <fc-card [show_desc]="show_desc" [title]="item.name" text_desc="OP's em atraso" [qnt_ops]="item.qnt"
@@ -48,6 +49,7 @@
         </div>
       </div>
     </div>
+
 
     <ng-template #listaVazia>
       <h4 style="text-align: center;">Nenhum item encontrado..</h4>

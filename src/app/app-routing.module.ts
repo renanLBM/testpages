@@ -4,7 +4,6 @@ import { AuditorGuard } from './guard/auditor.guard';
 import { LoginGuard } from './guard/login.guard';
 import { MotoristaGuard } from './guard/motorista.guard';
 import { PcpGuard } from './guard/pcp.guard';
-import { AuthenticationComponent } from './shared/components/authentication/authentication.component';
 import { LoginComponent } from './shared/components/login/login.component';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 
@@ -19,13 +18,6 @@ const routes: Routes = [
     canActivate: [LoginGuard],
     component: LoginComponent,
   },
-  // {
-  //   path: '',
-  //   component: AuthenticationComponent,
-  //   children: [
-  //     {path: 'login', component: LoginComponent}
-  //   ]
-  // },
   {
     path: 'pcp',
     canLoad: [PcpGuard],

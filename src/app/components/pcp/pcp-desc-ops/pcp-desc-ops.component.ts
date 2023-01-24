@@ -1,17 +1,19 @@
-import { Location } from '@angular/common';
+import { DatePipe, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { Faccoes } from 'src/app/models/faccao';
+import { OPDescricoes } from 'src/app/models/opdescricao';
 import { Motivo, Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
-import { AuditorService } from 'src/app/services/auditor.service';
+import { AtrasoService } from 'src/app/services/atraso.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
+import { ApontamentoList, ApontamentoListParado } from 'src/app/models/enums/enumApontamentos';
+import { ApontamentoService } from 'src/app/services/apontamento.service';
 
 @Component({
   selector: 'fc-pcp-desc-ops',
@@ -19,6 +21,7 @@ import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
   styleUrls: ['./pcp-desc-ops.component.scss'],
 })
 export class PcpDescOpsComponent implements OnInit {
+  datePipe = new DatePipe('pt-Br');
   dtOptions: any;
   dtTrigger: Subject<any> = new Subject<any>();
   selectedFilters = {
@@ -40,9 +43,10 @@ export class PcpDescOpsComponent implements OnInit {
   apontamento!: Apontamento;
   faccaoList: OPs = [];
   motivoList: Motivos = [];
-  faccao: Faccoes = [];
+  faccao: OPDescricoes = [];
   listOPs$: BehaviorSubject<OPs> = new BehaviorSubject(this.faccaoList);
 
+  dtHoje = new Date();
   imgUrl = 'https://indicium-lbm-client.s3-sa-east-1.amazonaws.com/images/';
 
   constructor(
@@ -50,7 +54,8 @@ export class PcpDescOpsComponent implements OnInit {
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
     private _opsFilteredService: OpsFilteredService,
-    private _auditorService: AuditorService,
+    private _atrasoService: AtrasoService,
+    private _apontamentoService: ApontamentoService,
     private _route: ActivatedRoute,
     private _location: Location
   ) {}
@@ -59,10 +64,10 @@ export class PcpDescOpsComponent implements OnInit {
     this._setTitle.setTitle('Carregando...');
     this.selectedFilters = this._opsFilteredService.getFilter();
 
-    this._auditorService.getApontamento().subscribe((a) => {
-      this.apontamentoList = this.filterApontamento(a);
-      this._auditorService.getMotivos().subscribe((m) => {
-        this.motivoList = m;
+    this._apontamentoService.getApontamento().subscribe((a) => {
+      this.apontamentoList = this.filterApontamento(JSON.parse(a.data));
+      this._atrasoService.getMotivos().subscribe((m) => {
+        this.motivoList = JSON.parse(m.data);
 
         this.dtOptions = {
           language: LanguagePtBr.ptBr_datatable,
@@ -91,34 +96,52 @@ export class PcpDescOpsComponent implements OnInit {
         this.origemStatus = this._route.snapshot.paramMap.get('origem')!;
         this._setTitle.setTitle(this.tituloStatus);
 
+        const dataFromSession = this._opsService.getSessionData();
         if (this.tituloStatus == 'Total') {
-          this._opsService.getAllOPs().subscribe({
-            next: (list) => {
-              let opsList = this.filterOPs(list);
-              this.getOPS(opsList);
+          if (!!dataFromSession.length) {
+            let opsList = this.filterOPs(dataFromSession);
+            this.getOPS(opsList);
+            this.listOPs$.next(this.faccaoList);
+            this.dtTrigger.next(this.dtOptions);
+          } else {
+            this._opsService.getAllOPs().subscribe({
+              next: (list) => {
+                let opsList = this.filterOPs(JSON.parse(list.data));
+                this.getOPS(opsList);
 
-              this.listOPs$.next(this.faccaoList);
-              this.dtTrigger.next(this.dtOptions);
-            },
-            error: (err: Error) => {
-              console.error(err);
-              this._setTitle.setTitle('Erro');
-            },
-          });
+                this.listOPs$.next(this.faccaoList);
+                this.dtTrigger.next(this.dtOptions);
+              },
+              error: (err: Error) => {
+                console.error(err);
+                this._setTitle.setTitle('Erro');
+              },
+            });
+          }
         } else {
-          this._opsService.getOpByStatus(this.tituloStatus).subscribe({
-            next: (list) => {
-              let opsList = this.filterOPs(list);
-              this.getOPS(opsList);
+          if (!!dataFromSession.length) {
+            let opsList = dataFromSession.filter((ops) => {
+              return ops.Status == this.tituloStatus;
+            });
+            opsList = this.filterOPs(opsList);
+            this.getOPS(opsList);
+            this.listOPs$.next(this.faccaoList);
+            this.dtTrigger.next(this.dtOptions);
+          } else {
+            this._opsService.getOpByStatus(this.tituloStatus).subscribe({
+              next: (list) => {
+                let opsList = this.filterOPs(JSON.parse(list.data));
+                this.getOPS(opsList);
 
-              this.listOPs$.next(this.faccaoList);
-              this.dtTrigger.next(this.dtOptions);
-            },
-            error: (err: Error) => {
-              console.error(err);
-              this._setTitle.setTitle('Erro');
-            },
-          });
+                this.listOPs$.next(this.faccaoList);
+                this.dtTrigger.next(this.dtOptions);
+              },
+              error: (err: Error) => {
+                console.error(err);
+                this._setTitle.setTitle('Erro');
+              },
+            });
+          }
         }
       });
     });
@@ -128,7 +151,9 @@ export class PcpDescOpsComponent implements OnInit {
     this.faccaoList = thisOPs;
     this.tituloLocal = this.tituloStatus;
     if (this.origemStatus) {
-      this.faccaoList = this.faccaoList.filter((x) => x.DS_TIPO == this.origemStatus);
+      this.faccaoList = this.faccaoList.filter(
+        (x) => x.DS_TIPO == this.origemStatus
+      );
     }
     if (this.facIdStatus != '99999') {
       this.faccaoList = this.faccaoList.filter(
@@ -137,60 +162,72 @@ export class PcpDescOpsComponent implements OnInit {
       this.tituloLocal = this.faccaoList[0].DS_LOCAL;
     }
     this.faccaoList.map((x) => {
-      if(!x.PREV_RETORNO){
-        x.PREV_RETORNO = '01/01/2001 00:00:00';
+      if (!x.DT_PREVRETORNO) {
+        x.dt_ajustada = new Date('2022-01-01')
+          .toLocaleString('pt-Br', { timeZone: 'UTC' })
+          .substring(0, 10);
+      } else {
+        x.dt_ajustada = new Date(+x.DT_PREVRETORNO)
+          .toLocaleString('pt-Br', { timeZone: 'UTC' })
+          .substring(0, 10);
       }
-      x.DT_ENTRADA = `${x.DT_ENTRADA.substring(6, 10)}-${x.DT_ENTRADA.substring(
-        3,
-        5
-      )}-${x.DT_ENTRADA.substring(0, 2)}  04:00:00`;
-      x.PREV_RETORNO = `${x.PREV_RETORNO.substring(
-        6,
-        10
-      )}-${x.PREV_RETORNO.substring(3, 5)}-${x.PREV_RETORNO.substring(
-        0,
-        2
-      )} 04:00:00`;
+
+      x.css_class = x.Status == 'Em atraso' ? 'atraso' : 'andamento';
 
       let atraso!: Motivo;
       if (this.motivoList.toString() != 'error') {
         atraso = this.motivoList.filter(
-          (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
+          (_) => _.CD_PRODUCAO == x.CD_PRODUCAO
         )[0];
       }
 
       let apontamento!: Apontamento;
       if (this.apontamentoList.toString() != 'error') {
         apontamento = this.apontamentoList.filter(
-          (_) => _.cod + _.CD_LOCAL == x.cod! + x.CD_LOCAL
+          (_) =>
+            _.NR_REDUZIDOOP + '-' + _.CD_LOCAL ==
+            x.NR_REDUZIDOOP! + '-' + x.CD_LOCAL
         )[0];
       }
-
-      let hj = new Date();
-
-      let dataEntrada = new Date(x.DT_ENTRADA);
-      let dtPrev = new Date(x.PREV_RETORNO);
-
-      x.css_class = dtPrev < hj ? 'atraso' : 'andamento';
 
       if (!x.DS_COORDENADO) {
         x.DS_COORDENADO = x.DS_GRUPO;
       }
+      let dt_entrada = new Date(+x.DT_ENTRADA);
       x['dias_faccao'] = Math.floor(
-        (hj.getTime() - dataEntrada.getTime()) / (24 * 3600 * 1000)
+        (this.dtHoje.getTime() - dt_entrada.getTime()) / (24 * 3600 * 1000)
       );
+
+      x['motivo_atraso'] = '-';
+      x['nova_previsao'] = '-';
 
       //  verifica se teve atraso para essa OP
       if (atraso) {
-        x['motivo_atraso'] = atraso.MOTIVO;
-        x['nova_previsao'] = atraso.NOVA_PREVISAO;
-      } else {
-        x['motivo_atraso'] = '-';
-        x['nova_previsao'] = '-';
+        let dtNovaPrev = new Date(+atraso.DT_PREV_RETORNO_NOVA);
+
+        if (dtNovaPrev >= this.dtHoje) {
+          x['motivo_atraso'] = atraso.DS_ATRASO_DS;
+          x['nova_previsao'] = dtNovaPrev
+            .toLocaleString('pt-Br', { timeZone: 'UTC' })
+            .substring(0, 10);
+        }
       }
 
       //  verifica se teve apontamento para essa OP
-      x['apontamento'] = apontamento ? apontamento.Situacao : '-';
+      let apontamentoShowed: string;
+      apontamentoShowed = apontamento ? apontamento.DS_APONTAMENTO_DS! : '-';
+      apontamentoShowed = apontamentoShowed.includes('Parado')
+        ? 'Parado'
+        : apontamentoShowed;
+      if (!apontamentoShowed.includes('-')) {
+        x['DS_APONTAMENTO_DS'] =
+          '0' +
+          ApontamentoListParado[apontamentoShowed as keyof typeof ApontamentoListParado] +
+          ' - ' +
+          apontamento.DS_APONTAMENTO_DS;
+      } else {
+        x['DS_APONTAMENTO_DS'] = '-';
+      }
     });
   }
 
@@ -201,17 +238,17 @@ export class PcpDescOpsComponent implements OnInit {
     // filtra as ops de acordo com o status filtrado
     if (!!apontamentoFilter && apontamentoFilter != 'Não informado') {
       let apCodList = this.apontamentoList.flatMap(
-        (ap) => ap.cod + ap.CD_LOCAL
+        (ap) => ap.cod + '-' + ap.CD_LOCAL
       );
       listFilteredOPs = listFilteredOPs.filter((x) =>
-        apCodList.includes(x.cod! + x.CD_LOCAL)
+        apCodList.includes(x.cod! + '-' + x.CD_LOCAL)
       );
     } else if (apontamentoFilter == 'Não informado') {
       let apCodList = this.apontamentoList.flatMap(
-        (ap) => ap.cod + ap.CD_LOCAL
+        (ap) => ap.cod + '-' + ap.CD_LOCAL
       );
       listFilteredOPs = listFilteredOPs.filter(
-        (x) => !apCodList.includes(x.cod! + x.CD_LOCAL)
+        (x) => !apCodList.includes(x.cod! + '-' + x.CD_LOCAL)
       );
     }
 
@@ -220,15 +257,15 @@ export class PcpDescOpsComponent implements OnInit {
 
     if (hasOrigem && hasColecao) {
       listFilteredOPs = listFilteredOPs.filter(
-        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.DS_CICLO)
+        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.NR_CICLO + '')
       );
-    } else if (hasOrigem && !hasColecao) {
+    } else if (hasOrigem) {
       listFilteredOPs = listFilteredOPs.filter((x) =>
         origem.includes(x.DS_CLASS)
       );
-    } else if (!hasOrigem && hasColecao) {
+    } else if (hasColecao) {
       listFilteredOPs = listFilteredOPs.filter((x) =>
-        colecao.includes(x.DS_CICLO)
+        colecao.includes(x.NR_CICLO + '')
       );
     }
     return listFilteredOPs;
@@ -238,7 +275,7 @@ export class PcpDescOpsComponent implements OnInit {
   filterApontamento(ap: Apontamentos): Apontamentos {
     let { apontamentoFilter } = this.selectedFilters;
     if (!!apontamentoFilter && apontamentoFilter != 'Não informado') {
-      return ap.filter((a) => a.Situacao! == apontamentoFilter);
+      return ap.filter((a) => a.Situacao!.includes(apontamentoFilter));
     }
     return ap;
   }

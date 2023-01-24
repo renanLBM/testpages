@@ -1,0 +1,170 @@
+<nb-layout>
+  <nb-layout-column>
+    <div class="body-wrapper">
+      <div class="bt-voltar-wrapper">
+        <button nbButton outline status="primary" size="small" class="bt-voltar" (click)="voltar()">
+          Voltar
+        </button>
+      </div>
+
+      <ng-container *ngIf="naoEncontrado | async; else insumos">
+        <div class="nao_encontrado">
+          <h1>Produto não encontrado!</h1>
+          <p>Entre em contato com o administrador...</p>
+        </div>
+      </ng-container>
+
+      <!-- placeholder while loading -->
+      <ng-template #insumos>
+        <div class="loading" *ngIf="loading | async; else mptemplate">
+          <div class="toolbar-wrapper loading">
+            <div class="titulo">
+              <h3>Carregando...</h3>
+            </div>
+            <div class="toolbar-info">
+              <div class="toolbar-value">
+                <div>
+                  Referência:
+                </div>
+                <div class="h6">
+                  0
+                </div>
+              </div>
+              <div class="toolbar-value">
+                <div>
+                  Ciclo-OP:
+                </div>
+                <div class="h6">
+                  0
+                </div>
+              </div>
+              <div class="toolbar-value">
+                <div>
+                  Qtd. Peças:
+                </div>
+                <div class="h6">
+                  0
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-wrapper loading">
+            <ng-container>
+              <nb-card>
+                <nb-card-header>
+                  <h4>Grupo: ...</h4>
+                </nb-card-header>
+                <nb-card-body>
+                  <table class="rwd-table loading">
+                    <tr>
+                      <th>Cód. Produto</th>
+                      <th>Produto</th>
+                      <th>Tamanho</th>
+                      <th>Solicitação</th>
+                    </tr>
+                    <tr>
+                      <td data-th="Cód. Produto">0</td>
+                      <td data-th="Produto">...</td>
+                      <td data-th="Tamanho">...</td>
+                      <td data-th="Solicitação">
+                        <input nbInput status="warning" class="solicitado-input" type="number" min="0" placeholder="0">
+                      </td>
+                      <hr>
+                    </tr>
+                  </table>
+                </nb-card-body>
+              </nb-card>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- toolbar -->
+        <ng-template #mptemplate>
+          <div class="toolbar-wrapper">
+            <div class="titulo">
+              <h3>{{ opsData.DS_GRUPO }}</h3>
+            </div>
+            <div class="toolbar-info">
+              <div class="toolbar-value">
+                <div>
+                  Referência:
+                </div>
+                <div class="h6">
+                  {{ opsData.CD_REFERENCIA }}
+                </div>
+              </div>
+              <div class="toolbar-value">
+                <div>
+                  Ciclo-OP:
+                </div>
+                <div class="h6">
+                  {{ cicloOP }}
+                </div>
+              </div>
+              <div class="toolbar-value">
+                <div>
+                  Qtd. Peças:
+                </div>
+                <div class="h6">
+                  {{ opsData.QT_OP }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-wrapper">
+            <!-- MATÉRIAS PRIMAS -->
+            <ng-container *ngFor="let mp of materiasPrimasList$ | async">
+              <nb-card>
+                <nb-card-header>
+                  <h4>{{mp.DS_PRODUCT_CLASSIFICATION}}</h4>
+                </nb-card-header>
+                <nb-card-body>
+                  <table class="rwd-table">
+                    <tr>
+                      <th>Cód. Produto</th>
+                      <th>Produto</th>
+                      <th *ngIf="mp.DS_PRODUCT_CLASSIFICATION == 'TECIDO'">Parte do Corte</th>
+                      <th>Tamanho da peça</th>
+                      <th>Solicitação</th>
+                    </tr>
+                    <ng-container *ngFor="let item of mp.mp_list; let i = index">
+                      <tr>
+                        <td data-th="Cód. Produto">{{ item.CD_MATERIAL }}</td>
+                        <td data-th="Produto">{{ item.DS_MATERIAL }}</td>
+                        <td *ngIf="mp.DS_PRODUCT_CLASSIFICATION == 'TECIDO'" data-th="corte">
+                          <input nbInput status="warning" type="text" class="corte-input" [id]="item.CD_MATERIAL+'_corte'"
+                            placeholder="Parte do corte desejado" required>
+                        </td>
+                        <td data-th="Tamanho da peça">
+                          <nb-select class="tamanho-input" placeholder="P/M/G" status="warning" [id]="item.CD_MATERIAL+'_tamanho'">
+                            <nb-option [value]="idx" *ngFor="let t of item.DS_TAMANHO; let idx = index">{{ t }}
+                            </nb-option>
+                          </nb-select>
+                        </td>
+                        <td data-th="Solicitação" [id]="i">
+                          <input nbInput status="warning" class="solicitado-input" type="number"
+                          [id]="item.CD_MATERIAL+'-'+item.DS_MATERIAL" min="0" [max]="opsData.QT_OP" placeholder="0" required>
+                        </td>
+                        <hr>
+                      </tr>
+                    </ng-container>
+                  </table>
+                </nb-card-body>
+              </nb-card>
+            </ng-container>
+
+            <h4><b>Observações:</b></h4>
+            <textarea nbInput fullWidth status="warning" type="text" rows="4" class="txt-area" id="observacoes"
+              [(ngModel)]="obsValue"></textarea>
+            <button [nbSpinner]="loading.getValue()" [disabled]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="success"
+              class="bt-send" (click)="enviar()" type="submit" id="'bt-send">Enviar</button>
+            <button [nbSpinner]="loading.getValue()" [disabled]="loading.getValue()" nbSpinnerStatus="info" nbButton shape="round" status="warning"
+              class="bt-clear" (click)="limparForm()" type="reset" id="'bt-clear">Limpar</button>
+          </div>
+        </ng-template>
+      </ng-template>
+
+    </div>
+  </nb-layout-column>
+</nb-layout>

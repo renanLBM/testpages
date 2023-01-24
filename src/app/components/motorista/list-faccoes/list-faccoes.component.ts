@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Faccoes } from 'src/app/models/faccao';
+import { Apontamentos } from 'src/app/models/apontamento';
+import { OPDescricoes } from 'src/app/models/opdescricao';
 import { OPs } from 'src/app/models/ops';
 import { MotoristaService } from 'src/app/services/motorista.service';
-import { OpsService } from 'src/app/services/ops.service';
+import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 @Component({
   selector: 'fc-list-faccoes',
   templateUrl: './list-faccoes.component.html',
   styleUrls: ['./list-faccoes.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListFaccoesComponent implements OnInit {
   color: string[] = ['info', 'warning', 'primary', 'success'];
@@ -17,47 +19,60 @@ export class ListFaccoesComponent implements OnInit {
   filtroAtivo: boolean = false;
   show_desc: boolean = true;
 
-  AllOpsList: OPs = [];
   listCodOPsDisponiveis: string[] = [];
   listOPsDisponiveis: OPs = [];
+  resumoApontamento: Apontamentos = [];
+
+  qtDisponivel: number = 0;
+  qtDisponivel$: BehaviorSubject<number> = new BehaviorSubject(
+    this.qtDisponivel
+  );
+  qtColetado: number = 0;
+  qtColetado$: BehaviorSubject<number> = new BehaviorSubject(this.qtColetado);
+  qtTotal: number = 0;
+  qtTotal$: BehaviorSubject<number> = new BehaviorSubject(this.qtTotal);
 
   localList: any[] = [];
-  faccaoList: Faccoes = [];
-  faccaoList$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.faccaoList);
+  faccaoList: OPDescricoes = [];
+  faccaoList$: BehaviorSubject<OPDescricoes> = new BehaviorSubject(
+    this.faccaoList
+  );
 
   constructor(
     private _setTitle: SetTitleServiceService,
-    private _opsService: OpsService,
-    private _motoristaService: MotoristaService
+    private _motoristaService: MotoristaService,
+    private _opsFilteredService: OpsFilteredService
   ) {}
 
   ngOnInit(): void {
     this._setTitle.setTitle('Carregando...');
 
-    // pega todos os códigos das ops marcadas como disponível
+    this._opsFilteredService.setFilter({
+      origem: '',
+      colecao: '',
+      apontamentoFilter: '',
+    });
+
     this._motoristaService.listDisponivel().subscribe({
-      next: (apontamentos) => {
-        this.listCodOPsDisponiveis = apontamentos.flatMap(
-          (op) => op.cod + '-' + op.CD_LOCAL.toString()
-        );
-
-        // listagem de todas as facções que possuem ops com status de apontamento "Disponível para coleta"
-        this._opsService.getAllOPs().subscribe({
-          next: (ops) => {
-
-            this.listOPsDisponiveis = ops.filter((op) => {
-              return this.listCodOPsDisponiveis.includes(
-                op.cod + '-' + op.CD_LOCAL.toString()
-              );
-            });
-
-            this.setfaccaolist(this.listOPsDisponiveis);
-
-            this._setTitle.setTitle('Motorista');
-            this.emptyList = false;
-          },
-          error: (err: Error) => console.error(err),
+      next: (ops) => {
+        this.listOPsDisponiveis = JSON.parse(ops.data);
+        this.listOPsDisponiveis.forEach((a) => {
+          if (a.DS_APONTAMENTO_DS == 'Disponível para coleta') {
+            this.qtDisponivel += +a.QT_OP;
+          } else if (a.DS_APONTAMENTO_DS == 'Coletado') {
+            this.qtColetado += +a.QT_OP;
+          }
+          this.qtTotal += a.QT_OP;
         });
+
+        this.qtDisponivel$.next(this.qtDisponivel);
+        this.qtColetado$.next(this.qtColetado);
+        this.qtTotal$.next(this.qtTotal);
+
+        this.setfaccaolist(this.listOPsDisponiveis);
+
+        this._setTitle.setTitle('Motorista');
+        this.emptyList = false;
       },
       error: (err: Error) => console.error(err),
     });
@@ -138,6 +153,23 @@ export class ListFaccoesComponent implements OnInit {
     );
     this.emptyList = !this.faccaoList.length;
     this.faccaoList$.next(this.faccaoList);
+  }
+
+  filtroApontamento(apontamentoFiltrado: string) {
+    // set the filter service to pass to others components
+    this._opsFilteredService.setFilter({
+      origem: '',
+      colecao: '',
+      apontamentoFilter: apontamentoFiltrado,
+    });
+    if (apontamentoFiltrado == 'Todos') {
+      this.setfaccaolist(this.listOPsDisponiveis);
+      return;
+    }
+    let faccoes = this.listOPsDisponiveis.filter(
+      (ops) => ops.DS_APONTAMENTO_DS == apontamentoFiltrado
+    );
+    this.setfaccaolist(faccoes);
   }
 
   filtroFaccao(event: Event): void {

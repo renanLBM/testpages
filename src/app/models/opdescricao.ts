@@ -1,6 +1,4 @@
-import { NbComponentStatus } from "@nebular/theme";
-
-export interface Faccao {
+export interface OPDescricao {
   id?: number,
   name: string,
   qnt: number,
@@ -18,4 +16,4 @@ export interface Faccao {
   ordem?: number
 }
 
-export type Faccoes = Array<Faccao>;
+export type OPDescricoes = Array<OPDescricao>;

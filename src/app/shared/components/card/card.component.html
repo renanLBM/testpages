@@ -3,11 +3,11 @@
   <nb-card-body>
     <div class="c-body">
       <div [ngClass]="page_desc">
-        <p>{{ qnt_ops | number: '1.0' }}</p>
+        <p>{{ qnt_ops | number: '1.0':'pt-Br' }}</p>
         <span><b>Total de OP's</b></span>
       </div>
       <div *ngIf="show_desc" class="desc-op">
-        <span><b>{{ qnt_text_desc }}</b></span>
+        <span><b>{{ qnt_atraso | number: '1.0':'pt-Br' }}</b></span>
         <span>{{ text_desc }}</span>
       </div>
     </div>

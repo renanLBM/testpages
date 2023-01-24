@@ -1,18 +1,17 @@
 export interface Coleta {
-  ID_NOVA_SITUACAO?: number,
-  CD_LOCAL: number,
-  NR_CICLO: number,
-  NR_OP: number,
-  CD_REFERENCIA: number,
-  PREV_RETORNO: string,
-  QT_OP: number,
-  Status: string,
-  USUARIO: string,
-  DT_COLETA: string,
+  ID_COLETA?: number,
   ajustado?: string,
-  cod: string,
-  latitude?: number,
-  longitude?: number,
+
+  NR_REDUZIDOOP: number,
+  CD_LOCAL: number,
+  QT_OP: number,
+  DT_PREVRETORNO_HIST: string | null,
+  DS_STATUS_HIST?: string,
+  CD_RESPONSAVEL: number,
+  DT_COLETA: string,
+  GEOLOCALIZACAO?: string
+
+  USUARIO?: string,
 }
 
 export type Coletas = Array<Coleta>;

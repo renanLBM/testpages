@@ -17,8 +17,9 @@ export class AppUpdateService {
   }
 
   showAppUpdateAlert() {
-    const header = 'Atualização disponível';
-    const message = 'Click em OK para atualizar';
+    const header = 'Atualização disponível!';
+    const message = "Atualizar sistema.";
+
 
     this.dialogService.open(DialogDefaultBodyComponent, {
       closeOnBackdropClick: false,

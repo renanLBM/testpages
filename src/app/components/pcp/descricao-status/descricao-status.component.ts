@@ -9,11 +9,11 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { NbDialogService } from '@nebular/theme';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { Faccao, Faccoes } from 'src/app/models/faccao';
+import { OPDescricao, OPDescricoes } from 'src/app/models/opdescricao';
 import { Motivos } from 'src/app/models/motivo';
 import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
-import { AuditorService } from 'src/app/services/auditor.service';
+import { AtrasoService } from 'src/app/services/atraso.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -50,14 +50,16 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
   faccaoList: any[] = [];
   motivoList: Motivos = [];
   newMotivoList: Motivos = [];
-  faccao: Faccoes = [];
-  faccao$: BehaviorSubject<Faccoes> = new BehaviorSubject(this.faccao);
+  faccao: OPDescricoes = [];
+  faccao$: BehaviorSubject<OPDescricoes> = new BehaviorSubject(this.faccao);
+
+  dtHoje = new Date();
 
   constructor(
     private _setTitle: SetTitleServiceService,
     private _opsService: OpsService,
     private _opsFilteredService: OpsFilteredService,
-    private _auditorService: AuditorService,
+    private _atrasolService: AtrasoService,
     private _route: ActivatedRoute,
     private _location: Location,
     private _dialogService: NbDialogService,
@@ -68,8 +70,8 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     this._setTitle.setTitle('Carregando...');
     this.selectedFilters = this._opsFilteredService.getFilter();
 
-    this._auditorService.getMotivos().subscribe((m) => {
-      this.motivoList = m;
+    this._atrasolService.getMotivos().subscribe((m) => {
+      this.motivoList = JSON.parse(m.data);
 
       this.dtOptions = {
         language: LanguagePtBr.ptBr_datatable,
@@ -101,193 +103,222 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
       this._setTitle.setTitle(this.tituloStatus);
 
       // clicado em total - sem filtro por tipo
+      const dataFromSession = this._opsService.getSessionData();
       if (this.isTotal && !this.haveOrigem) {
-        this._opsService.getAllOPs().subscribe({
-          next: (list) => {
-            this.listFaccoes = this.filterOPs(list);
-            // this.listFaccoes = list;
-
-            // transforma o cod em uma lista
-            this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
-
-            this.motivoList = this.motivoList.filter((m) =>
-              this.codigoList.includes(m.cod)
-            );
-
-            // chama a funcção de somar os totais de ops e peças
-            let {
-              nomesUnicos,
-              qntOpsLocal,
-              qntOpsTotal,
-              qntPecasLocal,
-              qntPecasTotal,
-              qntOpsAtrasoLocal,
-              qntOpsAtrasoTotal,
-              pecasAtrasoLocal,
-              pecasAtrasoTotal,
-            } = this.contabilizaTotais();
-
-            let id = 0;
-            let motivos = [];
-
-            nomesUnicos.map((f: string, index: number) => {
-              id = this.faccaoList.find((x) => x.local == f)?.id_local!;
-
-              if (this.motivoList.toString() != 'error') {
-                motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
-              }
-
-              this.faccao.push(
-                ...[
-                  {
-                    id: id,
-                    name: f,
-                    qnt: qntOpsLocal[f],
-                    qnt_pecas: qntPecasLocal[f],
-                    qnt_atraso: qntOpsAtrasoLocal[f + '-Em atraso'] || 0,
-                    pecas_atraso: pecasAtrasoLocal[f + '-Em atraso'] || 0,
-                    color: '',
-                    alteracoes: motivos.length,
-                  },
-                ]
-              );
-            });
-
-            this.faccao.push({
-              id: 99999,
-              name: 'Geral',
-              qnt: qntOpsTotal,
-              qnt_pecas: qntPecasTotal,
-              qnt_atraso: qntOpsAtrasoTotal,
-              pecas_atraso: pecasAtrasoTotal,
-              color: '',
-              alteracoes: this.motivoList.length,
-            });
-
-            this.faccao
-              .sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0))
-              .map(
-                (f: Faccao, index: number) =>
-                  (f.color = this.color[index % this.color.length])
-              );
-
-            this.faccao$.next(this.faccao);
-            this.dtTrigger.next(this.dtOptions);
-          },
-          error: (err: Error) => {
-            console.error(err);
-            this._setTitle.setTitle('Erro');
-          },
-        });
-      } else {
-        this._opsService
-          .getOpByStatus(this.tituloStatus, this.origem)
-          .subscribe({
-            next: (list) => {
-              this.listFaccoes = this.filterOPs(list);
-              // this.listFaccoes = list;
-
-              // chama a funcção de somar os totais de ops e peças
-              let {
-                nomesUnicos,
-                qntOpsLocal,
-                qntOpsTotal,
-                qntPecasLocal,
-                qntPecasTotal,
-                qntOpsAtrasoLocal,
-                qntOpsAtrasoTotal,
-                pecasAtrasoLocal,
-                pecasAtrasoTotal,
-              } = this.contabilizaTotais();
-
-              this.codigoList = this.listFaccoes.flatMap((x) => x.cod);
-
-              this.motivoList = this.motivoList.filter((m) =>
-                this.codigoList.includes(m.cod)
-              );
-
-              let id = 0;
-              let motivos: Motivos = [];
-
-              nomesUnicos.map((f: string, index: number) => {
-                id = this.faccaoList.find((x) => x.local == f)?.id_local!;
-                if (this.motivoList.toString() != 'error') {
-                  if (this.isTotal) {
-                    motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
-                  } else {
-                    motivos = this.motivoList.filter(
-                      (m) =>
-                        m.CD_LOCAL == id && m.Status_Atual == this.tituloStatus
-                    );
-                  }
-                }
-                // filtra lista de motivos vazios e insere em um novo array
-                motivos.forEach((motivo) => {
-                  if (motivo) {
-                    this.newMotivoList.push(motivo);
-                  }
-                });
-
-                this.faccao.push(
-                  ...[
-                    {
-                      id: id,
-                      name: f,
-                      tipo: this.origem,
-                      qnt: qntOpsLocal[f],
-                      qnt_pecas: qntPecasLocal[f],
-                      qnt_atraso: qntOpsAtrasoLocal[f + '-Em atraso'] || 0,
-                      pecas_atraso: pecasAtrasoLocal[f + '-Em atraso'] || 0,
-                      color: '',
-                      alteracoes: motivos.length,
-                    },
-                  ]
-                );
-              });
-
-              if (this.isTotal) {
-                this.faccao.push({
-                  id: 99999,
-                  name: 'Geral',
-                  tipo: this.origem,
-                  qnt: qntOpsTotal,
-                  qnt_pecas: qntPecasTotal,
-                  qnt_atraso: qntOpsAtrasoTotal,
-                  pecas_atraso: pecasAtrasoTotal,
-                  color: '',
-                  alteracoes: this.newMotivoList.length,
-                });
-              } else {
-                this.faccao.push({
-                  id: 99999,
-                  name: 'Geral',
-                  tipo: this.origem,
-                  qnt: qntOpsTotal,
-                  qnt_pecas: qntPecasTotal,
-                  color: '',
-                  alteracoes: this.newMotivoList.filter(
-                    (m) => m.Status_Atual == this.tituloStatus
-                  ).length,
-                });
-              }
-
-              this.faccao
-                .sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0))
-                .map(
-                  (f: Faccao, index: number) =>
-                    (f.color = this.color[index % this.color.length])
-                );
-
-              this.faccao$.next(this.faccao);
-              this.dtTrigger.next(this.dtOptions);
+        if (!!dataFromSession.length) {
+          this.startDataTotal(dataFromSession);
+        } else {
+          this._opsService.getAllOPs().subscribe({
+            next: (listOPs) => {
+              this.startDataTotal(JSON.parse(listOPs.data));
             },
             error: (err: Error) => {
               console.error(err);
               this._setTitle.setTitle('Erro');
             },
           });
+        }
+      } else {
+        if (!!dataFromSession.length) {
+          let filteredOPs = dataFromSession.filter((ops) => {
+            if (this.origem) {
+              return (
+                ops.Status == this.tituloStatus && ops.DS_TIPO == this.origem
+              );
+            }
+            return ops.Status == this.tituloStatus;
+          });
+
+          this.startDataFiltered(filteredOPs);
+        } else {
+          this._opsService
+            .getOpByStatus(this.tituloStatus, this.origem)
+            .subscribe({
+              next: (listOPs) => {
+                this.startDataFiltered(JSON.parse(listOPs.data));
+              },
+              error: (err: Error) => {
+                console.error(err);
+                this._setTitle.setTitle('Erro');
+              },
+            });
+        }
       }
     });
+  }
+
+  startDataTotal(listOPs: OPs) {
+    this.listFaccoes = this.filterOPs(listOPs);
+
+    // transforma o cod em uma lista
+    this.codigoList = this.listFaccoes.flatMap((x) => x.CD_PRODUCAO);
+
+    this.motivoList = this.motivoList.filter((m) => {
+      let dataAjustada = new Date(m.DT_PREV_RETORNO_NOVA);
+      return (
+        this.codigoList.includes(m.CD_PRODUCAO) && dataAjustada >= this.dtHoje
+      );
+    });
+
+    // chama a funcção de somar os totais de ops e peças
+    let {
+      nomesUnicos,
+      qntOpsLocal,
+      qntOpsTotal,
+      qntPecasLocal,
+      qntPecasTotal,
+      qntOpsAtrasoLocal,
+      qntOpsAtrasoTotal,
+      pecasAtrasoLocal,
+      pecasAtrasoTotal,
+    } = this.contabilizaTotais();
+
+    let id = 0;
+    let motivos: string | any[] = [];
+
+    nomesUnicos.map((f: string, index: number) => {
+      id = this.faccaoList.find((x) => x.local == f)?.id_local!;
+
+      if (this.motivoList.toString() != 'error') {
+        motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
+      }
+
+      this.faccao.push(
+        ...[
+          {
+            id: id,
+            name: f,
+            qnt: qntOpsLocal[f],
+            qnt_pecas: qntPecasLocal[f],
+            qnt_atraso: qntOpsAtrasoLocal[f + '-Em atraso'] || 0,
+            pecas_atraso: pecasAtrasoLocal[f + '-Em atraso'] || 0,
+            color: '',
+            alteracoes: motivos.length,
+          },
+        ]
+      );
+    });
+
+    this.faccao.push({
+      id: 99999,
+      name: 'Geral',
+      qnt: qntOpsTotal,
+      qnt_pecas: qntPecasTotal,
+      qnt_atraso: qntOpsAtrasoTotal,
+      pecas_atraso: pecasAtrasoTotal,
+      color: '',
+      alteracoes: this.motivoList.length,
+    });
+
+    this.faccao
+      .sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0))
+      .map(
+        (f: OPDescricao, index: number) =>
+          (f.color = this.color[index % this.color.length])
+      );
+
+    this.faccao$.next(this.faccao);
+    this.dtTrigger.next(this.dtOptions);
+  }
+
+  startDataFiltered(listOPs: OPs) {
+    this.listFaccoes = this.filterOPs(listOPs);
+
+    // chama a funcção de somar os totais de ops e peças
+    let {
+      nomesUnicos,
+      qntOpsLocal,
+      qntOpsTotal,
+      qntPecasLocal,
+      qntPecasTotal,
+      qntOpsAtrasoLocal,
+      qntOpsAtrasoTotal,
+      pecasAtrasoLocal,
+      pecasAtrasoTotal,
+    } = this.contabilizaTotais();
+
+    this.codigoList = this.listFaccoes.flatMap((x) => x.CD_PRODUCAO);
+
+    this.motivoList = this.motivoList.filter((m) => {
+      let dataAjustada = new Date(m.DT_PREV_RETORNO_NOVA);
+      return (
+        this.codigoList.includes(m.CD_PRODUCAO) && dataAjustada >= this.dtHoje
+      );
+    });
+
+    let id = 0;
+    let motivos: Motivos = [];
+
+    nomesUnicos.map((f: string, index: number) => {
+      id = this.faccaoList.find((x) => x.local == f)?.id_local!;
+      if (this.motivoList.toString() != 'error') {
+        if (this.isTotal) {
+          motivos = this.motivoList.filter((m) => m.CD_LOCAL == id);
+        } else {
+          motivos = this.motivoList.filter(
+            (m) => m.CD_LOCAL == id && m.Status_Atual == this.tituloStatus
+          );
+        }
+      }
+      // filtra lista de motivos vazios e insere em um novo array
+      motivos.forEach((motivo) => {
+        if (motivo) {
+          this.newMotivoList.push(motivo);
+        }
+      });
+
+      this.faccao.push(
+        ...[
+          {
+            id: id,
+            name: f,
+            tipo: this.origem,
+            qnt: qntOpsLocal[f],
+            qnt_pecas: qntPecasLocal[f],
+            qnt_atraso: qntOpsAtrasoLocal[f + '-Em atraso'] || 0,
+            pecas_atraso: pecasAtrasoLocal[f + '-Em atraso'] || 0,
+            color: '',
+            alteracoes: motivos.length,
+          },
+        ]
+      );
+    });
+
+    if (this.isTotal) {
+      this.faccao.push({
+        id: 99999,
+        name: 'Geral',
+        tipo: this.origem,
+        qnt: qntOpsTotal,
+        qnt_pecas: qntPecasTotal,
+        qnt_atraso: qntOpsAtrasoTotal,
+        pecas_atraso: pecasAtrasoTotal,
+        color: '',
+        alteracoes: this.newMotivoList.length,
+      });
+    } else {
+      this.faccao.push({
+        id: 99999,
+        name: 'Geral',
+        tipo: this.origem,
+        qnt: qntOpsTotal,
+        qnt_pecas: qntPecasTotal,
+        color: '',
+        alteracoes: this.newMotivoList.filter(
+          (m) => m.Status_Atual == this.tituloStatus
+        ).length,
+      });
+    }
+
+    this.faccao
+      .sort((a, b) => (a.qnt < b.qnt ? 1 : b.qnt < a.qnt ? -1 : 0))
+      .map(
+        (f: OPDescricao, index: number) =>
+          (f.color = this.color[index % this.color.length])
+      );
+
+    this.faccao$.next(this.faccao);
+    this.dtTrigger.next(this.dtOptions);
   }
 
   openAtraso(id: NumberInput, name: string) {
@@ -410,17 +441,17 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
 
     if (hasOrigem && hasColecao) {
       listFilteredOPs = OPList.filter(
-        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.DS_CICLO)
+        (x) => origem.includes(x.DS_CLASS) && colecao.includes(x.NR_CICLO + '')
       );
     } else if (hasOrigem && !hasColecao) {
       listFilteredOPs = OPList.filter((x) => origem.includes(x.DS_CLASS));
     } else if (!hasOrigem && hasColecao) {
-      listFilteredOPs = OPList.filter((x) => colecao.includes(x.DS_CICLO));
+      listFilteredOPs = OPList.filter((x) => colecao.includes(x.NR_CICLO + ''));
     }
     return listFilteredOPs;
   }
 
-  trackByFaccao(_index: number, faccao: Faccao) {
+  trackByFaccao(_index: number, faccao: OPDescricao) {
     return faccao.id;
   }
 

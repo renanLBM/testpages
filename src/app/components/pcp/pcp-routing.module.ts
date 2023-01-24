@@ -2,8 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AlteracoesComponent } from './alteracoes/alteracoes.component';
 import { DescricaoStatusComponent } from './descricao-status/descricao-status.component';
-import { PcpComponent } from './list-status/pcp.component';
+import { HistPendenciaComponent } from './hist-pendencia/hist-pendencia.component';
 import { PcpDescOpsComponent } from './pcp-desc-ops/pcp-desc-ops.component';
+import { PcpComponent } from './pcp-home/pcp.component';
+import { PCPPendenciasComponent } from './pendencias/pcp-pendencias.component';
 
 const routes: Routes = [
   {
@@ -29,6 +31,14 @@ const routes: Routes = [
   {
     path: 'alteracoes',
     component: AlteracoesComponent,
+  },
+  {
+    path: 'pendencias',
+    component: PCPPendenciasComponent,
+  },
+  {
+    path: 'hist_pendencias',
+    component: HistPendenciaComponent,
   }
 ];
 

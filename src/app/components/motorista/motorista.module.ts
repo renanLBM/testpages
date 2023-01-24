@@ -1,3 +1,4 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -20,7 +21,6 @@ import { DescricaoFaccaoComponent } from './descricao-faccao/descricao-faccao.co
 import { ListFaccoesComponent } from './list-faccoes/list-faccoes.component';
 import { MotoristaRoutingModule } from './motorista-routing.module';
 
-
 @NgModule({
   declarations: [ListFaccoesComponent, DescricaoFaccaoComponent],
   imports: [
@@ -29,6 +29,7 @@ import { MotoristaRoutingModule } from './motorista-routing.module';
     MotoristaRoutingModule,
     SharedComponentsModule,
     LazyLoadImageModule,
+    ScrollingModule,
     NbButtonModule,
     NbCardModule,
     NbFormFieldModule,

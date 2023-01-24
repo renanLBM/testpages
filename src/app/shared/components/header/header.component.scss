@@ -4,9 +4,13 @@ h1 {
   margin: 0;
 }
 
+.icon-wrapper{
+  min-width: 7.5vw;
+}
+
 .icon-header {
-  margin: 0 10px;
-  font-size: 25px;
+  margin: 0 5px;
+  font-size: 2.1cqi;
   cursor: pointer;
 }
 
@@ -47,21 +51,27 @@ h1 {
   align-items: center;
 }
 
+.bt-theme {
+  padding: 0 !important;
+}
+
 .bt-exit {
+  padding: 5px !important;
   display: flex;
 }
 
 
-@media screen and (max-width: 375px) {
+@media screen and (max-width: 475px) {
   .title {
-    font-size: 16px !important;
+    font-size: 4.5cqi !important;
     line-height: 1;
   }
-}
-
-@media (min-width:376px) and (max-width: 475px) {
-  .title {
-    font-size: 22px !important;
-    line-height: 1;
+  .icon-wrapper{
+    min-width: 20vw;
+  }
+  .icon-header {
+    margin: 0 5px;
+    font-size: 6cqi;
+    cursor: pointer;
   }
 }

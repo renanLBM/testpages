@@ -1,6 +1,7 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import {
   NbAlertModule,
@@ -12,28 +13,44 @@ import {
   NbInputModule,
   NbLayoutModule,
   NbSelectModule,
-  NbSpinnerModule, NbTagModule,
-  NbTooltipModule
+  NbSpinnerModule,
+  NbTagModule,
+  NbToastrModule,
+  NbTooltipModule,
 } from '@nebular/theme';
 import {
   LazyLoadImageModule,
   LAZYLOAD_IMAGE_HOOKS,
-  ScrollHooks
+  ScrollHooks,
 } from 'ng-lazyload-image';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
+
 import { AuditorRoutingModule } from './auditor-routing.module';
 import { DescricaoFaccaoComponent } from './descricao-faccao/descricao-faccao.component';
+import { HistPendenciasComponent } from './hist-pendencias/hist-pendencias.component';
 import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
+import { MinhasPendenciasComponent } from './minhas-pendencias/minhas-pendencias.component';
+import { PendenciaComponent } from './pendencia/pendencia.component';
 
 @NgModule({
-  declarations: [ListFaccaoComponent, DescricaoFaccaoComponent],
+  declarations: [
+    ListFaccaoComponent,
+    DescricaoFaccaoComponent,
+    PendenciaComponent,
+    MinhasPendenciasComponent,
+    HistPendenciasComponent,
+  ],
   imports: [
     RouterModule,
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     AuditorRoutingModule,
     SharedComponentsModule,
+    InfiniteScrollModule,
     LazyLoadImageModule,
+    ScrollingModule,
     NbAlertModule,
     NbButtonModule,
     NbCardModule,
@@ -46,6 +63,7 @@ import { ListFaccaoComponent } from './list-faccao/list-faccao.component';
     NbSpinnerModule,
     NbTagModule,
     NbTooltipModule,
+    NbToastrModule.forRoot(),
   ],
   providers: [{ provide: LAZYLOAD_IMAGE_HOOKS, useClass: ScrollHooks }],
 })

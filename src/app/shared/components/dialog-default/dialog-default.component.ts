@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
-import { DialogDefaultBodyComponent } from '../dialog-default-body/dialog-default-body.component';
 
 @Component({
   selector: 'fc-dialog-default',
@@ -14,10 +13,6 @@ export class DialogDefaultComponent {
   @Input() buttonName: string = '';
 
   constructor(protected dialogRef: NbDialogRef<DialogDefaultComponent>) {}
-
-  cancel() {
-    this.dialogRef.close();
-  }
 
   submit() {
     this.dialogRef.close(true);
