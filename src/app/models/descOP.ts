@@ -7,9 +7,10 @@ export interface descOP {
   ciclo?: number,
   op?: number,
   ref: string,
-  previsao: string,
+  previsao: string | null,
   entrada?: string,
   semana?: number,
+  ano?: number
   descricao?: string,
   drop?: string,
   novaprevisao?: string,

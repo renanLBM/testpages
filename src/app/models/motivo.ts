@@ -23,6 +23,7 @@ export interface Motivo {
   Valida?: string,
   ajustado?: string,
 
+  DT_PREVRETORNO?: number,
   DS_APONTAMENTO_DS?: string,
   NR_REDUZIDOOP?: number,
   DT_MODIFICACAO?: string,

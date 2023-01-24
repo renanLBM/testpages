@@ -4,16 +4,8 @@
       <h6 class="filter-title">Filtros</h6>
       <div class="filtro-menu-wrapper">
         <div class="filtro-dropdown">
-          <!-- <nb-select multiple placeholder="Origem" [(ngModel)]="origemFiltrada" status="primary">
-        <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
-        <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let origem of menuOrigem" [value]="origem">{{origem}}</nb-option>
-      </nb-select> -->
         </div>
         <div class="filtro-dropdown">
-          <!-- <nb-select multiple placeholder="Coleção" [(ngModel)]="selectedColecao" status="primary">
-        <nb-option (click)="filtrosDropdown()">Limpar filtro</nb-option>
-        <nb-option style="font-size: 12px !important;" (click)="filtrosDropdown()" *ngFor="let colecao of menuColecao" [value]="colecao">{{colecao}}</nb-option>
-      </nb-select> -->
         </div>
       </div>
     </div>
@@ -21,16 +13,6 @@
       <h6 class="filter-title">Status</h6>
       <nb-card>
         <nb-card-body class="apontamento-alert-wrapper">
-          <!-- <nb-alert status="danger" (click)="filterApontamento('Não informado')">Não informado: {{
-            apontamentoList.nao_informado | percent:'1.1-2' }}</nb-alert>
-          <nb-alert status="primary" (click)="filterApontamento('Em fila')">Em fila: {{ apontamentoList.em_fila |
-            percent:'1.1-2' }}</nb-alert>
-          <nb-alert status="info" (click)="filterApontamento('Em produção')">Em produção: {{ apontamentoList.em_producao
-            | percent:'1.1-2' }}</nb-alert>
-          <nb-alert status="warning" (click)="filterApontamento('Parado')">Parado: {{ apontamentoList.parado |
-            percent:'1.1-2' }}</nb-alert>
-          <nb-alert status="success" (click)="filterApontamento('Disponível para coleta')">Coleta: {{
-            apontamentoList.disponivel | percent:'1.1-2' }}</nb-alert> -->
         </nb-card-body>
       </nb-card>
     </div>
@@ -38,49 +20,36 @@
       <h6 class="filter-title">Apontamentos</h6>
       <nb-card>
         <nb-card-body class="apontamento-alert-wrapper">
-          <!-- <nb-alert status="danger" (click)="filterApontamento('Não informado')">Não informado: {{
-            apontamentoList.nao_informado | percent:'1.1-2' }}</nb-alert>
-          <nb-alert status="primary" (click)="filterApontamento('Em fila')">Em fila: {{ apontamentoList.em_fila |
-            percent:'1.1-2' }}</nb-alert>
-          <nb-alert status="info" (click)="filterApontamento('Em produção')">Em produção: {{ apontamentoList.em_producao
-            | percent:'1.1-2' }}</nb-alert>
-          <nb-alert status="warning" (click)="filterApontamento('Parado')">Parado: {{ apontamentoList.parado |
-            percent:'1.1-2' }}</nb-alert>
-          <nb-alert status="success" (click)="filterApontamento('Disponível para coleta')">Coleta: {{
-            apontamentoList.disponivel | percent:'1.1-2' }}</nb-alert> -->
         </nb-card-body>
       </nb-card>
     </div>
 
     <div class="table-wrapper">
-          <!-- <label class="search-label" for="search">Search:</label> -->
-    <!-- <input nbInput [nbFilterInput]="dataSource" id="search" class="search-input"> -->
 
-    <table [nbTreeGrid]="dataSource" [nbSort]="dataSource" (sort)="updateSort($event)">
+      <table [nbTreeGrid]="dataSource" [nbSort]="dataSource" (sort)="updateSort($event)">
 
-      <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
-      <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns"></tr>
+        <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
+        <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns"></tr>
 
-      <ng-container [nbTreeGridColumnDef]="customColumn">
-        <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(customColumn)" *nbTreeGridHeaderCellDef>
-          {{customColumn}}
-        </th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row">
-          <nb-fs-icon [percentual]="row.data.percentual" [expanded]="row.expanded"></nb-fs-icon>
-          {{row.data[customColumn]}}
-        </td>
-      </ng-container>
+        <ng-container [nbTreeGridColumnDef]="customColumn">
+          <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(customColumn)" *nbTreeGridHeaderCellDef>
+            {{customColumn}}
+          </th>
+          <td nbTreeGridCell *nbTreeGridCellDef="let row">
+            <nb-fs-icon [percentual]="row.data.percentual" [expanded]="row.expanded"></nb-fs-icon>
+            {{row.data[customColumn]}}
+          </td>
+        </ng-container>
 
-      <ng-container *ngFor="let column of defaultColumns; let index = index"
-                    [nbTreeGridColumnDef]="column"
-                    [showOn]="getShowOn(index)">
-        <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(column)" *nbTreeGridHeaderCellDef>
-          {{column}}
-        </th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row">{{row.data[column] || '-'}}</td>
-      </ng-container>
+        <ng-container *ngFor="let column of defaultColumns; let index = index" [nbTreeGridColumnDef]="column"
+          [showOn]="getShowOn(index)">
+          <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(column)" *nbTreeGridHeaderCellDef>
+            {{column}}
+          </th>
+          <td nbTreeGridCell *nbTreeGridCellDef="let row">{{row.data[column] || '-'}}</td>
+        </ng-container>
 
-    </table>
+      </table>
     </div>
 
   </nb-layout-column>

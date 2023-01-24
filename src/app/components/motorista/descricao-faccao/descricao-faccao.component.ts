@@ -1,8 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
@@ -13,7 +10,7 @@ import { OP } from 'src/app/models/ops';
 import { ApontamentoService } from 'src/app/services/apontamento.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { MotoristaService } from 'src/app/services/motorista.service';
-import { OpsService } from 'src/app/services/ops.service';
+import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { UserService } from 'src/app/services/user.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
@@ -24,6 +21,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoFaccaoComponent implements OnInit {
+  datePipe = new DatePipe('pt-Br');
   loading: boolean = false;
   loadingError: boolean = false;
   filtroAtivo: boolean = false;
@@ -52,6 +50,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     private _aponamentoSerice: ApontamentoService,
     private _motoristaService: MotoristaService,
     private _userService: UserService,
+    private _opsFilteredService: OpsFilteredService,
     public _loadingService: LoadingService
   ) {}
 
@@ -60,6 +59,10 @@ export class DescricaoFaccaoComponent implements OnInit {
     let id = this._route.snapshot.paramMap.get('id')!;
     this.user = this._userService.getSession().nome!;
     this.cd_user = this._userService.getSession().CD_USUARIO!;
+
+    // pega o filtro setado na página anterior (escolha da facção)
+    let filtroApontamento: string =
+      this._opsFilteredService.getFilter().apontamentoFilter;
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -79,10 +82,17 @@ export class DescricaoFaccaoComponent implements OnInit {
     this._motoristaService.listDisponivel().subscribe({
       next: (coletados) => {
         let listDisponivel = JSON.parse(coletados.data);
-        console.log(listDisponivel);
-        listDisponivel = listDisponivel.filter(
-          (x: { CD_LOCAL: number }) => x.CD_LOCAL == +id
-        );
+        if ([undefined, "Todos", ""].includes(filtroApontamento)) {
+          listDisponivel = listDisponivel.filter(
+            (x: { CD_LOCAL: number; DS_APONTAMENTO_DS: string }) =>
+              x.CD_LOCAL == +id
+          );
+        } else {
+          listDisponivel = listDisponivel.filter(
+            (x: { CD_LOCAL: number; DS_APONTAMENTO_DS: string }) =>
+              x.CD_LOCAL == +id && x.DS_APONTAMENTO_DS == filtroApontamento
+          );
+        }
 
         listDisponivel.sort(
           (a: { DT_PREVRETORNO: string }, b: { DT_PREVRETORNO: string }) => {
@@ -92,7 +102,6 @@ export class DescricaoFaccaoComponent implements OnInit {
 
         let foiColetado: boolean = false;
 
-        console.log(listDisponivel);
         listDisponivel.map((op: OP) => {
           foiColetado = op.DS_APONTAMENTO_DS == 'Coletado';
 
@@ -104,8 +113,9 @@ export class DescricaoFaccaoComponent implements OnInit {
             ciclo: +op.NR_CICLO,
             op: +op.NR_OP,
             ref: op.CD_REFERENCIA,
+            // previsao: this.datePipe.transform(new Date(+op.DT_PREVRETORNO + ), 'dd/MM/yyyy'),
             previsao: new Date(+op.DT_PREVRETORNO)
-              .toLocaleString('pt-Br')
+              .toLocaleString('pt-Br', { timeZone: 'UTC' })
               .substring(0, 10),
             Situacao: op.DS_APONTAMENTO_DS,
             checked: foiColetado,
@@ -134,7 +144,6 @@ export class DescricaoFaccaoComponent implements OnInit {
             }
           });
         });
-        console.log(this.descOP);
 
         let title = this.descOP[0].local
           .replace('COSTURA', '')

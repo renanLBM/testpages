@@ -3,27 +3,25 @@ import {
   AfterContentInit,
   ChangeDetectorRef,
   Component,
-  OnInit,
+  OnInit
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  NbGlobalPhysicalPosition,
-  NbDialogService,
-  NbToastrService,
+  NbDialogService, NbGlobalPhysicalPosition, NbToastrService
 } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
+import { Pages } from 'src/app/models/enums/enumPages';
 import { MateriaPrimaList, MateriasPrimas } from 'src/app/models/materiaPrima';
+import { OP } from 'src/app/models/ops';
 import { Pendencias } from 'src/app/models/pendencia';
 import { OpsService } from 'src/app/services/ops.service';
 import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
+import { DialogDefaultBodyComponent } from 'src/app/shared/components/dialog-default-body/dialog-default-body.component';
+import { DataTableConstants } from 'src/app/shared/datatable-constants';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 import { environment } from 'src/environments/environment';
-import { DialogDefaultBodyComponent } from 'src/app/shared/components/dialog-default-body/dialog-default-body.component';
-import { Pages } from 'src/app/models/enums/enumPages';
-import { OP } from 'src/app/models/ops';
 
-const usuarios_pendencias = environment.usuarios_pendencias;
 interface MPList {
   id?: string;
   qnt?: number;
@@ -37,6 +35,8 @@ interface MPList {
 export class PendenciaComponent implements OnInit, AfterContentInit {
   positions = NbGlobalPhysicalPosition;
   regSanitizer = /<(?:[^>=]|='[^']*'|=\"[^\"]*\"|=[^'\"][^\\s>]*)*>|(%3c)|%3e/g;
+
+  usuarios_pendencias = DataTableConstants.usuariosPendencias;
 
   loading = new BehaviorSubject<boolean>(true);
   loadingError = false;
@@ -84,9 +84,8 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     this._userService.getUser().subscribe((user) => {
       this.loggedUser = user.nome!;
       let logginUser = user.login!;
-      console.log(logginUser);
       if (Pages[userNivel] != 'auditor') {
-        if (!usuarios_pendencias.includes(logginUser)) {
+        if (!this.usuarios_pendencias.includes(logginUser)) {
           this._router.navigate(['login']);
         }
       }
@@ -204,11 +203,9 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
         qntSelecionado = 0;
 
         let getCorte = document.getElementById(tmpCD_MP + '_corte') as HTMLInputElement;
-        console.log(getCorte);
 
         let descricaoCorte = '';
         if(!!getCorte){
-          console.log(getCorte.value);
           descricaoCorte = (
             document.getElementById(tmpCD_MP + '_corte') as HTMLInputElement
           ).value;

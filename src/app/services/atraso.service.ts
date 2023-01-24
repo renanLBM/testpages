@@ -27,7 +27,7 @@ export class AtrasoService {
     const headers = this.getToken();
     if (!id) {
       return this._httpClient
-        .get<any>(`${API}/api/atraso/all`, {
+        .get<any>(`${API}/api/faccaocontrol/atraso/all`, {
           headers,
         })
         .pipe(
@@ -38,7 +38,7 @@ export class AtrasoService {
         );
     } else {
       return this._httpClient
-        .get<any>(`${API}/api/atraso/local/${id}`, {
+        .get<any>(`${API}/api/faccaocontrol/atraso/local/${id}`, {
           headers,
         })
         .pipe(
@@ -54,7 +54,7 @@ export class AtrasoService {
     const headers = this.getToken();
     const body = JSON.stringify(motivo);
     return this._httpClient
-      .post<any>(`${API}/api/add/atraso`, body, { headers })
+      .post<any>(`${API}/api/faccaocontrol/atraso/add`, body, { headers })
       .pipe(
         map((res) => {
           let x = res['data'];

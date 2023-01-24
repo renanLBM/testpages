@@ -25,13 +25,13 @@ export interface OP {
   DS_APONTAMENTO_DS?: string
   qnt?: number,
   pecas?: number,
-  dt_ajustada?: Date,
+  dt_ajustada?: string | null,
 
   cod?: string,
   semana?: string,
   dias_faccao?: number,
   motivo_atraso?: string,
-  nova_previsao?: string,
+  nova_previsao?: string | null,
   Situacao?: string,
   css_class?: string,
 }

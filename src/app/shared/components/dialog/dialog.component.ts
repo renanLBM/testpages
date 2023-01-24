@@ -4,7 +4,10 @@ import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { Apontamento } from 'src/app/models/apontamento';
 import { descOP } from 'src/app/models/descOP';
-import { ApontamentoList } from 'src/app/models/enums/enumApontamentos';
+import {
+  ApontamentoList,
+  ApontamentoListParado,
+} from 'src/app/models/enums/enumApontamentos';
 import {
   MotivoAtraso,
   MotivoAtrasoCD,
@@ -75,7 +78,7 @@ export class DialogComponent implements OnInit {
     dateInput?.blur();
     dateInput?.setAttribute('readonly', 'readonly'); // Force mobile keyboard to hide on input field.
 
-    let prev_ajuste = this.prevOP.previsao.split('/').reverse();
+    let prev_ajuste = this.prevOP.previsao!.split('/').reverse();
     if (this.tipo != 'Adiantamento') {
       prev_ajuste[2] = +prev_ajuste[2] + 1 + '';
       let min_prev = new Date(prev_ajuste.join('-'));
@@ -132,7 +135,7 @@ export class DialogComponent implements OnInit {
     this.novoMotivo = {
       NR_REDUZIDOOP: this.prevOP.NR_REDUZIDOOP!,
       CD_LOCAL: this.prevOP.cd_local,
-      DT_PREV_RETORNO: this.prevOP.previsao,
+      DT_PREV_RETORNO: this.prevOP.previsao!,
       DT_PREV_RETORNO_NOVA: '',
       QT_OP: this.prevOP.qnt!,
       Status: this.prevOP.status!,
@@ -156,7 +159,7 @@ export class DialogComponent implements OnInit {
           removed: this.removed,
         });
       },
-      error: (err: { code: any; message: any; }) => {
+      error: (err: { code: any; message: any }) => {
         alert(`ERROR(${err.code}) ${err.message}`);
       },
     });
@@ -213,10 +216,11 @@ export class DialogComponent implements OnInit {
       data_ajustada![0].split('/').reverse().join('-') +
       ' ' +
       data_ajustada![1];
-    let prev_retorno_ajustado =
-      this.prevOP.previsao.split('/').reverse().join('-');
-    novaDataForm =
-      novaDataForm.split('/').reverse().join('-');
+    let prev_retorno_ajustado = this.prevOP
+      .previsao!.split('/')
+      .reverse()
+      .join('-');
+    novaDataForm = novaDataForm.split('/').reverse().join('-');
 
     this.novoMotivo = {
       CD_ATRASO: !!this.prevOP.CD_ATRASO ? this.prevOP.CD_ATRASO : 0,
@@ -245,7 +249,7 @@ export class DialogComponent implements OnInit {
             removed: this.removed,
           });
         },
-        error: (err: { code: any; message: any; }) => {
+        error: (err: { code: any; message: any }) => {
           alert(`ERROR(${err.code}) ${err.message}`);
           this.err = true;
           this.loading = false;
@@ -261,7 +265,7 @@ export class DialogComponent implements OnInit {
             removed: this.removed,
           });
         },
-        error: (err: { code: any; message: any; }) => {
+        error: (err: { code: any; message: any }) => {
           alert(`ERROR(${err.code}) ${err.message}`);
           this.err = true;
           this.loading = false;
@@ -304,14 +308,17 @@ export class DialogComponent implements OnInit {
       QT_OP: this.prevOP.qnt!,
       Status: this.prevOP.status!,
       CD_APONTAMENTO_DS:
-        ApontamentoList[novoApontamentoForm as keyof typeof ApontamentoList] +
-        1,
+        ApontamentoListParado[
+          novoApontamentoForm as keyof typeof ApontamentoListParado
+        ] + 1,
       DS_APONTAMENTO_DS: novoApontamentoForm,
       CD_USUARIO: this.cd_user,
       USUARIO: this.user,
       DT_MODIFICACAO: dt_modificacao,
       GEOLOCALIZACAO: this.latitude + ', ' + this.longitude,
     };
+
+    console.log(this.novoApontamento);
 
     if (novoApontamentoForm.match('Parado') && this.selectedParado < 0) {
       this.err = true;
@@ -327,7 +334,7 @@ export class DialogComponent implements OnInit {
             DS_APONTAMENTO_DS: this.novoApontamento.DS_APONTAMENTO_DS,
           });
         },
-        error: (err: { code: any; message: any; }) => {
+        error: (err: { code: any; message: any }) => {
           alert(`ERROR(${err.code}) ${err.message}`);
           this.err = true;
           this.loading = false;

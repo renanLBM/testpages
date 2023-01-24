@@ -49,7 +49,7 @@ export class HistPendenciasComponent implements OnInit {
 
     let usuario = 0;
     this._userService.getUser().subscribe((_) => (usuario = _.CD_USUARIO!));
-    this._pendenciaService.listPendencia(usuario,0).subscribe({
+    this._pendenciaService.listPendencia(usuario, 0).subscribe({
       next: (pendencias) => {
         this.minhasPendencias = JSON.parse(pendencias.data);
         this.minhasPendencias = this.minhasPendencias.filter(
@@ -58,7 +58,11 @@ export class HistPendenciasComponent implements OnInit {
         );
 
         this.minhasPendencias.forEach((pendencia) => {
-          pendencia.DT_SOLICITACAO = new Date(pendencia.DT_SOLICITACAO).toLocaleString('pt-Br');
+          let dataAjustada = new Date(pendencia.DT_SOLICITACAO);
+          pendencia.DT_SOLICITACAO = new Date(dataAjustada).toLocaleString(
+            'pt-Br',
+            { timeZone: 'UTC' }
+          );
           pendencia.cod =
             pendencia.NR_CICLO +
             '-' +

@@ -32,7 +32,7 @@ export class OpsService {
   getAllOPs(): Observable<any> {
     const headers = this.getToken();
     return this._httpClient
-      .get<any>(`${API}/api/op/all`, {
+      .get<any>(`${API}/api/faccaocontrol/op/all`, {
         headers,
       })
       .pipe(
@@ -53,7 +53,7 @@ export class OpsService {
     let regiao = loggedUser.regiao;
     if (regiao == '99999') {
       return this._httpClient
-        .get<any>(`${API}/api/op/all`, {
+        .get<any>(`${API}/api/faccaocontrol/op/all`, {
           headers,
         })
         .pipe(
@@ -68,7 +68,7 @@ export class OpsService {
         );
     } else {
       return this._httpClient
-        .get<any>(`${API}/api/op/regiao/${regiao}`, {
+        .get<any>(`${API}/api/faccaocontrol/op/regiao/${regiao}`, {
           headers,
         })
         .pipe(
@@ -88,7 +88,7 @@ export class OpsService {
     const headers = this.getToken();
 
     return this._httpClient
-      .get<OPs>(`${API}/api/op/resumido/all`, {
+      .get<OPs>(`${API}/api/faccaocontrol/op/resumido/all`, {
         headers,
       })
       .pipe(
@@ -107,7 +107,7 @@ export class OpsService {
     const headers = this.getToken();
     if (!!local) {
       return this._httpClient
-        .get<any>(`${API}/api/op/id/${cod + '-' + local}`, {
+        .get<any>(`${API}/api/faccaocontrol/op/id/${cod + '-' + local}`, {
           headers,
         })
         .pipe(
@@ -118,7 +118,7 @@ export class OpsService {
         );
     } else {
       return this._httpClient
-        .get<any>(`${API}/api/op/id/${cod}`, {
+        .get<any>(`${API}/api/faccaocontrol/op/id/${cod}`, {
           headers,
         })
         .pipe(
@@ -132,7 +132,7 @@ export class OpsService {
   getOpByLocal(local: string): Observable<any> {
     const headers = this.getToken();
     return this._httpClient
-      .get<any>(`${API}/api/op/local/${local}`, {
+      .get<any>(`${API}/api/faccaocontrol/op/local/${local}`, {
         headers,
       })
       .pipe(
@@ -147,7 +147,7 @@ export class OpsService {
     const headers = this.getToken();
     if (!origem) {
       return this._httpClient
-        .get<any>(`${API}/api/op/status/${status}`, {
+        .get<any>(`${API}/api/faccaocontrol/op/status/${status}`, {
           headers,
         })
         .pipe(
@@ -158,7 +158,7 @@ export class OpsService {
         );
     } else {
       return this._httpClient
-        .get<any>(`${API}/api/op/status/${status}/${origem}`, {
+        .get<any>(`${API}/api/faccaocontrol/op/status/${status}/${origem}`, {
           headers,
         })
         .pipe(
@@ -174,7 +174,7 @@ export class OpsService {
     const headers = this.getToken();
     if (!!local) {
       return this._httpClient
-        .get<any>(`${API}/api/local/${local}`, {
+        .get<any>(`${API}/api/faccaocontrol/local/${local}`, {
           headers,
         })
         .pipe(
@@ -185,7 +185,7 @@ export class OpsService {
         );
     } else {
       return this._httpClient
-        .get<any>(`${API}/api/local/all`, {
+        .get<any>(`${API}/api/faccaocontrol/local/all`, {
           headers,
         })
         .pipe(

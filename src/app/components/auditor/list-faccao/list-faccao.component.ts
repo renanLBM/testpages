@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Pages } from 'src/app/models/enums/enumPages';
-import { OPDescricao, OPDescricoes } from 'src/app/models/opdescricao';
+import { OPDescricoes } from 'src/app/models/opdescricao';
 import { OPs } from 'src/app/models/ops';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -60,62 +60,33 @@ export class ListFaccaoComponent implements OnInit {
 
     this._setTitle.setTitle('Carregando...');
 
-    const dataFromSession = this._opsService.getSessionData();
+    this._opsService.getOPsRegiao().subscribe({
+      next: (list) => {
+        this.AllOpsList = JSON.parse(list.data);
+        this.setfaccaolist(this.AllOpsList);
 
-    if (!!dataFromSession.length) {
-      this.AllOpsList = dataFromSession;
-      this.setfaccaolist(this.AllOpsList);
+        this.faccaoList.forEach((x) => {
+          this.menuColecao.push(x.ciclo + '-' + x.colecao!);
+          x['name'] = x['name'].replace('EXT. ', '');
+        });
 
-      this.faccaoList.forEach((x) => {
-        this.menuColecao.push(x.ciclo + '-' + x.colecao!);
         this.menuColecao = [...new Set(this.menuColecao)];
-        x['name'] = x['name'].replace('EXT. ', '');
-      });
+        this.menuColecao.sort((a, b) =>
+          +a.split('-')[0] > +b.split('-')[0] ? 1 :
+          +b.split('-')[0] > +a.split('-')[0] ? -1 : 0
+        );
 
-      this.menuColecao.sort((a, b) =>
-        +a.split('-')[0] > +b.split('-')[0]
-          ? 1
-          : +b.split('-')[0] > +a.split('-')[0]
-          ? -1
-          : 0
-      );
-
-      this.faccaoList$.next(this.faccaoList);
-      this._setTitle.setTitle(titulo);
-      this.loading.next(false);
-      this.emptyList.next(!this.faccaoList.length);
-    } else {
-      this._opsService.getOPsRegiao().subscribe({
-        next: (list) => {
-          this.AllOpsList = JSON.parse(list.data);
-          this.setfaccaolist(this.AllOpsList);
-
-          this.faccaoList.forEach((x) => {
-            this.menuColecao.push(x.ciclo + '-' + x.colecao!);
-            this.menuColecao = [...new Set(this.menuColecao)];
-            x['name'] = x['name'].replace('EXT. ', '');
-          });
-
-          this.menuColecao.sort((a, b) =>
-            +a.split('-')[0] > +b.split('-')[0]
-              ? 1
-              : +b.split('-')[0] > +a.split('-')[0]
-              ? -1
-              : 0
-          );
-
-          this.faccaoList$.next(this.faccaoList);
-          this._setTitle.setTitle(titulo);
-          this.loading.next(false);
-          this.emptyList.next(!this.faccaoList.length);
-        },
-        error: (err: Error) => {
-          console.error(err);
-          this.loading.next(false);
-          this.emptyList.next(!this.faccaoList.length);
-        },
-      });
-    }
+        this.faccaoList$.next(this.faccaoList);
+        this._setTitle.setTitle(titulo);
+        this.loading.next(false);
+        this.emptyList.next(!this.faccaoList.length);
+      },
+      error: (err: Error) => {
+        console.error(err);
+        this.loading.next(false);
+        this.emptyList.next(!this.faccaoList.length);
+      },
+    });
   }
 
   setfaccaolist(listaFaccoes: OPs) {

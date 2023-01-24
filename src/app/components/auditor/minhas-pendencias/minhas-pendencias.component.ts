@@ -63,9 +63,10 @@ export class MinhasPendenciasComponent implements OnInit {
               ' - ' +
               pendencia.CORTE
             : pendencia.CD_PRODUTO_MP + ' - ' + pendencia.DS_PRODUTO_MP;
+          let dataAjustada = new Date(pendencia.DT_SOLICITACAO);
           pendencia.DT_SOLICITACAO = new Date(
-            pendencia.DT_SOLICITACAO
-          ).toLocaleString('pt-Br');
+            dataAjustada
+          ).toLocaleString('pt-Br', { timeZone: 'UTC' });
           pendencia.cod =
             pendencia.NR_CICLO +
             '-' +
@@ -178,6 +179,8 @@ export class MinhasPendenciasComponent implements OnInit {
     this.loadingSend.next(false);
     this.loading.next(true);
     pendencia.MODIFICADO_POR = this._userService.getSession().nome;
+    let usuarioSolicitante = pendencia.CD_USUARIO;
+    pendencia.CD_USUARIO = this._userService.getSession().CD_USUARIO || 0;
     pendencia.DT_MODIFICACAO = new Date(Date.now()).toLocaleString('pt-Br');
 
     pendencia.CD_NovoStatus = 4;
@@ -218,6 +221,7 @@ export class MinhasPendenciasComponent implements OnInit {
             this.minhasPendenciasLocal.splice(idxLocalRemoved, 1);
           }
 
+          pendencia.CD_USUARIO = usuarioSolicitante;
           this.minhasPendenciasLocal$.next(this.minhasPendenciasLocal);
           this.isEmptyList.next(!this.minhasPendenciasLocal.length);
           this.loadingSend.next(true);
