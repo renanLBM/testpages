@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { NbDialogRef,
-  NbToastrService } from '@nebular/theme';
+import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
 import { MotivoPendencia } from 'src/app/models/enums/enumMotivoPendencia';
 import { Pendencias } from 'src/app/models/pendencia';
@@ -16,6 +15,7 @@ export class DialogDefaultBodyComponent {
   @Input() bodyText: string = '';
   @Input() buttonName: string = '';
   @Input() solicitacao: Pendencias = [];
+  @Input() tipo: number = 0;
 
   selectedMotivo!: number;
   motivoList: string[] = [];
@@ -30,7 +30,7 @@ export class DialogDefaultBodyComponent {
       (value) => typeof value === 'string'
     );
     for (let [i, item] of situacaoEnum.entries()) {
-      this.motivoList.push((item) as string);
+      this.motivoList.push(item as string);
     }
   }
 
@@ -40,35 +40,38 @@ export class DialogDefaultBodyComponent {
 
   submit() {
     this.loading.next(true);
-    if (this.title == 'Motivo da Pendência') {
-      let motivo = MotivoPendencia[this.selectedMotivo];
-      if(!motivo){
-        this.toastrService.warning(
-          'Preencha o motivo!',
-          'Atenção!',
-          {
+    switch (this.tipo) {
+      case 0:
+        this.loading.next(false);
+        this.dialogRef.close(true);
+        break;
+      case 1:
+        let motivo = MotivoPendencia[this.selectedMotivo];
+        if (!motivo) {
+          this.toastrService.warning('Preencha o motivo!', 'Atenção!', {
             preventDuplicates: true,
-          }
-        );
-        return;
-      }
-      this.solicitacao.forEach((_) => {
-        _.DS_MOTIVO_PENDENCIA = motivo;
-        _.CD_MOTIVO = this.selectedMotivo+1;
-      });
-      this._pendenciaService.setPendencia(this.solicitacao).subscribe({
-        next: (res) => {
-          this.loading.next(false);
-          return this.dialogRef.close(true);
-        },
-        error: (err) => {
-          this.loading.next(false);
-          return this.dialogRef.close(false);
-        },
-      });
-    }else{
-      this.loading.next(false);
-      this.dialogRef.close(true);
+          });
+          return;
+        }
+        this.solicitacao.forEach((_) => {
+          _.DS_MOTIVO_PENDENCIA = motivo;
+          _.CD_MOTIVO = this.selectedMotivo + 1;
+        });
+        this._pendenciaService.setPendencia(this.solicitacao).subscribe({
+          next: (res) => {
+            this.loading.next(false);
+            return this.dialogRef.close(res);
+          },
+          error: (err) => {
+            this.loading.next(false);
+            return this.dialogRef.close(err);
+          },
+        });
+        break;
+      case 2:
+        this.loading.next(false);
+        this.dialogRef.close(true);
+        break;
     }
   }
 }

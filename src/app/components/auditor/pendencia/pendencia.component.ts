@@ -3,11 +3,13 @@ import {
   AfterContentInit,
   ChangeDetectorRef,
   Component,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  NbDialogService, NbGlobalPhysicalPosition, NbToastrService
+  NbDialogService,
+  NbGlobalPhysicalPosition,
+  NbToastrService,
 } from '@nebular/theme';
 import { BehaviorSubject } from 'rxjs';
 import { Pages } from 'src/app/models/enums/enumPages';
@@ -154,10 +156,19 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
       let cod =
         materiaPrima.CD_MATERIAL.toString() + '-' + materiaPrima.DS_MATERIAL;
       let inputSelecionado = document.getElementById(cod) as HTMLInputElement;
-      let inputSelecionadoValor =
-        parseInt(inputSelecionado.value) > this.opsData.QT_OP
-          ? this.opsData.QT_OP
-          : parseInt(inputSelecionado.value);
+      let inputSelecionadoValor = parseInt(inputSelecionado.value);
+
+      if (inputSelecionadoValor > this.opsData.QT_OP) {
+        this.toastrService.warning(
+          'A quantidade não pode ser maior que a OP',
+          'Atenção!!!',
+          {
+            preventDuplicates: true,
+          }
+        );
+        this.loading.next(false);
+        throw 'Erro quantidade!';
+      }
 
       if (!!inputSelecionadoValor) {
         this.inputList.push({
@@ -202,10 +213,12 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
         tamanhoSelecionado = '';
         qntSelecionado = 0;
 
-        let getCorte = document.getElementById(tmpCD_MP + '_corte') as HTMLInputElement;
+        let getCorte = document.getElementById(
+          tmpCD_MP + '_corte'
+        ) as HTMLInputElement;
 
         let descricaoCorte = '';
-        if(!!getCorte){
+        if (!!getCorte) {
           descricaoCorte = (
             document.getElementById(tmpCD_MP + '_corte') as HTMLInputElement
           ).value;
@@ -256,32 +269,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
       });
     });
 
-    if (this.solicitacao.length > 0) {
-      // abrir modal com o motivo da solicitação
-      this.NbDdialogService.open(DialogDefaultBodyComponent, {
-        context: {
-          title: 'Motivo da Pendência',
-          bodyText: '',
-          buttonName: 'Enviar',
-          solicitacao: this.solicitacao,
-        },
-      }).onClose.subscribe((x) => {
-        if (x) {
-          this.toastrService.success('Item enviado com sucesso!', 'Sucesso!', {
-            preventDuplicates: true,
-          });
-          this.limparForm(true);
-          return;
-        }
-        this.toastrService.warning(
-          'Erro ao enviar solicitação!',
-          'Atenção!!!',
-          {
-            preventDuplicates: true,
-          }
-        );
-      });
-    } else {
+    if (this.solicitacao.length < 1) {
       this.toastrService.warning(
         'Alguns itens estão incorretos!',
         'Atenção!!!',
@@ -289,7 +277,38 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
           preventDuplicates: true,
         }
       );
+      return;
     }
+    // abrir modal com o motivo da solicitação
+    this.NbDdialogService.open(DialogDefaultBodyComponent, {
+      context: {
+        title: 'Motivo da Pendência',
+        bodyText: '',
+        buttonName: 'Enviar',
+        solicitacao: this.solicitacao,
+        tipo: 1
+      },
+    }).onClose.subscribe((x) => {
+      this.NbDdialogService.open(DialogDefaultBodyComponent, {
+        context: {
+          title: 'Itens Enviados',
+          bodyText: x.map((_: string) => '<p>' + _ + '</p>').toLocaleString().replace(',','<hr>'),
+          buttonName: 'Ok',
+          tipo: 2
+        },
+      });
+      if (x) {
+        this.toastrService.success('Item enviado com sucesso!', 'Sucesso!', {
+          preventDuplicates: true,
+        });
+        this.limparForm(true);
+        return;
+      }
+      this.toastrService.warning('Erro ao enviar solicitação!', 'Atenção!!!', {
+        preventDuplicates: true,
+      });
+    });
+
     this.loading.next(false);
   }
 

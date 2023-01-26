@@ -43,7 +43,7 @@ export class PendenciasService {
     });
   }
 
-  setPendencia(pendencias: Pendencias): Observable<number>{
+  setPendencia(pendencias: Pendencias): Observable<string[]>{
     const headers = this.getToken();
 
     const body = JSON.stringify(pendencias);
@@ -55,9 +55,9 @@ export class PendenciasService {
         map((res) => {
           let x = res['data'];
           if (x == 'OK') {
-            return 1;
+            return x;
           }
-          return 0;
+          return x;
         })
       );
   }

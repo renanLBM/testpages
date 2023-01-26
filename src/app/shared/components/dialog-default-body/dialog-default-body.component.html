@@ -1,7 +1,10 @@
 <nb-card class="dialog-card">
   <nb-card-header>{{ title }}</nb-card-header>
   <nb-card-body>
-    {{ bodyText}}
+    <div *ngIf="tipo == 2; else mainText" [innerHTML]="bodyText"></div>
+    <ng-template #mainText>
+      {{ bodyText}}
+    </ng-template>
     <ng-container *ngIf="title == 'Motivo da Pendência'">
       <nb-select placeholder="Selecionar Motivo" [(ngModel)]="selectedMotivo">
         <nb-option *ngFor="let item of motivoList; let id = index" [value]="id">{{item}}</nb-option>
