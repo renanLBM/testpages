@@ -286,27 +286,40 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
         bodyText: '',
         buttonName: 'Enviar',
         solicitacao: this.solicitacao,
-        tipo: 1
+        tipo: 1,
       },
-    }).onClose.subscribe((x) => {
-      this.NbDdialogService.open(DialogDefaultBodyComponent, {
-        context: {
-          title: 'Itens Enviados',
-          bodyText: x.map((_: string) => '<p>' + _ + '</p>').toLocaleString().replace(',','<hr>'),
-          buttonName: 'Ok',
-          tipo: 2
-        },
-      });
-      if (x) {
+    }).onClose.subscribe({
+      next: (x) => {
+        if (!x) {
+          this.toastrService.warning(
+            'Erro ao enviar solicitação!',
+            'Atenção!!!',
+            {
+              preventDuplicates: true,
+            }
+          );
+          return;
+        }
+        this.NbDdialogService.open(DialogDefaultBodyComponent, {
+          context: {
+            title: 'Itens Enviados',
+            bodyText: x
+              .map((_: string) => '<p>' + _ + '</p>')
+              .toLocaleString()
+              .replace(',', '<hr>'),
+            buttonName: 'Ok',
+            tipo: 2,
+          },
+        });
         this.toastrService.success('Item enviado com sucesso!', 'Sucesso!', {
           preventDuplicates: true,
         });
         this.limparForm(true);
         return;
-      }
-      this.toastrService.warning('Erro ao enviar solicitação!', 'Atenção!!!', {
-        preventDuplicates: true,
-      });
+      },
+      error: (err) => {
+        console.error('Erro ao enviar');
+      },
     });
 
     this.loading.next(false);
