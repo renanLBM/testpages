@@ -4,7 +4,7 @@ export enum ApontamentoList {
   'Em fila',
   'Em produção',
   'Parado',
-  'Em inspeção',
+  'Em auditoria',
   'Disponível para coleta',
   'Coletado',
   'Não industrializado'
@@ -16,7 +16,7 @@ export enum ApontamentoListParado {
   'Em fila',
   'Em produção',
   'Parado',
-  'Em inspeção',
+  'Em auditoria',
   'Disponível para coleta',
   'Coletado',
   'Não industrializado',
