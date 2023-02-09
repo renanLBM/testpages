@@ -2,14 +2,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnInit,
+  OnInit
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   NbDialogService,
   NbMenuService,
   NbWindowControlButtonsConfig,
-  NbWindowService,
+  NbWindowService
 } from '@nebular/theme';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -30,6 +30,8 @@ import { DialogComponent } from 'src/app/shared/components/dialog/dialog.compone
 import { DataTableConstants } from 'src/app/shared/datatable-constants';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
+const MILISEG_EM_UM_DIA = 24 * 3600 * 1000
+
 @Component({
   selector: 'fc-descricao-faccao',
   templateUrl: './descricao-faccao.component.html',
@@ -37,6 +39,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DescricaoFaccaoComponent implements OnInit {
+  dtHoje = new Date();
   itensLimite = 10;
 
   selectedApontamento: string[] = [];
@@ -263,6 +266,10 @@ export class DescricaoFaccaoComponent implements OnInit {
         }
       }
 
+      let diasNaFaccao = Math.floor(
+        (this.dtHoje.getTime() - parseInt(op.DT_ENTRADA)) / MILISEG_EM_UM_DIA
+      )
+
       this.descOP.push({
         semana: prevSemana.semana,
         ano: prevSemana.ano,
@@ -279,6 +286,9 @@ export class DescricaoFaccaoComponent implements OnInit {
         ref: op.CD_REFERENCIA + '',
         NR_REDUZIDOOP: op.NR_REDUZIDOOP!,
         previsao: prev,
+        diasNaFaccao: diasNaFaccao,
+        statusDiasNaFaccao: diasNaFaccao > 60 ? 'atencao' : diasNaFaccao > 20 ? 'cuidado' : 'ok',
+        iconDiasNaFaccao: diasNaFaccao > 60 ? 'alert-triangle-outline' : diasNaFaccao > 20 ? 'alert-circle-outline' : '',
         entrada: op.DT_ENTRADA,
         DS_APONTAMENTO_DS:
           maiorApontamento.DS_APONTAMENTO_DS || 'Não informado',
@@ -321,7 +331,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     this.verifyClosestWeek(); // verifica a semana mais próxima para selecionar
 
-    this.adjustTitle(this.descOP[0].local); // arruma o titulo para ficar mais legivel
+    this.ajustarTituloPagina(this.descOP[0].local); // arruma o titulo para ficar mais legivel
 
     if (this.isDistribuicao) this.ordenarMenor(); // se distribuição, ordenar por entrada
 
@@ -696,11 +706,8 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   getFirstAndLastWeekDay(datePred: string) {
-    // pegar o primeiro e último dia da semana
-    let dia = datePred.substring(0, 2);
-    let mes = datePred.substring(3, 5);
-    let ano = datePred.substring(6, 10);
-    let newDate = new Date(mes + '/' + dia + '/' + ano);
+    const dataSeparada  = datePred.split('/');
+    let newDate = new Date(dataSeparada[1] + '/' + dataSeparada[0] + '/' + dataSeparada[2]);
     let dataSemana = new Date(newDate.getTime() - 4 * 86400000);
 
     this.dataIni = new Date(newDate.getTime() - dataSemana.getDay() * 86400000);
@@ -774,16 +781,20 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.semanaSelecionada = this.closestSemana.toString();
   }
 
-  adjustTitle(local: string) {
-    let title = local;
+  ajustarTituloPagina(local: string) {
+    let titulo = local;
     if (!this.isInterno) {
-      title = local
-        .replace('COSTURA', '')
-        .replace('CONSERTO', '')
-        .replace('ESTAMPARIA', '')
-        .replace('TERCEIROS', '');
+      titulo = this.removerTextoDesnecessario(titulo.trim());
     }
-    this._setTitle.setTitle(title);
+    this._setTitle.setTitle(titulo);
+  }
+
+  removerTextoDesnecessario(titulo: string) {
+    return titulo
+      .replace('COSTURA', '')
+      .replace('CONSERTO', '')
+      .replace('ESTAMPARIA', '')
+      .replace('TERCEIROS', '');
   }
 
   openUrl(link: string) {

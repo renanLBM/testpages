@@ -2,18 +2,22 @@ import { DatePipe, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { OPDescricoes } from 'src/app/models/opdescricao';
+
+import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
+import { ApontamentoListParado } from 'src/app/models/enums/enumApontamentos';
 import { Motivo, Motivos } from 'src/app/models/motivo';
+import { OPDescricoes } from 'src/app/models/opdescricao';
 import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
+
+import { ApontamentoService } from 'src/app/services/apontamento.service';
 import { AtrasoService } from 'src/app/services/atraso.service';
 import { LoadingService } from 'src/app/services/loading.service';
+import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
-import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
-import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
-import { ApontamentoList, ApontamentoListParado } from 'src/app/models/enums/enumApontamentos';
-import { ApontamentoService } from 'src/app/services/apontamento.service';
+
+const MILISEG_EM_UM_DIA = 24 * 3600 * 1000
 
 @Component({
   selector: 'fc-pcp-desc-ops',
@@ -195,7 +199,7 @@ export class PcpDescOpsComponent implements OnInit {
       }
       let dt_entrada = new Date(+x.DT_ENTRADA);
       x['dias_faccao'] = Math.floor(
-        (this.dtHoje.getTime() - dt_entrada.getTime()) / (24 * 3600 * 1000)
+        (this.dtHoje.getTime() - dt_entrada.getTime()) / MILISEG_EM_UM_DIA
       );
 
       x['motivo_atraso'] = '-';

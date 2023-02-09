@@ -57,7 +57,6 @@ export class AtrasoService {
       .post<any>(`${API}/api/faccaocontrol/atraso/add`, body, { headers })
       .pipe(
         map((res) => {
-          let x = res['data'];
           if (res == 'ok') {
             return 1;
           }

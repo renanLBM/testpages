@@ -109,10 +109,11 @@
                     </div>
                   </div>
                   <div class="c-body">
-                    <p *ngIf="!isInterno; else entrada" style="font-size: 15px;"><b>Previsão de retorno:</b> {{
+                    <p class="parag qt-dias"><b>Dias na facção:</b> {{ item.diasNaFaccao }} <nb-icon [ngClass]="item.statusDiasNaFaccao" [icon]="item.iconDiasNaFaccao!"></nb-icon></p>
+                    <p *ngIf="!isInterno; else entrada" class="parag"><b>Previsão de retorno:</b> {{
                       item.previsao }}</p>
                     <ng-template #entrada>
-                      <p style="font-size: 15px;"><b>Disponibilizado:</b> {{ item.entrada |
+                      <p class="parag"><b>Disponibilizado:</b> {{ item.entrada |
                         date:'dd/MM/yyyy' }}</p>
                     </ng-template>
                     <div class="nv-prev" *ngIf="item.checked">

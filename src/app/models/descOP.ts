@@ -8,6 +8,9 @@ export interface descOP {
   op?: number,
   ref: string,
   previsao: string | null,
+  diasNaFaccao?: number,
+  statusDiasNaFaccao?: string,
+  iconDiasNaFaccao?: string,
   entrada?: string,
   semana?: number,
   ano?: number
