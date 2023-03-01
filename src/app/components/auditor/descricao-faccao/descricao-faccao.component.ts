@@ -287,8 +287,8 @@ export class DescricaoFaccaoComponent implements OnInit {
         NR_REDUZIDOOP: op.NR_REDUZIDOOP!,
         previsao: prev,
         diasNaFaccao: diasNaFaccao,
-        statusDiasNaFaccao: diasNaFaccao > 60 ? 'atencao' : diasNaFaccao > 20 ? 'cuidado' : 'ok',
-        iconDiasNaFaccao: diasNaFaccao > 60 ? 'alert-triangle-outline' : diasNaFaccao > 20 ? 'alert-circle-outline' : '',
+        statusDiasNaFaccao: diasNaFaccao > 30 ? 'atencao' : diasNaFaccao > 20 ? 'cuidado' : 'ok',
+        iconDiasNaFaccao: diasNaFaccao > 30 ? 'alert-triangle-outline' : diasNaFaccao > 20 ? 'alert-circle-outline' : '',
         entrada: op.DT_ENTRADA,
         DS_APONTAMENTO_DS:
           maiorApontamento.DS_APONTAMENTO_DS || 'Não informado',
