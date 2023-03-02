@@ -20,9 +20,8 @@ import { OpsService } from 'src/app/services/ops.service';
 import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { DialogDefaultBodyComponent } from 'src/app/shared/components/dialog-default-body/dialog-default-body.component';
-import { DataTableConstants } from 'src/app/shared/datatable-constants';
+import { DataTableConstants } from 'src/app/shared/datatable-constants.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
-import { environment } from 'src/environments/environment';
 
 interface MPList {
   id?: string;
@@ -37,8 +36,6 @@ interface MPList {
 export class PendenciaComponent implements OnInit, AfterContentInit {
   positions = NbGlobalPhysicalPosition;
   regSanitizer = /<(?:[^>=]|='[^']*'|=\"[^\"]*\"|=[^'\"][^\\s>]*)*>|(%3c)|%3e/g;
-
-  usuarios_pendencias = DataTableConstants.usuariosPendencias;
 
   loading = new BehaviorSubject<boolean>(true);
   loadingError = false;
@@ -74,24 +71,16 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     private _setTitulo: SetTitleServiceService,
     private _userService: UserService,
     private _opService: OpsService,
-    private _pendenciaService: PendenciasService
+    private _pendenciaService: PendenciasService,
+    private _datatableConstants: DataTableConstants
   ) {}
 
   ngOnInit(): void {
     this._setTitulo.setTitle('Nova Solicitação');
 
     this.cd_user = this._userService.getSession().CD_USUARIO!;
-    let userNivel = this._userService.getNivel();
 
-    this._userService.getUser().subscribe((user) => {
-      this.loggedUser = user.nome!;
-      let logginUser = user.login!;
-      if (Pages[userNivel] != 'auditor') {
-        if (!this.usuarios_pendencias.includes(logginUser)) {
-          this._router.navigate(['login']);
-        }
-      }
-    });
+    this.verificaAcesso();
 
     this.codOp = this._route.snapshot.paramMap.get('cod')!;
     this.nr_reduzido = this.codOp.split('-')[0];
@@ -338,6 +327,32 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     this.solicitacao = [];
 
     setTimeout(() => this.loading.next(false), 100);
+  }
+
+  verificaAcesso(): void {
+    let userNivel = this._userService.getNivel();
+    let userLogin = this._userService.getSession().login || '';
+
+    if (this._datatableConstants.getUsuariosPendencias().length == 0) {
+      this._pendenciaService.getUsuariosPendencias().subscribe({
+        next: (res) => {
+          this._datatableConstants.setUsuariosPendencias(res);
+          if (!res.includes(userLogin)) {
+            this._router.navigate(['login']);
+          }
+        },
+        error: (err) => {
+          throw new Error(err);
+        },
+      });
+    }
+
+    if (
+      Pages[userNivel] != 'auditor' ||
+      !this._datatableConstants.getUsuariosPendencias().includes(userLogin)
+    ) {
+      this._router.navigate(['login']);
+    }
   }
 
   voltar() {

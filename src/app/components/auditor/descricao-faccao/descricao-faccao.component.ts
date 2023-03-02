@@ -2,14 +2,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   NbDialogService,
   NbMenuService,
   NbWindowControlButtonsConfig,
-  NbWindowService
+  NbWindowService,
 } from '@nebular/theme';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -24,13 +24,14 @@ import { AtrasoService } from 'src/app/services/atraso.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
+import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { CarosselComponent } from 'src/app/shared/components/carossel/carossel.component';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
-import { DataTableConstants } from 'src/app/shared/datatable-constants';
+import { DataTableConstants } from 'src/app/shared/datatable-constants.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
-const MILISEG_EM_UM_DIA = 24 * 3600 * 1000
+const MILISEG_EM_UM_DIA = 24 * 3600 * 1000;
 
 @Component({
   selector: 'fc-descricao-faccao',
@@ -44,8 +45,6 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   selectedApontamento: string[] = [];
   idSelectedApontamento: number[] = [];
-
-  usuarios_pendencias = DataTableConstants.usuariosPendencias;
 
   apontamentoEnum = ApontamentoList;
   menuApontamento: string[] = [];
@@ -94,19 +93,21 @@ export class DescricaoFaccaoComponent implements OnInit {
   ];
 
   constructor(
+    public _loadingService: LoadingService,
     private NbDdialogService: NbDialogService,
     private windowService: NbWindowService,
     private changeDetectorRef: ChangeDetectorRef,
     private nbMenuService: NbMenuService,
-    public _loadingService: LoadingService,
+    private _route: ActivatedRoute,
+    private _router: Router,
     private _setTitle: SetTitleServiceService,
     private _opsFilteredService: OpsFilteredService,
     private _opsService: OpsService,
     private _atrasoService: AtrasoService,
     private _apontamentoService: ApontamentoService,
     private _userService: UserService,
-    private _route: ActivatedRoute,
-    private _router: Router
+    private _datatableConstants: DataTableConstants,
+    private _pendenciasService: PendenciasService
   ) {}
 
   ngOnInit(): void {
@@ -117,18 +118,11 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.isInterno = ['302', '8921'].includes(this.routeId);
     this.isUsuario = userNivel == 5;
 
-    // isDistribuicao
-    let usuarioName = this._userService.getSession().login;
 
     if (Pages[userNivel] == 'fornecedor')
-      this.itemsMenu = [{ title: 'Apontamento de Produção' }];
+    this.itemsMenu = [{ title: 'Apontamento de Produção' }];
 
-    if (
-      this.usuarios_pendencias.includes(usuarioName!) ||
-      Pages[userNivel] == 'auditor'
-    )
-      this.itemsMenu.push({ title: 'Pendências' });
-
+    this.verificaAcesso();
     // pega o filtro setado na página anterior (escolha da facção)
     let filtroColecao: string[] = this._opsFilteredService.getFilter().colecao;
 
@@ -137,7 +131,6 @@ export class DescricaoFaccaoComponent implements OnInit {
     this._setTitle.setTitle('Carregando...');
 
     // chamando todos os serviços com forkjoin
-    // https://www.learnrxjs.io/learn-rxjs/operators/combination/forkjoin
     forkJoin([
       this._apontamentoService.getApontamento(this.routeId),
       this._atrasoService.getMotivos(this.routeId),
@@ -268,7 +261,7 @@ export class DescricaoFaccaoComponent implements OnInit {
 
       let diasNaFaccao = Math.floor(
         (this.dtHoje.getTime() - parseInt(op.DT_ENTRADA)) / MILISEG_EM_UM_DIA
-      )
+      );
 
       this.descOP.push({
         semana: prevSemana.semana,
@@ -287,8 +280,14 @@ export class DescricaoFaccaoComponent implements OnInit {
         NR_REDUZIDOOP: op.NR_REDUZIDOOP!,
         previsao: prev,
         diasNaFaccao: diasNaFaccao,
-        statusDiasNaFaccao: diasNaFaccao > 30 ? 'atencao' : diasNaFaccao > 20 ? 'cuidado' : 'ok',
-        iconDiasNaFaccao: diasNaFaccao > 30 ? 'alert-triangle-outline' : diasNaFaccao > 20 ? 'alert-circle-outline' : '',
+        statusDiasNaFaccao:
+          diasNaFaccao > 30 ? 'atencao' : diasNaFaccao > 20 ? 'cuidado' : 'ok',
+        iconDiasNaFaccao:
+          diasNaFaccao > 30
+            ? 'alert-triangle-outline'
+            : diasNaFaccao > 20
+            ? 'alert-circle-outline'
+            : '',
         entrada: op.DT_ENTRADA,
         DS_APONTAMENTO_DS:
           maiorApontamento.DS_APONTAMENTO_DS || 'Não informado',
@@ -440,8 +439,9 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.descOP$.next(this.descOP);
       if (this.semanaSelecionada != 'Todas' && !this.isInterno) {
         this.descOP$.next(
-          this.descOP
-            .filter((_) => _.semana == parseInt(this.semanaSelecionada))
+          this.descOP.filter(
+            (_) => _.semana == parseInt(this.semanaSelecionada)
+          )
         );
       }
     } else {
@@ -449,23 +449,22 @@ export class DescricaoFaccaoComponent implements OnInit {
       if (this.semanaSelecionada != 'Todas') {
         if (this.isInterno) {
           this.descOP$.next(
-            this.descOP
-              .filter((_) => _.cod?.includes(filterValue.toUpperCase()))
+            this.descOP.filter((_) =>
+              _.cod?.includes(filterValue.toUpperCase())
+            )
           );
         } else {
           this.descOP$.next(
-            this.descOP
-              .filter(
-                (_) =>
-                  _.cod?.includes(filterValue.toUpperCase()) &&
-                  _.semana == parseInt(this.semanaSelecionada)
-              )
+            this.descOP.filter(
+              (_) =>
+                _.cod?.includes(filterValue.toUpperCase()) &&
+                _.semana == parseInt(this.semanaSelecionada)
+            )
           );
         }
       } else {
         this.descOP$.next(
-          this.descOP
-            .filter((_) => _.cod?.includes(filterValue.toUpperCase()))
+          this.descOP.filter((_) => _.cod?.includes(filterValue.toUpperCase()))
         );
       }
       this.descOP$.subscribe((x) => {
@@ -485,34 +484,31 @@ export class DescricaoFaccaoComponent implements OnInit {
     (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
     if (this.semanaSelecionada != 'Todas') {
       this.descOP$.next(
-        this.descOP
-          .filter((_) => _.semana == parseInt(this.semanaSelecionada))
+        this.descOP.filter((_) => _.semana == parseInt(this.semanaSelecionada))
       );
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP
-            .filter((_) => {
-              let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
-                ? 'Parado'
-                : _.DS_APONTAMENTO_DS;
-              return (
-                this.selectedApontamento.includes(situacaoAjustada!) &&
-                _.semana == parseInt(this.semanaSelecionada)
-              );
-            })
+          this.descOP.filter((_) => {
+            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+              ? 'Parado'
+              : _.DS_APONTAMENTO_DS;
+            return (
+              this.selectedApontamento.includes(situacaoAjustada!) &&
+              _.semana == parseInt(this.semanaSelecionada)
+            );
+          })
         );
       }
     } else {
       this.descOP$.next(this.descOP);
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP
-            .filter((_) => {
-              let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
-                ? 'Parado'
-                : _.DS_APONTAMENTO_DS;
-              return this.selectedApontamento.includes(situacaoAjustada!);
-            })
+          this.descOP.filter((_) => {
+            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+              ? 'Parado'
+              : _.DS_APONTAMENTO_DS;
+            return this.selectedApontamento.includes(situacaoAjustada!);
+          })
         );
       }
     }
@@ -530,8 +526,9 @@ export class DescricaoFaccaoComponent implements OnInit {
     if (this.semanaSelecionada != 'Todas') {
       if (!this.isInterno) {
         this.descOP$.next(
-          this.descOP
-            .filter((_) => _.semana == parseInt(this.semanaSelecionada))
+          this.descOP.filter(
+            (_) => _.semana == parseInt(this.semanaSelecionada)
+          )
         );
       }
     }
@@ -550,13 +547,12 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.descOP$.next(this.descOP);
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP
-            .filter((_) => {
-              let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
-                ? 'Parado'
-                : _.DS_APONTAMENTO_DS;
-              return this.selectedApontamento.includes(situacaoAjustada!);
-            })
+          this.descOP.filter((_) => {
+            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+              ? 'Parado'
+              : _.DS_APONTAMENTO_DS;
+            return this.selectedApontamento.includes(situacaoAjustada!);
+          })
         );
       }
     } else if (eventSemana == 0) {
@@ -565,45 +561,39 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.descOP$.next(this.descOP);
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP
-            .filter((_) => {
-              let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
-                ? 'Parado'
-                : _.DS_APONTAMENTO_DS;
-              return (
-                this.selectedApontamento.includes(situacaoAjustada!) &&
-                _.semana! < this.semanaAtual &&
-                _.ano! <= this.anoAtual
-              );
-            })
+          this.descOP.filter((_) => {
+            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+              ? 'Parado'
+              : _.DS_APONTAMENTO_DS;
+            return (
+              this.selectedApontamento.includes(situacaoAjustada!) &&
+              _.semana! < this.semanaAtual &&
+              _.ano! <= this.anoAtual
+            );
+          })
         );
         return;
       }
       this.descOP$.next(
-        this.descOP
-          .filter((_) => {
-            return _.semana! < this.semanaAtual && _.ano! <= this.anoAtual;
-          })
+        this.descOP.filter((_) => {
+          return _.semana! < this.semanaAtual && _.ano! <= this.anoAtual;
+        })
       );
     } else {
       this.semanaSelecionada = eventSemana.toString();
-      this.descOP$.next(
-        this.descOP
-          .filter((_) => _.semana == eventSemana)
-      );
+      this.descOP$.next(this.descOP.filter((_) => _.semana == eventSemana));
       if (this.selectedApontamento.length != 0) {
         this.descOP$.next(
-          this.descOP
-            .filter((_) => {
-              let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
-                ? 'Parado'
-                : _.DS_APONTAMENTO_DS;
-              return (
-                this.selectedApontamento.includes(situacaoAjustada!) &&
-                _.semana == +this.semanaSelecionada &&
-                _.ano! <= this.anoAtual
-              );
-            })
+          this.descOP.filter((_) => {
+            let situacaoAjustada = _.DS_APONTAMENTO_DS?.includes('Parado')
+              ? 'Parado'
+              : _.DS_APONTAMENTO_DS;
+            return (
+              this.selectedApontamento.includes(situacaoAjustada!) &&
+              _.semana == +this.semanaSelecionada &&
+              _.ano! <= this.anoAtual
+            );
+          })
         );
       }
     }
@@ -706,8 +696,10 @@ export class DescricaoFaccaoComponent implements OnInit {
   }
 
   getFirstAndLastWeekDay(datePred: string) {
-    const dataSeparada  = datePred.split('/');
-    let newDate = new Date(dataSeparada[1] + '/' + dataSeparada[0] + '/' + dataSeparada[2]);
+    const dataSeparada = datePred.split('/');
+    let newDate = new Date(
+      dataSeparada[1] + '/' + dataSeparada[0] + '/' + dataSeparada[2]
+    );
     let dataSemana = new Date(newDate.getTime() - 4 * 86400000);
 
     this.dataIni = new Date(newDate.getTime() - dataSemana.getDay() * 86400000);
@@ -779,6 +771,32 @@ export class DescricaoFaccaoComponent implements OnInit {
     }
     // troca semana atual para a mais proxima
     this.semanaSelecionada = this.closestSemana.toString();
+  }
+
+  verificaAcesso(): void {
+    let userNivel = this._userService.getNivel();
+    let userLogin = this._userService.getSession().login || '';
+
+    if (this._datatableConstants.getUsuariosPendencias().length == 0) {
+      this._pendenciasService.getUsuariosPendencias().subscribe({
+        next: (res) => {
+          this._datatableConstants.setUsuariosPendencias(res);
+          if (res.includes(userLogin)) {
+            this.itemsMenu.push({ title: 'Pendências' });
+          }
+        },
+        error: (err) => {
+          throw new Error(err);
+        },
+      });
+    }
+
+    if (
+      Pages[userNivel] == 'auditor' ||
+      this._datatableConstants.getUsuariosPendencias().includes(userLogin)
+    ) {
+      this.itemsMenu.push({ title: 'Pendências' });
+    }
   }
 
   ajustarTituloPagina(local: string) {

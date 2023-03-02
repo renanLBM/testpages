@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
     private _router: Router,
     private _setTitle: SetTitleServiceService,
     private _userService: UserService,
-    private _authService: AuthService
+    private _authService: AuthService,
   ) {}
 
   ngOnInit(): void {

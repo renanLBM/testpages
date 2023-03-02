@@ -8,7 +8,6 @@ export const environment = {
     authDomain: 'faccaocontrol.firebaseapp.com',
     messagingSenderId: '943441546924',
   },
-  usuarios_pendencias: ['renan.garcia', 'alisson', 'zoe', 'pop', 'daniela.silva', 'manoel.santana', 'daniel.vicenzi', 'brenda.martins', 'marcos.tummler'],
   ENCRIPT_KEY: '7PQ9TV&*d@38c0bT',
   API_ENV: 'https://apilabella.labellamafia.com.br/',
 };

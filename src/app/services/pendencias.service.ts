@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Pendencia, Pendencias } from '../models/pendencia';
+import { DataTableConstants } from '../shared/datatable-constants.service';
 import { TokenService } from './token.service';
 
 const API = environment.API_ENV;
@@ -14,7 +15,8 @@ const API = environment.API_ENV;
 export class PendenciasService {
   constructor(
     private _httpClient: HttpClient,
-    private _tokenService: TokenService
+    private _tokenService: TokenService,
+    private _datatableConstants: DataTableConstants
   ) {}
 
   listMateriaPrima(cod_op: string): Observable<any> {
@@ -43,7 +45,7 @@ export class PendenciasService {
     });
   }
 
-  setPendencia(pendencias: Pendencias): Observable<string[]>{
+  setPendencia(pendencias: Pendencias): Observable<string[]> {
     const headers = this.getToken();
 
     const body = JSON.stringify(pendencias);
@@ -62,7 +64,7 @@ export class PendenciasService {
       );
   }
 
-  editPendencia(pendencia: Pendencia): Observable<number>{
+  editPendencia(pendencia: Pendencia): Observable<number> {
     const headers = this.getToken();
 
     const body = JSON.stringify(pendencia);
@@ -77,6 +79,20 @@ export class PendenciasService {
             return 1;
           }
           return 0;
+        })
+      );
+  }
+
+  getUsuariosPendencias(): Observable<string[]> {
+    const headers = this.getToken();
+    return this._httpClient
+      .get<any>(`${API}/api/faccaocontrol/apontamento/usuario-pendencia`, {
+        headers,
+      })
+      .pipe(
+        map((res) => {
+          this._datatableConstants.setUsuariosPendencias(res['data']);
+          return res['data'];
         })
       );
   }

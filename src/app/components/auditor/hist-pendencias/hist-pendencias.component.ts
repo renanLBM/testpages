@@ -40,8 +40,7 @@ export class HistPendenciasComponent implements OnInit {
     private _location: Location,
     private _setTituloService: SetTitleServiceService,
     private _userService: UserService,
-    private _pendenciaService: PendenciasService,
-    private _opsService: OpsService
+    private _pendenciaService: PendenciasService
   ) {}
 
   ngOnInit(): void {
