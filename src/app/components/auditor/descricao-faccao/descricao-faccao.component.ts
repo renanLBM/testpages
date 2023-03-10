@@ -655,7 +655,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.NbDdialogService.open(DialogComponent, {
       context: {
         prevOP: this.tempOP,
-        prev: this.tempOP.novaprevisao,
+        prev: this.tempOP.novaprevisao?.includes('Invalid') ? '' : this.tempOP.novaprevisao,
         i_motivo: this.tempOP.motivo_atraso,
         tipo: tipo,
         DS_APONTAMENTO_DS: this.tempOP.DS_APONTAMENTO_DS,
@@ -665,7 +665,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       if (ehApontamento) {
         this.tempOP.DS_APONTAMENTO_DS = x.DS_APONTAMENTO_DS;
       }
-      if (!!x.prev) {
+      if (!!x.prev && x.prev != '') {
         this.tempOP.novaprevisao = new Date(x.prev).toLocaleString('pt-Br', {
           timeZone: 'UTC',
         });

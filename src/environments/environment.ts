@@ -14,9 +14,8 @@ export const environment = {
   },
 
   ENCRIPT_KEY: '7PQ9TV&*d@38c0bT',
-  API_ENV: 'http://172.16.10.159:5000/',
+  API_ENV: 'https://apilabella.labellamafia.com.br/',
+  // API_ENV: 'http://172.16.10.159:5000/',
   // API_ENV: 'http://172.16.10.97:5000/',
-  // API_ENV: 'https://apilabella.labellamafia.com.br/',
-  // API_ENV: 'https://app-controle-ops.herokuapp.com',
   API_ENV2: 'http://127.0.0.1/',
 };

@@ -337,7 +337,7 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
       this._pendenciaService.getUsuariosPendencias().subscribe({
         next: (res) => {
           this._datatableConstants.setUsuariosPendencias(res);
-          if (!res.includes(userLogin)) {
+          if (Pages[userNivel] != 'auditor' && !res.includes(userLogin)) {
             this._router.navigate(['login']);
           }
         },
@@ -348,9 +348,10 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
     }
 
     if (
-      Pages[userNivel] != 'auditor' ||
+      Pages[userNivel] != 'auditor' &&
       !this._datatableConstants.getUsuariosPendencias().includes(userLogin)
     ) {
+      console.log(this._datatableConstants.getUsuariosPendencias(), userLogin);
       this._router.navigate(['login']);
     }
   }

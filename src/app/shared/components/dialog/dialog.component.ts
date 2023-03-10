@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormControl, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { Apontamento } from 'src/app/models/apontamento';
 import { descOP } from 'src/app/models/descOP';
@@ -46,7 +46,7 @@ export class DialogComponent implements OnInit {
   novoApontamento!: Apontamento;
   novoMotivo!: Motivo;
   @Input() prevOP!: descOP;
-  @Input() prev: string = '';
+  @Input() prev: string = this.min.toLocaleString('pt-Br').substring(10);
   @Input() i_motivo: string = '';
   @Input() tipo: string = '';
   @Input() DS_APONTAMENTO_DS: string = '';
@@ -57,7 +57,7 @@ export class DialogComponent implements OnInit {
 
   dialogForm = new UntypedFormGroup({
     motivoControl: new UntypedFormControl(),
-    dtControl: new UntypedFormControl(),
+    dtControl: new FormControl<string>(''),
     DS_APONTAMENTO_DSControl: new UntypedFormControl(),
     motivoParadoControl: new UntypedFormControl(),
   });
