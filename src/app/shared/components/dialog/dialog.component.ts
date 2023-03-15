@@ -318,8 +318,6 @@ export class DialogComponent implements OnInit {
       GEOLOCALIZACAO: this.latitude + ', ' + this.longitude,
     };
 
-    console.log(this.novoApontamento);
-
     if (novoApontamentoForm.match('Parado') && this.selectedParado < 0) {
       this.err = true;
       this.loading = false;

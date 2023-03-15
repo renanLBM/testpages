@@ -66,7 +66,6 @@ export class PCPPendenciasComponent implements OnInit {
     this._pendenciaService.listPendencia().subscribe({
       next: (pendencias) => {
         this.minhasPendencias = JSON.parse(pendencias.data);
-        console.log(this.minhasPendencias);
         this.minhasPendencias = this.minhasPendencias.filter(
           (pendencia) =>
             !this.ignoredStatus.includes(pendencia.DS_STATUS_PENDENCIA)

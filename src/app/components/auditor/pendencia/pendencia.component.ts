@@ -351,7 +351,6 @@ export class PendenciaComponent implements OnInit, AfterContentInit {
       Pages[userNivel] != 'auditor' &&
       !this._datatableConstants.getUsuariosPendencias().includes(userLogin)
     ) {
-      console.log(this._datatableConstants.getUsuariosPendencias(), userLogin);
       this._router.navigate(['login']);
     }
   }

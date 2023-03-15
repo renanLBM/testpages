@@ -24,5 +24,6 @@ export enum ApontamentoListParado {
   'Parado - Resolução de pendência',
   'Parado - Remanejamento',
   'Parado - Sistema',
-  'Parado - Resolução de nota'
+  'Parado - Resolução de nota',
+  'Parado - Inconsistência',
 }
