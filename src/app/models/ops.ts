@@ -26,6 +26,7 @@ export interface OP {
   qnt?: number,
   pecas?: number,
   dt_ajustada?: string | null,
+  DT_MODIFICACAO?: string,
 
   cod?: string,
   semana?: string,

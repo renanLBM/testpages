@@ -229,8 +229,10 @@ export class PcpDescOpsComponent implements OnInit {
           ApontamentoListParado[apontamentoShowed as keyof typeof ApontamentoListParado] +
           ' - ' +
           apontamento.DS_APONTAMENTO_DS;
+        x['DT_MODIFICACAO'] = apontamento.DT_MODIFICACAO;
       } else {
         x['DS_APONTAMENTO_DS'] = '-';
+        x['DT_MODIFICACAO'] = '';
       }
     });
   }
