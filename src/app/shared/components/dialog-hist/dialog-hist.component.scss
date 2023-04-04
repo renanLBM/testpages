@@ -1,0 +1,44 @@
+@import "../../../../themes.scss";
+
+nb-card {
+  max-height: 362px;
+  position: relative;
+}
+
+nb-card-header {
+  padding: 1em 3em 0;
+}
+
+.bt-fechar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px 1em 0 0;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  text-align: center;
+  border: 1px solid nb-theme(color-tb-even-bg);
+
+  thead {
+    background-color: nb-theme(color-tb-header-bg);
+    height: 32px;
+  }
+  th {
+    padding: 5px;
+  }
+  td {
+    font-size: 14px;
+    padding: 3px;
+    border: 1px solid nb-theme(color-tb-even-bg);
+  }
+  .even {
+    background-color: nb-theme(color-tb-even-bg);
+  }
+}
+
+h5 {
+  text-align: center;
+}

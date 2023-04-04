@@ -64,6 +64,27 @@ export class ApontamentoService {
     }
   }
 
+  logApontamento(cd_local: string, nr_reduzido: string): Observable<any> {
+    const headers = this.getToken();
+    return this._httpClient
+      .get<any>(
+        `${API}/api/faccaocontrol/apontamento/log/${cd_local}/${nr_reduzido}`,
+        {
+          headers,
+        }
+      )
+      .pipe(
+        map((res) => {
+          const resultado = JSON.parse(res['data']);
+          return resultado.length > 0 ? resultado : null;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          if (error.status == 401) this.missingToken();
+          return EMPTY;
+        })
+      );
+  }
+
   setApontamento(apontamento: Apontamento): Observable<number> {
     const body = JSON.stringify(apontamento);
     const headers = this.getToken();

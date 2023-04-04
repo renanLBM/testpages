@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { PendenciasService } from '../services/pendencias.service';
 
 @Injectable({
   providedIn: 'root',

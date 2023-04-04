@@ -1,0 +1,55 @@
+<nb-card>
+  <nb-card-header>
+    <h3>Histórico de Alterações</h3>
+    <div class="bt-fechar" (click)="cancel()">x</div>
+  </nb-card-header>
+  <nb-card-body>
+    <ng-container *ngIf="(logAlteracoes$ | async ) || (logApontamentos$ | async); else vazio">
+      <table class="row-border hover" *ngIf="isAtraso">
+        <thead>
+          <tr>
+            <th>Motivo Anterior</th>
+            <th>Data Original</th>
+            <th>Novo Motivo</th>
+            <th>Nova Previsão</th>
+            <th>Usuário</th>
+            <th>Data Inserido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of logAlteracoes$ | async">
+            <td>{{ item.motivoAnterior || '-' }}</td>
+            <td>{{ +item.dtOriginal + MAIS_3_HORAS_MILISSEGUNDOS | date: 'dd/MM/yyyy'}}</td>
+            <td>{{ item.novoMotivo }}</td>
+            <td>{{ +item.novaPrevisao + MAIS_3_HORAS_MILISSEGUNDOS | date: 'dd/MM/yyyy' : 'pt-Br' }}</td>
+            <td>{{ item.usuario }}</td>
+            <td>{{ +item.dtInserido + MAIS_3_HORAS_MILISSEGUNDOS | date: 'dd/MM/yyyy HH:mm:ss' : 'pt-Br' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="row-border hover" *ngIf="isApontamento">
+        <thead>
+          <tr>
+            <th>Apontamento Anterior</th>
+            <th>Apontamento Novo</th>
+            <th>Dias no Apontamento</th>
+            <th>Usuário</th>
+            <th>Data Inserido</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of logApontamentos$ | async">
+            <td>{{ item.apontamentoAnterior || '-' }}</td>
+            <td>{{ item.apontamentoNovo }}</td>
+            <td>{{ item.diasNoApontamento }}</td>
+            <td>{{ item.usuario }}</td>
+            <td>{{ +item.dtInserido + MAIS_3_HORAS_MILISSEGUNDOS | date: 'dd/MM/yyyy HH:mm:ss' : 'pt-Br' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+    <ng-template #vazio>
+        <h5>Nenhuma alteração registrada!</h5>
+    </ng-template>
+  </nb-card-body>
+</nb-card>

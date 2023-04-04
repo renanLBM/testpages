@@ -27,6 +27,7 @@ import { OpsService } from 'src/app/services/ops.service';
 import { PendenciasService } from 'src/app/services/pendencias.service';
 import { UserService } from 'src/app/services/user.service';
 import { CarosselComponent } from 'src/app/shared/components/carossel/carossel.component';
+import { DialogHistComponent } from 'src/app/shared/components/dialog-hist/dialog-hist.component';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { DataTableConstants } from 'src/app/shared/datatable-constants.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
@@ -89,6 +90,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   itemsMenu = [
     { title: 'Atraso' },
     { title: 'Adiantamento' },
+    { title: 'Histórico Previsão' },
     { title: 'Apontamento de Produção' },
   ];
 
@@ -118,9 +120,11 @@ export class DescricaoFaccaoComponent implements OnInit {
     this.isInterno = ['302', '8921'].includes(this.routeId);
     this.isUsuario = userNivel == 5;
 
-
     if (Pages[userNivel] == 'fornecedor')
-    this.itemsMenu = [{ title: 'Apontamento de Produção' }];
+      this.itemsMenu = [
+        { title: 'Apontamento de Produção' },
+        { title: 'Histórico' },
+      ];
 
     this.verificaAcesso();
     // pega o filtro setado na página anterior (escolha da facção)
@@ -351,6 +355,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     });
     this.descOP$.next(this.descOP);
   }
+
   ordenarMaior(): void {
     this.itensLimite = 10;
     this.descOP.sort((a, b) => {
@@ -636,26 +641,43 @@ export class DescricaoFaccaoComponent implements OnInit {
       .subscribe((title) => {
         this.counter++; // se tirar isso o menu abre mil vezes
         if (this.counter == 1) {
-          this.open(title);
+          this.openModal(title);
         }
       });
     this.counter = 0;
   }
 
-  open(tipo: string) {
+  historicoAtraso(opEnviada: descOP) {
+    this.tempOP = opEnviada;
+    this.openModal('Histórico Apontamento');
+  }
+
+  openModal(tipo: string) {
     let ehApontamento = tipo == 'Apontamento de Produção';
     let ehPendencia = tipo == 'Pendências';
+    let ehHistorico = tipo == 'Histórico Previsão' || 'Histórico Apontamento';
 
     if (ehPendencia) {
       let codOp = this.tempOP.NR_REDUZIDOOP + '-' + this.tempOP.cd_local;
       this._router.navigate(['auditor/pendencias', codOp]);
       return;
     }
+    if (ehHistorico) {
+      this.NbDdialogService.open(DialogHistComponent, {
+        context: {
+          prevOP: this.tempOP,
+          tipo: tipo
+        },
+      });
+      return;
+    }
 
     this.NbDdialogService.open(DialogComponent, {
       context: {
         prevOP: this.tempOP,
-        prev: this.tempOP.novaprevisao?.includes('Invalid') ? '' : this.tempOP.novaprevisao,
+        prev: this.tempOP.novaprevisao?.includes('Invalid')
+          ? ''
+          : this.tempOP.novaprevisao,
         i_motivo: this.tempOP.motivo_atraso,
         tipo: tipo,
         DS_APONTAMENTO_DS: this.tempOP.DS_APONTAMENTO_DS,
