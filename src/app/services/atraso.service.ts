@@ -69,7 +69,7 @@ export class AtrasoService {
     const body = JSON.stringify(motivo);
     const headers = this.getToken();
     return this._httpClient
-      .post<any>(`${API}/api/remove/atraso`, body, { headers })
+      .post<any>(`${API}/api/faccaocontrol/atraso/remove`, body, { headers })
       .pipe(
         map((res) => {
           if (res == 'ok') {

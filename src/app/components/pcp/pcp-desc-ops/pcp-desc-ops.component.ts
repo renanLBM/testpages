@@ -17,7 +17,7 @@ import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
-const MILISEG_EM_UM_DIA = 24 * 3600 * 1000
+const MILISEG_EM_UM_DIA = 24 * 3600 * 1000;
 
 @Component({
   selector: 'fc-pcp-desc-ops',
@@ -206,14 +206,28 @@ export class PcpDescOpsComponent implements OnInit {
       x['nova_previsao'] = '-';
 
       //  verifica se teve atraso para essa OP
+
       if (atraso) {
         let dtNovaPrev = new Date(+atraso.DT_PREV_RETORNO_NOVA);
-
         if (dtNovaPrev >= this.dtHoje) {
           x['motivo_atraso'] = atraso.DS_ATRASO_DS;
           x['nova_previsao'] = dtNovaPrev
             .toLocaleString('pt-Br', { timeZone: 'UTC' })
             .substring(0, 10);
+        }
+
+        if (
+          atraso.DS_ATRASO_DS == 'Adiantamento' &&
+          +atraso.DT_PREV_RETORNO_NOVA >= atraso.DT_PREVRETORNO!
+        ) {
+          x['motivo_atraso'] = '-';
+          x['nova_previsao'] = '-';
+        } else if (
+          atraso.DS_ATRASO_DS != 'Adiantamento' &&
+          +atraso.DT_PREV_RETORNO_NOVA <= atraso.DT_PREVRETORNO!
+        ) {
+          x['motivo_atraso'] = '-';
+          x['nova_previsao'] = '-';
         }
       }
 
@@ -226,7 +240,9 @@ export class PcpDescOpsComponent implements OnInit {
       if (!apontamentoShowed.includes('-')) {
         x['DS_APONTAMENTO_DS'] =
           '0' +
-          ApontamentoListParado[apontamentoShowed as keyof typeof ApontamentoListParado] +
+          ApontamentoListParado[
+            apontamentoShowed as keyof typeof ApontamentoListParado
+          ] +
           ' - ' +
           apontamento.DS_APONTAMENTO_DS;
         x['DT_MODIFICACAO'] = apontamento.DT_MODIFICACAO;
