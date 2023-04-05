@@ -655,7 +655,8 @@ export class DescricaoFaccaoComponent implements OnInit {
   openModal(tipo: string) {
     let ehApontamento = tipo == 'Apontamento de Produção';
     let ehPendencia = tipo == 'Pendências';
-    let ehHistorico = tipo == 'Histórico Previsão' || 'Histórico Apontamento';
+    let ehHistorico = tipo == 'Histórico Previsão' || tipo == 'Histórico Apontamento';
+
 
     if (ehPendencia) {
       let codOp = this.tempOP.NR_REDUZIDOOP + '-' + this.tempOP.cd_local;

@@ -25,12 +25,13 @@ table {
   thead {
     background-color: nb-theme(color-tb-header-bg);
     height: 32px;
+    font-size: .8em;
   }
   th {
     padding: 5px;
   }
   td {
-    font-size: 14px;
+    font-size: .7em;
     padding: 3px;
     border: 1px solid nb-theme(color-tb-even-bg);
   }
@@ -41,4 +42,32 @@ table {
 
 h5 {
   text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+  nb-card-header {
+    padding: 8px 8px 0;
+  }
+  nb-card-body {
+    overflow: auto;
+    padding: 3px 5px;
+  }
+  table {
+    thead {
+      height: auto;
+    }
+    th {
+      padding: 3px;
+      line-height: 1.5;
+    }
+    td {
+      line-height: 1.5;
+    }
+  }
+}
+
+@media screen and (max-width: 360px) {
+	nb-card-body {
+		max-width: 320px;
+	}
 }

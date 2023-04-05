@@ -42,17 +42,11 @@ export class DialogHistComponent implements OnInit {
     this.isApontamento = this.tipo == 'Histórico Apontamento';
 
     if (this.isAtraso) {
-      console.log('object');
       this.logAlteracoes$ = this._atrasoService.logMotivos(
         this.prevOP.cd_local.toString(),
         this.prevOP.NR_REDUZIDOOP.toString()
       );
     } else if (this.isApontamento) {
-      console.log(
-        this.tipo,
-        this.prevOP.cd_local.toString(),
-        this.prevOP.NR_REDUZIDOOP.toString()
-      );
       this.logApontamentos$ = this._apontamentoService.logApontamento(
         this.prevOP.cd_local.toString(),
         this.prevOP.NR_REDUZIDOOP.toString()
