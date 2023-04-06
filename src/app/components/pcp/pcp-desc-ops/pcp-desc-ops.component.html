@@ -1,6 +1,17 @@
 <nb-layout>
   <nb-layout-column>
-    <div class="back-button">
+    <div class="header">
+      <div class="export-wrapper" *ngIf="faccaoList.length != 0">
+        <button class="bt-excel" (click)="exportExcel('log_data_retorno')">
+          Log Data Retorno
+        </button>
+        <button class="bt-excel" (click)="exportExcel('log_apontamentos')">
+          Log Apontamentos
+        </button>
+        <button class="bt-excel" (click)="exportExcel('faccontrol_ops')">
+          Exportar tabela
+        </button>
+      </div>
       <div class="titulo-wrapper">
         <h3>{{ tituloLocal }}</h3>
       </div>

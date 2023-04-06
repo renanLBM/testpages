@@ -9,8 +9,9 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { NbDialogService } from '@nebular/theme';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { OPDescricao, OPDescricoes } from 'src/app/models/opdescricao';
+
 import { Motivos } from 'src/app/models/motivo';
+import { OPDescricao, OPDescricoes } from 'src/app/models/opdescricao';
 import { OPs } from 'src/app/models/ops';
 import { LanguagePtBr } from 'src/app/models/ptBr';
 import { AtrasoService } from 'src/app/services/atraso.service';
@@ -63,7 +64,7 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
     private _route: ActivatedRoute,
     private _location: Location,
     private _dialogService: NbDialogService,
-    public _loadingService: LoadingService
+    public _loadingService: LoadingService,
   ) {}
 
   ngOnInit(): void {
@@ -85,13 +86,8 @@ export class DescricaoStatusComponent implements OnDestroy, OnInit {
           {
             extend: 'print',
             text: '<a style="color: #898989">Imprimir</a>',
-            titleAttr: 'Exportar para excel',
-          },
-          {
-            extend: 'excelHtml5',
-            text: '<a style="color: #898989">Excel</a>',
-            titleAttr: 'Exportar para excel',
-          },
+            titleAttr: 'Imprimir',
+          }
         ],
       };
 

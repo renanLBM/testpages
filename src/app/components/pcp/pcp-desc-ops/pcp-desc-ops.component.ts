@@ -12,6 +12,7 @@ import { LanguagePtBr } from 'src/app/models/ptBr';
 
 import { ApontamentoService } from 'src/app/services/apontamento.service';
 import { AtrasoService } from 'src/app/services/atraso.service';
+import { ExportExcelService } from 'src/app/services/export-excel.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { OpsFilteredService } from 'src/app/services/ops-filtered.service';
 import { OpsService } from 'src/app/services/ops.service';
@@ -60,6 +61,7 @@ export class PcpDescOpsComponent implements OnInit {
     private _opsFilteredService: OpsFilteredService,
     private _atrasoService: AtrasoService,
     private _apontamentoService: ApontamentoService,
+    private _exportExcelService: ExportExcelService,
     private _route: ActivatedRoute,
     private _location: Location
   ) {}
@@ -81,18 +83,7 @@ export class PcpDescOpsComponent implements OnInit {
           processing: true,
           order: [[5, 'asc']],
           dom: 'Bfrtip',
-          buttons: [
-            {
-              extend: 'print',
-              text: '<a style="color: #898989">Imprimir</a>',
-              titleAttr: 'Exportar para excel',
-            },
-            {
-              extend: 'excelHtml5',
-              text: '<a style="color: #898989">Excel</a>',
-              titleAttr: 'Exportar para excel',
-            },
-          ],
+          buttons: [],
         };
 
         this.tituloStatus = this._route.snapshot.paramMap.get('status')!;
@@ -300,6 +291,35 @@ export class PcpDescOpsComponent implements OnInit {
       return ap.filter((a) => a.Situacao!.includes(apontamentoFilter));
     }
     return ap;
+  }
+
+  exportExcel(nomeArquivo: string) {
+    switch (nomeArquivo) {
+      case 'log_data_retorno':
+        this._atrasoService
+          .logMotivos()
+          .subscribe({
+            next: (resp) =>
+              this._exportExcelService.exportExcel(resp, nomeArquivo),
+          });
+        break;
+
+      case 'log_apontamentos':
+        this._apontamentoService
+        .logApontamento()
+        .subscribe({
+          next: (resp) =>
+            this._exportExcelService.exportExcel(resp, nomeArquivo),
+        });
+        break;
+
+      case 'faccontrol_ops':
+        this._exportExcelService.exportExcel(this.faccaoList, nomeArquivo);
+        break;
+
+      default:
+        break;
+    }
   }
 
   voltar() {
