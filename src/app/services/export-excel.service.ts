@@ -72,12 +72,18 @@ export class ExportExcelService {
               cod: item.NR_CICLO + '-' + item.NR_OP + '-' + item.CD_REFERENCIA,
               CD_LOCAL: item[headers[1] as keyof LogAtraso],
               DS_LOCAL: item[headers[2] as keyof LogAtraso],
-              dtOriginal: this.convertDate(item[headers[3] as keyof LogAtraso]!),
+              dtOriginal: this.convertDate(
+                item[headers[3] as keyof LogAtraso]!
+              ),
               motivoAnterior: item[headers[4] as keyof LogAtraso],
-              novaPrevisao: this.convertDate(item[headers[5] as keyof LogAtraso]!),
+              novaPrevisao: this.convertDate(
+                item[headers[5] as keyof LogAtraso]!
+              ),
               novoMotivo: item[headers[6] as keyof LogAtraso],
               usuario: item[headers[7] as keyof LogAtraso],
-              dtInserido: this.convertDate(item[headers[8] as keyof LogAtraso]!),
+              dtInserido: this.convertDate(
+                item[headers[8] as keyof LogAtraso]!
+              ),
             },
             'n'
           );
@@ -115,6 +121,12 @@ export class ExportExcelService {
         worksheet.columns = LISTA_OPS;
 
         dados.forEach((item: OP) => {
+          let data_modificacao = item.DT_MODIFICACAO
+            ? ' | ' +
+              new Date(+item.DT_MODIFICACAO + MILISSECONDS_IN_3_HOURS)
+                .toLocaleString('pt-Br')
+                .replace(',', '')
+            : '';
           worksheet.addRow(
             {
               cod: item.NR_CICLO + '-' + item.NR_OP + '-' + item.CD_REFERENCIA,
@@ -125,7 +137,8 @@ export class ExportExcelService {
               QT_OP: item[headers[5] as keyof OP],
               DT_PREVRETORNO: this.convertDate(item[headers[6] as keyof OP]!),
               dias_faccao: item[headers[7] as keyof OP],
-              DS_APONTAMENTO_DS: item[headers[8] as keyof OP],
+              DS_APONTAMENTO_DS:
+                item[headers[8] as keyof OP] + data_modificacao,
               motivo_atraso: item[headers[9] as keyof OP],
               nova_previsao: item[headers[10] as keyof OP],
               DS_CLASS: item[headers[11] as keyof OP],
@@ -156,6 +169,6 @@ export class ExportExcelService {
     const mes = new Date(+inputDate + MILISSECONDS_IN_3_HOURS).getMonth() + 1; // take care of the month's number here ⚠️
     const ano = new Date(+inputDate + MILISSECONDS_IN_3_HOURS).getFullYear();
 
-    return ('00'+dia).slice(-2) + '/' + ('00'+mes).slice(-2) + '/' + ano;
+    return ('00' + dia).slice(-2) + '/' + ('00' + mes).slice(-2) + '/' + ano;
   }
 }
