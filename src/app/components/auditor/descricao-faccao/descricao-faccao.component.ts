@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   NbDialogService,
   NbMenuService,
+  NbToastrService,
   NbWindowControlButtonsConfig,
   NbWindowService,
 } from '@nebular/theme';
@@ -92,13 +93,14 @@ export class DescricaoFaccaoComponent implements OnInit {
     { title: 'Adiantamento' },
     { title: 'Histórico Previsão' },
     { title: 'Apontamento de Produção' },
+    { title: 'Download Ficha Técnica' },
   ];
 
   constructor(
     public _loadingService: LoadingService,
     private NbDdialogService: NbDialogService,
+    private toastrService: NbToastrService,
     private windowService: NbWindowService,
-    private changeDetectorRef: ChangeDetectorRef,
     private nbMenuService: NbMenuService,
     private _route: ActivatedRoute,
     private _router: Router,
@@ -109,7 +111,8 @@ export class DescricaoFaccaoComponent implements OnInit {
     private _apontamentoService: ApontamentoService,
     private _userService: UserService,
     private _datatableConstants: DataTableConstants,
-    private _pendenciasService: PendenciasService
+    private _pendenciasService: PendenciasService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -656,7 +659,15 @@ export class DescricaoFaccaoComponent implements OnInit {
     let ehApontamento = tipo == 'Apontamento de Produção';
     let ehPendencia = tipo == 'Pendências';
     let ehHistorico = tipo == 'Histórico Previsão' || tipo == 'Histórico Apontamento';
+    let ehFichaTecnica = tipo == 'Download Ficha Técnica';
 
+    if(ehFichaTecnica) {
+      window.open(this.tempOP.link_ficha_tecnica, '_blank');
+      this.toastrService.success('Download iniciado!', 'Ficha Técnica', {
+        preventDuplicates: true,
+      });
+      return;
+    }
 
     if (ehPendencia) {
       let codOp = this.tempOP.NR_REDUZIDOOP + '-' + this.tempOP.cd_local;
