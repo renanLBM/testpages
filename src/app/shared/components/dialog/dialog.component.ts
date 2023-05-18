@@ -1,6 +1,10 @@
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import {
+  FormControl,
+  UntypedFormControl,
+  UntypedFormGroup,
+} from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { Apontamento } from 'src/app/models/apontamento';
 import { descOP } from 'src/app/models/descOP';
@@ -97,8 +101,10 @@ export class DialogComponent implements OnInit {
         ApontamentoList[i] != 'Em transporte' &&
         ApontamentoList[i] != 'Não informado' &&
         ApontamentoList[i] != 'Coletado'
-      )
-        this.DS_APONTAMENTO_DSList.push(('0' + i + ' - ' + item) as string);
+      ) {
+        let indice: string = i < 10 ? '0' + i + ' - ' : i + ' - ';
+        this.DS_APONTAMENTO_DSList.push((indice + item) as string);
+      }
     }
 
     this.loading = false;

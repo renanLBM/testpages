@@ -6,9 +6,10 @@ export enum ApontamentoList {
   'Parado',
   'Em auditoria',
   'Disponível para coleta',
+  'Em contagem',
   'Coletado',
   'Não industrializado',
-  'Triangulação'
+  'Triangulação',
 }
 
 export enum ApontamentoListParado {
@@ -27,5 +28,6 @@ export enum ApontamentoListParado {
   'Parado - Sistema',
   'Parado - Resolução de nota',
   'Parado - Inconsistência',
-  'Triangulação'
+  'Triangulação',
+  'Em contagem',
 }
