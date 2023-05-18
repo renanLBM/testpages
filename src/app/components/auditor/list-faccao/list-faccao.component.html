@@ -35,6 +35,20 @@
               </button>
             </nb-form-field>
           </div>
+          <div class="filtro-dropdown">
+            <nb-form-field>
+              <input type="text" id="filtro-op" #filtroOp nbInput (keyup)="filtroOP($event)"
+                placeholder="Filtrar Referência">
+              <button *ngIf="filtroAtivoOp" nbPrefix nbButton ghost (click)="limpaFiltro(filtroOp)">
+                <nb-icon icon="close-square-outline" aria-label="pesquisar">
+                </nb-icon>
+              </button>
+              <button nbSuffix nbButton ghost (click)="filtroOP($event)">
+                <nb-icon icon="search-outline" aria-label="pesquisar">
+                </nb-icon>
+              </button>
+            </nb-form-field>
+          </div>
         </div>
       </div>
     </ng-template>

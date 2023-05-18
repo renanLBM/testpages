@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { Pages } from 'src/app/models/enums/enumPages';
 import { OPDescricoes } from 'src/app/models/opdescricao';
 import { OPs } from 'src/app/models/ops';
@@ -14,7 +14,7 @@ import { SetTitleServiceService } from 'src/app/shared/set-title-service.service
   styleUrls: ['./list-faccao.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ListFaccaoComponent implements OnInit {
+export class ListFaccaoComponent implements OnInit, OnDestroy {
   selectedColecao: string[] = [];
   menuColecao: string[] = [];
   selectedFilters = {
@@ -26,6 +26,7 @@ export class ListFaccaoComponent implements OnInit {
   loading = new BehaviorSubject<boolean>(true);
   emptyList = new BehaviorSubject<boolean>(false);
   filtroAtivo: boolean = false;
+  filtroAtivoOp: boolean = false;
   show_desc: boolean = true;
 
   color: string[] = ['info', 'warning', 'primary', 'success'];
@@ -37,6 +38,8 @@ export class ListFaccaoComponent implements OnInit {
   faccaoList$: BehaviorSubject<OPDescricoes> = new BehaviorSubject(
     this.faccaoList
   );
+
+  subscription!: Subscription;
 
   constructor(
     private _setTitle: SetTitleServiceService,
@@ -52,6 +55,8 @@ export class ListFaccaoComponent implements OnInit {
       apontamentoFilter: '',
     };
 
+    this._opsFilteredService.clearFilter();
+
     let nivel =
       this._userService.getNivel() == 99 ? 1 : this._userService.getNivel();
     let titulo = Pages[nivel].charAt(0).toUpperCase() + Pages[nivel].slice(1);
@@ -60,7 +65,7 @@ export class ListFaccaoComponent implements OnInit {
 
     this._setTitle.setTitle('Carregando...');
 
-    this._opsService.getOPsRegiao().subscribe({
+    this.subscription = this._opsService.getOPsRegiao().subscribe({
       next: (list) => {
         this.AllOpsList = JSON.parse(list.data);
         this.setfaccaolist(this.AllOpsList);
@@ -156,14 +161,28 @@ export class ListFaccaoComponent implements OnInit {
           _.name.includes(filterValue.toUpperCase())
         )
       );
-      this.faccaoList$.subscribe((x) => this.emptyList.next(!x.length));
+      const faccaoListSubscription = this.faccaoList$.subscribe((x) => this.emptyList.next(!x.length));
+      this.subscription.add(faccaoListSubscription);
     }
+  }
+
+  filtroOP(event: Event) {
+    document.getElementById('filtro-op')?.focus();
+    this.filtroAtivoOp = true;
+    const filterValue = (event.target as HTMLInputElement).value;
+    const opFiltrada = this.AllOpsList.filter((ops) => {
+      return ops.CD_REFERENCIA.includes(filterValue)
+    })
+    // set the filter service to pass to others components
+    this._opsFilteredService.setFilterRef(filterValue);
+    this.setfaccaolist(opFiltrada);
   }
 
   limpaFiltro(item: HTMLInputElement): void {
     this.filtroAtivo = false;
+    this.filtroAtivoOp = false;
     item.value = '';
-    this.faccaoList$.next(this.faccaoList);
+    this.setfaccaolist(this.AllOpsList);
   }
 
   filtrosDropdown(): void {
@@ -189,5 +208,9 @@ export class ListFaccaoComponent implements OnInit {
       return;
     }
     this.setfaccaolist(filteredOps);
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 }

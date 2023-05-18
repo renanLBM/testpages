@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,7 +13,7 @@ import {
   NbWindowControlButtonsConfig,
   NbWindowService,
 } from '@nebular/theme';
-import { BehaviorSubject, forkJoin } from 'rxjs';
+import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Apontamento, Apontamentos } from 'src/app/models/apontamento';
 import { descOP, descOPs } from 'src/app/models/descOP';
@@ -41,7 +42,7 @@ const MILISEG_EM_UM_DIA = 24 * 3600 * 1000;
   styleUrls: ['./descricao-faccao.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DescricaoFaccaoComponent implements OnInit {
+export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
   dtHoje = new Date();
   itensLimite = 10;
 
@@ -88,6 +89,8 @@ export class DescricaoFaccaoComponent implements OnInit {
   apontamento!: Apontamento;
   imgList: string[] = [];
 
+  subscription!: Subscription;
+
   itemsMenu = [
     { title: 'Atraso' },
     { title: 'Adiantamento' },
@@ -112,7 +115,7 @@ export class DescricaoFaccaoComponent implements OnInit {
     private _userService: UserService,
     private _datatableConstants: DataTableConstants,
     private _pendenciasService: PendenciasService,
-    private changeDetectorRef: ChangeDetectorRef,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -131,14 +134,16 @@ export class DescricaoFaccaoComponent implements OnInit {
 
     this.verificaAcesso();
     // pega o filtro setado na página anterior (escolha da facção)
-    let filtroColecao: string[] = this._opsFilteredService.getFilter().colecao;
+    const filtroColecao: string[] =
+      this._opsFilteredService.getFilter().colecao;
+    const filtroRef: string = this._opsFilteredService.getFilterRef();
 
     this.getWeek(); // pega semana e ano atual
 
     this._setTitle.setTitle('Carregando...');
 
     // chamando todos os serviços com forkjoin
-    forkJoin([
+    this.subscription = forkJoin([
       this._apontamentoService.getApontamento(this.routeId),
       this._atrasoService.getMotivos(this.routeId),
       this._opsService.getOpByLocal(this.routeId),
@@ -165,7 +170,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       if (this.isDistribuicao || this.isUsuario) {
         this.showMenu.next(false);
       }
-      this.ajusteDosDados(filtroColecao, ops);
+      this.ajusteDosDados(filtroColecao, ops, filtroRef);
     });
   }
 
@@ -177,10 +182,15 @@ export class DescricaoFaccaoComponent implements OnInit {
     return op.NR_REDUZIDOOP;
   }
 
-  ajusteDosDados(filtroColecao: string[], ops: OPs): void {
+  ajusteDosDados(filtroColecao: string[], ops: OPs, filtroRef: string): void {
     if (filtroColecao.length > 0) {
       ops = ops.filter((op) => {
         return filtroColecao.includes(op.NR_CICLO + '');
+      });
+    }
+    if (filtroRef.length > 0) {
+      ops = ops.filter((op) => {
+        return op.CD_REFERENCIA.includes(filtroRef);
       });
     }
 
@@ -475,10 +485,12 @@ export class DescricaoFaccaoComponent implements OnInit {
           this.descOP.filter((_) => _.cod?.includes(filterValue.toUpperCase()))
         );
       }
-      this.descOP$.subscribe((x) => {
+      const descOPSubscription = this.descOP$.subscribe((x) => {
         this.isEmptyList = !x.length;
         this.countOPs(x);
       });
+
+      this.subscription.add(descOPSubscription);
     }
   }
 
@@ -520,10 +532,12 @@ export class DescricaoFaccaoComponent implements OnInit {
         );
       }
     }
-    this.descOP$.subscribe((x) => {
+    const descOPSubscription = this.descOP$.subscribe((x) => {
       this.isEmptyList = !x.length;
       this.countOPs(x);
     });
+
+    this.subscription.add(descOPSubscription);
   }
 
   limpaFiltro(item: HTMLInputElement): void {
@@ -606,12 +620,14 @@ export class DescricaoFaccaoComponent implements OnInit {
       }
     }
 
-    this.descOP$.subscribe((x) => {
+    const descOPSubscription = this.descOP$.subscribe((x) => {
       // pega primeiro e último dia da semana para mostrar na toolbar
       this.getFirstAndLastWeekDay(x[0].previsao!);
       this.isEmptyList = !x.length;
       this.countOPs(x);
     });
+
+    this.subscription.add(descOPSubscription);
 
     (document.getElementById('filtro-op') as HTMLInputElement)!.value = '';
     this.filtroAtivo = false;
@@ -635,7 +651,7 @@ export class DescricaoFaccaoComponent implements OnInit {
   // dropdown menu
   openMenu(opEnviada: descOP) {
     this.tempOP = opEnviada;
-    this.nbMenuService
+    const menuServiceSubscription = this.nbMenuService
       .onItemClick()
       .pipe(
         filter(({ tag }) => tag === 'auditor-list'),
@@ -648,6 +664,7 @@ export class DescricaoFaccaoComponent implements OnInit {
         }
       });
     this.counter = 0;
+    this.subscription.add(menuServiceSubscription);
   }
 
   historicoAtraso(opEnviada: descOP) {
@@ -658,10 +675,11 @@ export class DescricaoFaccaoComponent implements OnInit {
   openModal(tipo: string) {
     let ehApontamento = tipo == 'Apontamento de Produção';
     let ehPendencia = tipo == 'Pendências';
-    let ehHistorico = tipo == 'Histórico Previsão' || tipo == 'Histórico Apontamento';
+    let ehHistorico =
+      tipo == 'Histórico Previsão' || tipo == 'Histórico Apontamento';
     let ehFichaTecnica = tipo == 'Download Ficha Técnica';
 
-    if(ehFichaTecnica) {
+    if (ehFichaTecnica) {
       window.open(this.tempOP.link_ficha_tecnica, '_blank');
       this.toastrService.success('Download iniciado!', 'Ficha Técnica', {
         preventDuplicates: true,
@@ -678,13 +696,13 @@ export class DescricaoFaccaoComponent implements OnInit {
       this.NbDdialogService.open(DialogHistComponent, {
         context: {
           prevOP: this.tempOP,
-          tipo: tipo
+          tipo: tipo,
         },
       });
       return;
     }
 
-    this.NbDdialogService.open(DialogComponent, {
+    const dialogSubscriptio = this.NbDdialogService.open(DialogComponent, {
       context: {
         prevOP: this.tempOP,
         prev: this.tempOP.novaprevisao?.includes('Invalid')
@@ -716,6 +734,7 @@ export class DescricaoFaccaoComponent implements OnInit {
       );
       this.changeDetectorRef.detectChanges();
     });
+    this.subscription.add(dialogSubscriptio);
   }
 
   countOPs(listOP: descOPs) {
@@ -812,17 +831,23 @@ export class DescricaoFaccaoComponent implements OnInit {
     let userLogin = this._userService.getSession().login || '';
 
     if (this._datatableConstants.getUsuariosPendencias().length == 0) {
-      this._pendenciasService.getUsuariosPendencias().subscribe({
-        next: (res) => {
-          this._datatableConstants.setUsuariosPendencias(res);
-          if (res.includes(userLogin)) {
-            this.itemsMenu.push({ title: 'Pendências' });
-          }
-        },
-        error: (err) => {
-          throw new Error(err);
-        },
-      });
+      const pendenciaServiceSubscription = this._pendenciasService
+        .getUsuariosPendencias()
+        .subscribe({
+          next: (res) => {
+            this._datatableConstants.setUsuariosPendencias(res);
+            if (res.includes(userLogin)) {
+              this.itemsMenu.push({ title: 'Pendências' });
+            }
+          },
+          error: (err) => {
+            throw new Error(err);
+          },
+        });
+
+      !this.subscription
+        ? (this.subscription = pendenciaServiceSubscription)
+        : this.subscription.add(pendenciaServiceSubscription);
     }
 
     if (
@@ -851,5 +876,9 @@ export class DescricaoFaccaoComponent implements OnInit {
 
   openUrl(link: string) {
     window.open(link, '_blank');
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 }
