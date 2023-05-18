@@ -651,7 +651,7 @@ export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
   // dropdown menu
   openMenu(opEnviada: descOP) {
     this.tempOP = opEnviada;
-    const menuServiceSubscription = this.nbMenuService
+    this.nbMenuService
       .onItemClick()
       .pipe(
         filter(({ tag }) => tag === 'auditor-list'),
@@ -664,7 +664,6 @@ export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
         }
       });
     this.counter = 0;
-    this.subscription.add(menuServiceSubscription);
   }
 
   historicoAtraso(opEnviada: descOP) {
@@ -702,7 +701,7 @@ export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const dialogSubscriptio = this.NbDdialogService.open(DialogComponent, {
+    this.NbDdialogService.open(DialogComponent, {
       context: {
         prevOP: this.tempOP,
         prev: this.tempOP.novaprevisao?.includes('Invalid')
@@ -714,6 +713,7 @@ export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
         apontamento: ehApontamento,
       },
     }).onClose.subscribe((x) => {
+      console.log(x);
       if (ehApontamento) {
         this.tempOP.DS_APONTAMENTO_DS = x.DS_APONTAMENTO_DS;
       }
@@ -734,7 +734,6 @@ export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
       );
       this.changeDetectorRef.detectChanges();
     });
-    this.subscription.add(dialogSubscriptio);
   }
 
   countOPs(listOP: descOPs) {
