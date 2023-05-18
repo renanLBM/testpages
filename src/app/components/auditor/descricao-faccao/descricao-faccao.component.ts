@@ -182,13 +182,13 @@ export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
     return op.NR_REDUZIDOOP;
   }
 
-  ajusteDosDados(filtroColecao: string[], ops: OPs, filtroRef: string): void {
+  ajusteDosDados(filtroColecao: string[], ops: OPs, filtroRef: string = ''): void {
     if (filtroColecao.length > 0) {
       ops = ops.filter((op) => {
         return filtroColecao.includes(op.NR_CICLO + '');
       });
     }
-    if (filtroRef.length > 0) {
+    if (!!filtroRef) {
       ops = ops.filter((op) => {
         return op.CD_REFERENCIA.includes(filtroRef);
       });
