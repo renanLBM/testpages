@@ -6,10 +6,10 @@ export enum ApontamentoList {
   'Parado',
   'Em auditoria',
   'Disponível para coleta',
-  'Em contagem',
   'Coletado',
   'Não industrializado',
   'Triangulação',
+  'Em contagem',
 }
 
 export enum ApontamentoListParado {
