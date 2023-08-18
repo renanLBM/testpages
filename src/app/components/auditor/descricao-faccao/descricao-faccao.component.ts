@@ -35,6 +35,7 @@ import { DataTableConstants } from 'src/app/shared/datatable-constants.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 const MILISEG_EM_UM_DIA = 24 * 3600 * 1000;
+const AJUSTE_3_HORAS = 10800000;
 
 @Component({
   selector: 'fc-descricao-faccao',
@@ -120,6 +121,7 @@ export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // #################
+    this.dtHoje.setHours(0, 0, 0, 0);
     let userNivel = this._userService.getNivel();
     this.routeId = this._route.snapshot.paramMap.get('id')!;
     this.isDistribuicao = this.routeId == '302';
@@ -182,7 +184,11 @@ export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
     return op.NR_REDUZIDOOP;
   }
 
-  ajusteDosDados(filtroColecao: string[], ops: OPs, filtroRef: string = ''): void {
+  ajusteDosDados(
+    filtroColecao: string[],
+    ops: OPs,
+    filtroRef: string = ''
+  ): void {
     if (filtroColecao.length > 0) {
       ops = ops.filter((op) => {
         return filtroColecao.includes(op.NR_CICLO + '');
@@ -318,6 +324,7 @@ export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
         checked: maiorMotivo.i_checked,
         descricao: op.DS_GRUPO,
         drop: op.DS_DROP,
+        colecao: op.DS_COLECAO,
         img:
           this.urlBase +
           op.CD_REFERENCIA.toString() +
@@ -392,35 +399,45 @@ export class DescricaoFaccaoComponent implements OnInit, OnDestroy {
           this.motivo = motivos.reduce((p, c) => {
             return p.ID_NOVO_MOTIVO! > c.ID_NOVO_MOTIVO! ? p : c;
           });
-          if (this.motivo.DS_ATRASO_DS == 'Adiantamento') {
-            if (
-              +this.motivo.DT_PREV_RETORNO_NOVA >= this.motivo.DT_PREVRETORNO!
-            ) {
-              return {
-                cd_atraso: 0,
-                ds_atraso: '',
-                dt_atraso: '',
-                i_checked: false,
-              };
+          if (+this.motivo.DT_PREV_RETORNO_NOVA < (+this.dtHoje - AJUSTE_3_HORAS)) {
+            return {
+              cd_atraso: 0,
+              ds_atraso: '',
+              dt_atraso: '',
+              i_checked: false,
+            };
+          } else {
+            if (this.motivo.DS_ATRASO_DS == 'Adiantamento') {
+              if (
+                +this.motivo.DT_PREV_RETORNO_NOVA >=
+                  this.motivo.DT_PREVRETORNO!
+              ) {
+                return {
+                  cd_atraso: 0,
+                  ds_atraso: '',
+                  dt_atraso: '',
+                  i_checked: false,
+                };
+              }
+            } else if (this.motivo.DS_ATRASO_DS != 'Adiantamento') {
+              if (
+                +this.motivo.DT_PREV_RETORNO_NOVA <= this.motivo.DT_PREVRETORNO!
+              ) {
+                return {
+                  cd_atraso: 0,
+                  ds_atraso: '',
+                  dt_atraso: '',
+                  i_checked: false,
+                };
+              }
             }
-          } else if (this.motivo.DS_ATRASO_DS != 'Adiantamento') {
-            if (
-              +this.motivo.DT_PREV_RETORNO_NOVA <= this.motivo.DT_PREVRETORNO!
-            ) {
-              return {
-                cd_atraso: 0,
-                ds_atraso: '',
-                dt_atraso: '',
-                i_checked: false,
-              };
-            }
+            return {
+              cd_atraso: this.motivo.CD_ATRASO,
+              ds_atraso: this.motivo.DS_ATRASO_DS,
+              dt_atraso: +this.motivo.DT_PREV_RETORNO_NOVA + AJUSTE_3_HORAS,
+              i_checked: true,
+            };
           }
-          return {
-            cd_atraso: this.motivo.CD_ATRASO,
-            ds_atraso: this.motivo.DS_ATRASO_DS,
-            dt_atraso: +this.motivo.DT_PREV_RETORNO_NOVA + 10800000,
-            i_checked: true,
-          };
         }
       }
     }

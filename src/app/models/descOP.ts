@@ -26,6 +26,7 @@ export interface descOP {
   status_color?: string,
   accent?: NbComponentStatus,
   qnt?: number,
+  colecao?: string,
 
   DS_APONTAMENTO_DS?: string,
   NR_REDUZIDOOP: number,

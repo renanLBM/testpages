@@ -19,6 +19,7 @@ import { OpsService } from 'src/app/services/ops.service';
 import { SetTitleServiceService } from 'src/app/shared/set-title-service.service';
 
 const MILISEG_EM_UM_DIA = 24 * 3600 * 1000;
+const AJUSTE_3_HORAS = 10800000;
 
 @Component({
   selector: 'fc-pcp-desc-ops',
@@ -67,6 +68,8 @@ export class PcpDescOpsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
+    this.dtHoje.setHours(0,0,0,0);
     this._setTitle.setTitle('Carregando...');
     this.selectedFilters = this._opsFilteredService.getFilter();
 
@@ -200,7 +203,7 @@ export class PcpDescOpsComponent implements OnInit {
 
       if (atraso) {
         let dtNovaPrev = new Date(+atraso.DT_PREV_RETORNO_NOVA);
-        if (dtNovaPrev >= this.dtHoje) {
+        if (+dtNovaPrev >= +this.dtHoje - AJUSTE_3_HORAS) {
           x['motivo_atraso'] = atraso.DS_ATRASO_DS;
           x['nova_previsao'] = dtNovaPrev
             .toLocaleString('pt-Br', { timeZone: 'UTC' })
