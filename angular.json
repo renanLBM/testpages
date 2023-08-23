@@ -61,11 +61,11 @@
                 {
                   "type": "initial",
                   "maximumWarning": "10mb",
-                  "maximumError": "5mb"
+                  "maximumError": "10mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "5kb",
+                  "maximumWarning": "10kb",
                   "maximumError": "10kb"
                 }
               ],

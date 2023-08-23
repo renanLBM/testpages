@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "faccaocontrol"
-  }
+    "default": "faccontrol-9f27b",
+    "faccontrol-prod": "faccontrol-9f27b"
+  },
+  "targets": {},
+  "etags": {}
 }

@@ -1,0 +1,117 @@
+{
+  "configVersion": 1,
+  "timestamp": 1692822628195,
+  "index": "/testpages/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/testpages/299.1952cd03bd63a8ea.js",
+        "/testpages/39.6ad5665224ed8fb9.js",
+        "/testpages/402.270669082d11ffa9.js",
+        "/testpages/568.172697d7caa1bc15.js",
+        "/testpages/735.e12b6d2e2a7fcf46.js",
+        "/testpages/common.1b774798bc4e0d8f.js",
+        "/testpages/favicon.ico",
+        "/testpages/index.html",
+        "/testpages/main.5270424a4c401c40.js",
+        "/testpages/manifest.webmanifest",
+        "/testpages/polyfills.d62cd5190ba83efb.js",
+        "/testpages/runtime.c8401aad43a3b329.js",
+        "/testpages/scripts.0cd378566d9d55ab.js",
+        "/testpages/styles.b7a47c3f7d11fa8c.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/testpages/assets/Logo_preto.png",
+        "/testpages/assets/faccaocontrol.ico",
+        "/testpages/assets/faccaocontrol1.ico",
+        "/testpages/assets/faccaocontrol2.ico",
+        "/testpages/assets/faccaocontrol3.ico",
+        "/testpages/assets/faccaocontrol4.ico",
+        "/testpages/assets/faccaocontrol5.ico",
+        "/testpages/assets/icon_excel.png",
+        "/testpages/assets/icons/Icon-128x128.png",
+        "/testpages/assets/icons/Icon-144x144.png",
+        "/testpages/assets/icons/Icon-152x152.png",
+        "/testpages/assets/icons/Icon-196x196.png",
+        "/testpages/assets/icons/Icon-256x256.png",
+        "/testpages/assets/icons/Icon-512x512.png",
+        "/testpages/assets/icons/Icon-72x72.png",
+        "/testpages/assets/icons/Icon-88x88.png",
+        "/testpages/assets/logo_branca.png",
+        "/testpages/assets/not-found.png",
+        "/testpages/assets/pdf.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/testpages/299.1952cd03bd63a8ea.js": "15383c33750c04de7b29553b724ed37d48c8a965",
+    "/testpages/39.6ad5665224ed8fb9.js": "7e1224a54d7962032e614a8a41b7abed9e092a2e",
+    "/testpages/402.270669082d11ffa9.js": "e8894f6b5b3d4e6f24dafd1682cbaf2e4369615a",
+    "/testpages/568.172697d7caa1bc15.js": "fa95e32d5f977263a155568fba2816868378e055",
+    "/testpages/735.e12b6d2e2a7fcf46.js": "966b1742c2d771595c784f4e7cdd20ae2c627e8d",
+    "/testpages/assets/Logo_preto.png": "c7addbf1e6c869185a69e3dc983e0dc93ede865c",
+    "/testpages/assets/faccaocontrol.ico": "563d1d94a30fe5622ce9e8cd7ce56cc8c484fb9e",
+    "/testpages/assets/faccaocontrol1.ico": "36d7935d3d04f8e2f21fe1cd0bcd3aa9a18c4f1a",
+    "/testpages/assets/faccaocontrol2.ico": "42013b7475ab3d82393fcd4248cb81d5efebc7f1",
+    "/testpages/assets/faccaocontrol3.ico": "e03c3dee57d127e71346c87ee0b6f883ac6187f0",
+    "/testpages/assets/faccaocontrol4.ico": "bb5a33387d203fb691323c5da71c43c8617cfe12",
+    "/testpages/assets/faccaocontrol5.ico": "df6723de192d02522fbe0cfe57c88aefbb24e71e",
+    "/testpages/assets/icon_excel.png": "86e8e673a746a638f4aa47477cb31b6408a595be",
+    "/testpages/assets/icons/Icon-128x128.png": "8678d94d5bdcf121deb70652890c15753f5f680f",
+    "/testpages/assets/icons/Icon-144x144.png": "c984c3bfafd6396c06856e8366baf394ce576fbf",
+    "/testpages/assets/icons/Icon-152x152.png": "187eae5148d5d6a4ead0a7340cc1f8b8ffedb854",
+    "/testpages/assets/icons/Icon-196x196.png": "4d2b2ab1da1368ab37fcad381a9380ebda82d9e7",
+    "/testpages/assets/icons/Icon-256x256.png": "c346954454b2f9bc0c160937a77ad6efd3e217ee",
+    "/testpages/assets/icons/Icon-512x512.png": "4596cb42cf1825b42ba5d1fc018a934b561e42ac",
+    "/testpages/assets/icons/Icon-72x72.png": "13cae97fa19cbbad438c715f65f2f8057dd76258",
+    "/testpages/assets/icons/Icon-88x88.png": "897dc5a985d2c308b708263a38786ae8959eac15",
+    "/testpages/assets/logo_branca.png": "42ef240cdedb2ccb38c7fa08af8ca1d752030f10",
+    "/testpages/assets/not-found.png": "3e2064032355a028e495b9e1aaa773c1e5a979cd",
+    "/testpages/assets/pdf.png": "008289668d0d6e8b68f9d5120b863556d4e44e84",
+    "/testpages/common.1b774798bc4e0d8f.js": "7229af045d08e0a769e0e886fbbf9a102302fc06",
+    "/testpages/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
+    "/testpages/index.html": "0b29adda74f7bb3df13eea73c7c41bd3b23bdf4f",
+    "/testpages/main.5270424a4c401c40.js": "d077cde45f0930adedb8db13f5ac8e16c8ac69dd",
+    "/testpages/manifest.webmanifest": "e72a0c5c8091b0b8aaeaa2b8e12c6fade1861129",
+    "/testpages/polyfills.d62cd5190ba83efb.js": "3abe9d9bf3743ff5062c42d62462faac7a8ae7ba",
+    "/testpages/runtime.c8401aad43a3b329.js": "d19dae584dfa6cc4b00652b2acdd8061c3c400ea",
+    "/testpages/scripts.0cd378566d9d55ab.js": "0068bc2a917622196c0861c502a124600e7d0456",
+    "/testpages/styles.b7a47c3f7d11fa8c.css": "d2f190e900e3a9fa2da25ca49ecdb7a9d3e1520c"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
